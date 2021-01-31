@@ -24,6 +24,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({
+  secret: '53l3po$@lar',
+  cookie: { maxAge: 60000, httpOnly: true, secure: true },
+  resave: true,
+  saveUninitialized: false
+}));
+
 app.use('/api', apiRouter);
 // app.use('/', viewsRouter);
 
