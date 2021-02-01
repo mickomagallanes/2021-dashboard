@@ -4,10 +4,14 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 // const logger = require('morgan');
 
+const mysql_conn = require("./models/basesql.js");
 const apiRouter = require('./routes/api');
-const viewsRouter = require('./routes/views');
 const limiter = require('./middlewares/ratelimiter.js');
 const cors = require('cors');
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
+const sessionStore = new MySQLStore({}, mysql_conn.pool);
+
 const app = express();
 // middleware for limiter
 app.use(limiter.perMinuteLimit);
@@ -25,22 +29,17 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
-  secret: '53l3po$@lar',
-  cookie: { maxAge: 60000, httpOnly: true, secure: true },
+  secret: '53l3po$@lAr93E$!a&G3lE54',
+  cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, secure: true },
   resave: true,
   saveUninitialized: false
 }));
 
 app.use('/api', apiRouter);
-// app.use('/', viewsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   res.status(404);
-  if (req.accepts('html')) {
-    res.render('404', { url: req.url });
-    return;
-  }
 });
 
 // error handler
@@ -51,7 +50,6 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
 });
 
 module.exports = app;

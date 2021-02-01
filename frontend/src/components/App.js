@@ -1,7 +1,10 @@
 import React from 'react';
-import './App.css';
-import Login from './Login/Login';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import './App.scss';
+import { Redirect, withRouter } from 'react-router-dom';
+import AppRoutes from './AppRoutes';
+import Navbar from './Navbar/Navbar';
+import Sidebar from './Sidebar/Sidebar';
+import Footer from './Footer/Footer';
 
 class App extends React.Component {
   state = {
@@ -10,22 +13,31 @@ class App extends React.Component {
 
   render() {
     if (!this.state.token) {
-      return <Login setToken={(tok) => this.setState({ token: tok })} />
+      <Redirect to='/login' />
     }
-    return (
-      <>
-        <BrowserRouter>
-          <Switch>
-            <Route path="/login">
-              <Login />
-            </Route>
-          </Switch>
-        </BrowserRouter>
 
-      </>
+    let urlPath = this.props.location.pathname;
+    let navbarComponent = urlPath !== "/login" ? <Navbar /> : '';
+    let sidebarComponent = urlPath !== "/login" ? <Sidebar /> : '';
+    let footerComponent = urlPath !== "/login" ? <Footer /> : '';
+
+    return (
+      <div className="container-scroller">
+        { sidebarComponent}
+        <div className="container-fluid page-body-wrapper">
+          {navbarComponent}
+          <div className="main-panel">
+            <div className="content-wrapper">
+              <AppRoutes />
+            </div>
+            {footerComponent}
+          </div>
+        </div>
+      </div>
     );
+
   }
 }
 
 
-export default App;
+export default withRouter(App);
