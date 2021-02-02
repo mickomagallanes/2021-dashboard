@@ -65,7 +65,7 @@ class CRUD {
 
     async update(id, rec) {
         try {
-            const result = await mysql_conn.update(this.tableName, rec, "where id=?", [id]);
+            await mysql_conn.update(this.tableName, rec, "where id=?", [id]);
             return true;
         } catch (err) {
             console.log(err);
@@ -75,7 +75,7 @@ class CRUD {
 
     async insert(rec) {
         try {
-            const result = await mysql_conn.insert(this.tableName, rec);
+            await mysql_conn.insert(this.tableName, rec);
             return true;
         } catch (err) {
             console.log(err);

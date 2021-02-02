@@ -4,7 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 // const logger = require('morgan');
 
-const mysql_conn = require("./models/basesql.js");
+const mysql_conn = require("./models/db.js");
 const apiRouter = require('./routes/api');
 const limiter = require('./middlewares/ratelimiter.js');
 const cors = require('cors');
@@ -30,6 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
   secret: '53l3po$@lAr93E$!a&G3lE54',
+  store: sessionStore,
   cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, secure: true },
   resave: true,
   saveUninitialized: false
