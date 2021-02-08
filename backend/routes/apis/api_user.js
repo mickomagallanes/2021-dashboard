@@ -22,10 +22,13 @@ router.post('/login', async function (req, res, next) {
 
     // check if user credentials are true
     let result = await UserService.loginUser(uname, pwd);
-    if (result === false) {
-        res.sendStatus(403);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Credentials is incorrect" });
     } else {
-        res.json({ status: 1 });
+        req.session.userData = result.data;
+        console.log(req.cookies['connect.sid'])
+        res.json({ "status": true, "msg": "Login successful" });
     }
 });
 

@@ -35,7 +35,16 @@ class UserService {
         let userObj = await UserModel.getByUsername(username);
         const result = await bcrypt.compare(password, userObj[0].Password);
 
-        return result;
+        if (result) {
+            let userData = {
+                "uname": userObj[0].Username,
+                "userid": userObj[0].UserID,
+                "roleid": userObj[0].RoleID
+            }
+
+            return { status: true, data: userData }
+        }
+        return { status: false, data: undefined }
     }
 
 

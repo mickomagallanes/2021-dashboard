@@ -38,7 +38,10 @@ class UserModel {
 
     static async getByUsername(username) {
         const stmt = `SELECT 
-               Password
+               Password,
+               RoleID,
+               Username,
+               UserID
             FROM
                 Users
             WHERE

@@ -8,6 +8,7 @@ const mysql_conn = require("./models/db.js");
 const apiRouter = require('./routes/api');
 const limiter = require('./middlewares/ratelimiter.js');
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const sessionStore = new MySQLStore({}, mysql_conn.pool);
@@ -16,7 +17,12 @@ const app = express();
 // middleware for limiter
 app.use(limiter.perMinuteLimit);
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: 'GET,HEAD,POST',
+  preflightContinue: false,
+  credentials: false
+}));
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
@@ -29,9 +35,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
+  genid: function (req) {
+    return uuidv4(); // use UUIDs for session IDs
+  },
   secret: '53l3po$@lAr93E$!a&G3lE54',
   store: sessionStore,
-  cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, secure: true },
+  cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: false, secure: true, sameSite: 'strict' },
   resave: true,
   saveUninitialized: false
 }));
