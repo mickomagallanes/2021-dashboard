@@ -1,12 +1,24 @@
 import React from 'react';
 
 import './Login.css';
-import { Link } from 'react-router-dom';
+
 import { Form } from 'react-bootstrap';
 import logo from "../../assets/images/logo.svg";
 
+import axios from 'axios';
+
+const loginURL = "http://localhost:3000/API/user/login";
+
 class Login extends React.Component {
 
+
+  constructor() {
+    super();
+    this.state = {
+      username: undefined,
+      password: undefined
+    }
+  }
   render() {
     return (
       <div>
@@ -21,13 +33,26 @@ class Login extends React.Component {
                 <h6 className="font-weight-light">Sign in to continue.</h6>
                 <Form className="pt-3">
                   <Form.Group className="d-flex search-field">
-                    <Form.Control type="email" placeholder="Username" size="lg" className="h-auto" />
+                    <Form.Control type="text"
+                      placeholder="Username"
+                      size="lg"
+                      className="h-auto"
+                      autoComplete="username"
+                      onChange={(e) => this.setState({ username: e.target.value })} />
                   </Form.Group>
                   <Form.Group className="d-flex search-field">
-                    <Form.Control type="password" placeholder="Password" size="lg" className="h-auto" />
+                    <Form.Control
+                      type="password"
+                      placeholder="Password"
+                      size="lg"
+                      className="h-auto"
+                      autoComplete="current-password"
+                      onChange={(e) => this.setState({ password: e.target.value })} />
                   </Form.Group>
                   <div className="mt-3">
-                    <Link className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" to="/dashboard">SIGN IN</Link>
+                    <button type="button" className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"
+                      onClick={this.signIn}>SIGN IN</button>
+
                   </div>
 
                 </Form>
@@ -37,6 +62,26 @@ class Login extends React.Component {
         </div>
       </div>
     );
+  }
+
+  signIn = async () => {
+    let axiosConfig = {
+      withCredentials: true,
+    };
+    let param = { "username": this.state.username, "password": this.state.password };
+
+    try {
+      const status = await axios.post(
+        loginURL,
+        param,
+        axiosConfig
+      )
+      console.log(status);
+
+    } catch (error) {
+      console.log(error)
+    }
+
   }
 }
 

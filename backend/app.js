@@ -17,11 +17,21 @@ const app = express();
 // middleware for limiter
 app.use(limiter.perMinuteLimit);
 
+// app.use(function (req, res, next) {
+//   res.header('Content-Type', 'application/json;charset=UTF-8')
+//   res.header('Access-Control-Allow-Credentials', true)
+//   res.header(
+//     'Access-Control-Allow-Headers',
+//     'Origin, X-Requested-With, Content-Type, Accept'
+//   )
+//   next();
+// })
+
 app.use(cors({
-  origin: '*',
+  origin: 'http://localhost:3006',
   methods: 'GET,HEAD,POST',
   preflightContinue: false,
-  credentials: false
+  credentials: true
 }));
 
 // view engine setup
@@ -31,7 +41,7 @@ app.use(cors({
 // app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser("53l3po$@lAr93E$!a&G3lE54"));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
@@ -40,7 +50,7 @@ app.use(session({
   },
   secret: '53l3po$@lAr93E$!a&G3lE54',
   store: sessionStore,
-  cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: false, secure: true, sameSite: 'strict' },
+  cookie: { maxAge: 5 * 1000, httpOnly: true, secure: process.env.NODE_ENV === "production" },
   resave: true,
   saveUninitialized: false
 }));

@@ -33,17 +33,19 @@ class UserService {
 
     static async loginUser(username, password) {
         let userObj = await UserModel.getByUsername(username);
-        const result = await bcrypt.compare(password, userObj[0].Password);
+        if (userObj.length) {
+            const result = await bcrypt.compare(password, userObj[0].Password);
+            if (result) {
+                let userData = {
+                    "uname": userObj[0].Username,
+                    "userid": userObj[0].UserID,
+                    "roleid": userObj[0].RoleID
+                }
 
-        if (result) {
-            let userData = {
-                "uname": userObj[0].Username,
-                "userid": userObj[0].UserID,
-                "roleid": userObj[0].RoleID
+                return { status: true, data: userData }
             }
-
-            return { status: true, data: userData }
         }
+
         return { status: false, data: undefined }
     }
 
