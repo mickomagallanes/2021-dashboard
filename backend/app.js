@@ -11,7 +11,12 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
-const sessionStore = new MySQLStore({}, mysql_conn.pool);
+const sessionStore = new MySQLStore({
+  // Whether or not to automatically check for and clear expired sessions:
+  clearExpired: true,
+  // How frequently expired sessions will be cleared; milliseconds:
+  checkExpirationInterval: 60 * 60 * 1000 // clear per hour
+}, mysql_conn.pool);
 
 const app = express();
 // middleware for limiter
@@ -50,7 +55,7 @@ app.use(session({
   },
   secret: '53l3po$@lAr93E$!a&G3lE54',
   store: sessionStore,
-  cookie: { maxAge: 5 * 1000, httpOnly: true, secure: process.env.NODE_ENV === "production" },
+  cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, secure: process.env.NODE_ENV === "production" },
   resave: true,
   saveUninitialized: false
 }));
