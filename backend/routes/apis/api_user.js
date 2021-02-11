@@ -38,7 +38,7 @@ router.post('/login', async function (req, res, next) {
         } else {
             req.session.userData = result.data;
 
-            res.json({ "status": true, "msg": "Login successful" });
+            res.json({ "status": true, "msg": "Login successful", "redirect": "/" });
         }
     }
 

@@ -5,8 +5,9 @@ import './Login.css';
 import { Form } from 'react-bootstrap';
 import logo from "../../assets/images/logo.svg";
 
+import { createBrowserHistory } from 'history'
 import axios from 'axios';
-
+const browserHistory = createBrowserHistory();
 const loginURL = "http://localhost:3000/API/user/login";
 
 class Login extends React.Component {
@@ -16,7 +17,8 @@ class Login extends React.Component {
     super();
     this.state = {
       username: undefined,
-      password: undefined
+      password: undefined,
+      isLoggedIn: false
     }
   }
   render() {
@@ -75,7 +77,16 @@ class Login extends React.Component {
         loginURL,
         param,
         axiosConfig
-      )
+      ).then(function (response) {
+        if (response.data.status === true) {
+          // LESSON: You can use the 'window' object from the browser as long as 
+          // you're not doing server-side rendering
+          window.location = response.data.redirect;
+
+        }
+      }).catch(function (error) {
+
+      })
       console.log(status);
 
     } catch (error) {
