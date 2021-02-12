@@ -11,46 +11,17 @@ class PageRoleModel {
     }
 
     /**
-     * inserts username and password to the database
-     * @param {String} username username of the user
-     * @param {String} password plain password of the user
-     * @param {String} roleId id from roles table if it is admin, etc
+     * check if user role has privilege on the page
+     * @param {Number} userId id of the user
+     * @param {String} pagePath path of the page, eg: "/user"
      */
 
-    static async insertUser(username, password, roleId) {
+    static async getPageRole(userId, pagePath) {
+        const stmt = `SELECT a.PageRolesID FROM PageRoles as a INNER JOIN Pages as b ON a.PageID = b.PageID 
+        INNER JOIN Users as c ON a.RoleID = c.RoleID WHERE UserID = ? AND PagePath = ?;`;
 
         try {
-            const result = await mysql_conn.insert("Users", {
-                Username: username,
-                Password: password,
-                RoleID: roleId
-            });
-            return result;
-
-        } catch (err) {
-            console.log(err);
-            return false;
-        }
-    }
-
-    /**
-     * get row by username
-     * @param {String} username username of the user
-     */
-
-    static async getByUsername(username) {
-        const stmt = `SELECT 
-               Password,
-               RoleID,
-               Username,
-               UserID
-            FROM
-                Users
-            WHERE
-                Username = ?;`;
-
-        try {
-            const result = await mysql_conn.query(stmt, [username]);
+            const result = await mysql_conn.query(stmt, [userId, pagePath]);
             return result;
         } catch (err) {
             console.log(err);

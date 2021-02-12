@@ -4,10 +4,9 @@ import './Login.css';
 
 import { Form } from 'react-bootstrap';
 import logo from "../../assets/images/logo.svg";
-
-import { createBrowserHistory } from 'history'
 import axios from 'axios';
-const browserHistory = createBrowserHistory();
+import { retryRequest } from "../../helpers/utils";
+
 const loginURL = "http://localhost:3000/API/user/login";
 
 class Login extends React.Component {
@@ -69,28 +68,26 @@ class Login extends React.Component {
   signIn = async () => {
     let axiosConfig = {
       withCredentials: true,
+      timeout: 10000
     };
     let param = { "username": this.state.username, "password": this.state.password };
 
     try {
-      const status = await axios.post(
+      const resp = await axios.post(
         loginURL,
         param,
         axiosConfig
-      ).then(function (response) {
-        if (response.data.status === true) {
-          // LESSON: You can use the 'window' object from the browser as long as 
-          // you're not doing server-side rendering
-          window.location = response.data.redirect;
+      );
 
-        }
-      }).catch(function (error) {
+      if (resp.data.status === true) {
+        // LESSON: You can use the 'window' object from the browser as long as 
+        // you're not doing server-side rendering
+        window.location = resp.data.redirect;
 
-      })
-      console.log(status);
+      }
 
     } catch (error) {
-      console.log(error)
+      retryRequest(this.signIn);
     }
 
   }
