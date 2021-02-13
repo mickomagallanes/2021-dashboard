@@ -44,4 +44,15 @@ router.post('/login', async function (req, res, next) {
 
 });
 
+router.get('/cookie', async function (req, res, next) {
+    if (req.signedCookies['connect.sid'] && req.signedCookies['connect.sid'] === req.sessionID) {
+        res.json({ "status": true, "msg": "Cookie exists" });
+    } else {
+        res.clearCookie('connect.sid');
+        res.json({ "status": false, "msg": "Cookie does not exist" });
+
+    }
+
+});
+
 module.exports = router;

@@ -69,7 +69,7 @@ function createSelectItems(dataArr) {
 function retryRequest(callback) {
     setTimeout(() => {
         callback();
-    }, 5000);
+    }, 10000);
 }
 
 export {

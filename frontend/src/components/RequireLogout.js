@@ -2,43 +2,39 @@ import React from 'react';
 import { Redirect } from 'react-router-dom'
 import axios from 'axios';
 import { retryRequest } from "../helpers/utils";
-import Spinner from '../components/Spinner/Spinner';
+import Spinner from './Spinner/Spinner';
 
-const pageRoleURL = "http://localhost:3000/API/pagerole/authorize";
+const pageRoleURL = "http://localhost:3000/API/user/cookie";
 
-const RequireAuth = (Component) => {
+const RequireLogout = (Component) => {
 
     return class extends React.Component {
         state = {
-            isAuthenticated: false,
+            isLogout: false,
             isLoading: true
         }
 
         componentDidMount() {
 
-            this.authorizeRole();
+            this.checkIfLogout();
         }
 
-        async authorizeRole() {
+        async checkIfLogout() {
             const axiosConfig = {
                 withCredentials: true,
                 timeout: 10000
             }
 
-            const { location } = this.props;
-            const param = { "pagepath": location.pathname };
-
             try {
-                const resp = await axios.post(
+                const resp = await axios.get(
                     pageRoleURL,
-                    param,
                     axiosConfig
                 );
 
                 if (resp.data.status === true) {
-                    this.setState({ isAuthenticated: true, isLoading: false });
+                    this.setState({ isLogout: false, isLoading: false });
                 } else {
-                    this.setState({ isAuthenticated: false, isLoading: false });
+                    this.setState({ isLogout: true, isLoading: false });
                 }
 
             } catch (error) {
@@ -48,21 +44,19 @@ const RequireAuth = (Component) => {
 
         render() {
 
-            const { isAuthenticated, isLoading } = this.state;
-            console.log(isLoading, isAuthenticated)
+            const { isLogout, isLoading } = this.state;
+
             if (isLoading) {
                 return <Spinner />
             }
-            if (!isAuthenticated) {
+            if (!isLogout) {
 
-                return <Redirect to="/login" />
+                return <Redirect to="/home" />
             }
             return <Component />
-
-
         }
     }
 
 }
 
-export default RequireAuth;
+export default RequireLogout;

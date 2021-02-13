@@ -1,7 +1,7 @@
 import React from 'react';
-import './User.css';
+import './Home.css';
 
-class User extends React.Component {
+class Home extends React.Component {
 
 
   constructor() {
@@ -12,11 +12,10 @@ class User extends React.Component {
   }
   render() {
     return (
-      <div> ASO KA</div>
+      <div> HOME</div>
     );
   }
 
 }
 
-
-export default User;
+export default Home;

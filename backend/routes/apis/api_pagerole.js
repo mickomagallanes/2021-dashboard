@@ -9,7 +9,7 @@ router.post('/authorize', async function (req, res, next) {
     if (req.signedCookies['connect.sid'] && req.signedCookies['connect.sid'] === req.sessionID) {
         let userId = req.session.userData.userid;
         let pagePath = req.body.pagepath;
-        console.log(userId, pagePath)
+
         let resp = await PageRoleService.getPageRole(userId, pagePath);
 
         if (resp.status) {

@@ -38,8 +38,7 @@ class UserService {
             if (result) {
                 let userData = {
                     "uname": userObj[0].Username,
-                    "userid": userObj[0].UserID,
-                    "roleid": userObj[0].RoleID
+                    "userid": userObj[0].UserID
                 }
 
                 return { status: true, data: userData }

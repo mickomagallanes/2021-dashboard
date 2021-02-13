@@ -58,11 +58,13 @@
     "react-tag-autocomplete": "^5.11.1",
     "react-treebeard": "^3.2.4",
     "react-trello": "^2.2.3",
+    "redux": "^4.0.5",
     "simple-line-icons": "^2.4.1",
     "slick-carousel": "^1.8.1",
     "sweetalert2-react": "^0.8.3",
     "ti-icons": "^0.1.2",
     "typicons.font": "^2.0.9",
+    "universal-cookie": "^4.0.4",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

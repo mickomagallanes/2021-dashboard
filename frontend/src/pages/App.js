@@ -7,15 +7,9 @@ import Sidebar from '../components/Sidebar/Sidebar';
 import Footer from '../components/Footer/Footer';
 
 class App extends React.Component {
-  state = {
-    token: undefined
-  };
+
 
   render() {
-    if (!this.state.token) {
-      <Redirect to='/login' />
-    }
-
     let urlPath = this.props.location.pathname;
     let navbarComponent = urlPath !== "/login" ? <Navbar /> : '';
     let sidebarComponent = urlPath !== "/login" ? <Sidebar /> : '';
