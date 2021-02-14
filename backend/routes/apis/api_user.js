@@ -18,16 +18,14 @@ router.post('/insert', async function (req, res, next) {
 });
 
 router.post('/login', async function (req, res, next) {
-    console.log(req.signedCookies['connect.sid']);
-    console.log(req.sessionID + " sessionID");
-    console.log(req.session.userData);
+    // console.log(req.signedCookies['connect.sid']);
+    // console.log(req.sessionID + " sessionID");
+    // console.log(req.session.userData);
     if (req.signedCookies['connect.sid'] && req.signedCookies['connect.sid'] === req.sessionID) {
-        console.log("failed");
+
         res.json({ "status": false, "msg": "Already logged in!" });
     } else {
-        console.log("success");
         res.clearCookie('connect.sid');
-
         let body = req.body, uname = body.username, pwd = body.password;
 
         // check if user credentials are true

@@ -10,24 +10,9 @@ class App extends React.Component {
 
 
   render() {
-    let urlPath = this.props.location.pathname;
-    let navbarComponent = urlPath !== "/login" ? <Navbar /> : '';
-    let sidebarComponent = urlPath !== "/login" ? <Sidebar /> : '';
-    let footerComponent = urlPath !== "/login" ? <Footer /> : '';
 
     return (
-      <div className="container-scroller">
-        { sidebarComponent}
-        <div className="container-fluid page-body-wrapper">
-          {navbarComponent}
-          <div className="main-panel">
-            <div className="content-wrapper">
-              <AppRoutes />
-            </div>
-            {footerComponent}
-          </div>
-        </div>
-      </div>
+      <AppRoutes />
     );
 
   }
