@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 // const logger = require('morgan');
-
+const helmet = require("helmet");
 const mysql_conn = require("./models/db.js");
 const apiRouter = require('./routes/api');
 const limiter = require('./middlewares/ratelimiter.js');
@@ -19,6 +19,9 @@ const sessionStore = new MySQLStore({
 }, mysql_conn.pool);
 
 const app = express();
+
+app.use(helmet());
+
 // middleware for limiter
 app.use(limiter.perMinuteLimit);
 
@@ -53,9 +56,14 @@ app.use(session({
   genid: function (req) {
     return uuidv4(); // use UUIDs for session IDs
   },
+  name: 'd3krabbit',
   secret: '53l3po$@lAr93E$!a&G3lE54',
   store: sessionStore,
-  cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: true, secure: process.env.NODE_ENV === "production" },
+  cookie: {
+    maxAge: 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production"
+  },
   resave: true,
   saveUninitialized: false
 }));

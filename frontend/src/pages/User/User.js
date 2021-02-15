@@ -1,5 +1,7 @@
-import React from 'react';
+import React from 'react'
+import { ProgressBar } from 'react-bootstrap';
 import './User.css';
+import Table from '../../components/Table/Table';
 
 class User extends React.Component {
 
@@ -12,7 +14,7 @@ class User extends React.Component {
   }
   render() {
     return (
-      <div> ASO KA</div>
+      <Table tblClass="table-bordered" thData={['Dorco', 'Blade', 'Sam', 'Aso']} />
     );
   }
 

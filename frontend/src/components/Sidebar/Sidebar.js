@@ -36,7 +36,7 @@ class Sidebar extends React.Component {
     });
 
     const dropdownPaths = [
-      { path: '/apps', state: 'appsMenuOpen' },
+      { path: '/user', state: 'appsMenuOpen' },
       { path: '/basic-ui', state: 'basicUiMenuOpen' },
       { path: '/form-elements', state: 'formElementsMenuOpen' },
       { path: '/tables', state: 'tablesMenuOpen' },
@@ -119,9 +119,21 @@ class Sidebar extends React.Component {
             <span className="nav-link"><Trans>Navigation</Trans></span>
           </li>
           <li className={this.isPathActive('/dashboard') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
-            <Link className="nav-link" to="/dashboard">
+            <Link className="nav-link" to="/home">
               <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
               <span className="menu-title"><Trans>Dashboard</Trans></span>
+            </Link>
+          </li>
+          <li className={this.isPathActive('/dashboard') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
+            <Link className="nav-link" to="/user">
+              <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
+              <span className="menu-title"><Trans>Userr</Trans></span>
+            </Link>
+          </li>
+          <li className={this.isPathActive('/dashboard') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
+            <Link className="nav-link" to="/login">
+              <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
+              <span className="menu-title"><Trans>Login</Trans></span>
             </Link>
           </li>
           <li className={this.isPathActive('/basic-ui') ? 'nav-item menu-items active' : 'nav-item menu-items'}>

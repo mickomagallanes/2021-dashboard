@@ -1,12 +1,14 @@
 "use strict";
 const PageRoleService = require('../../services/PageRoleService.js');
 
+const utils = require('../../utils/session.js');
 const express = require('express');
 const router = express.Router();
 
 router.post('/authorize', async function (req, res, next) {
+
     // TODO: get user roleid and check if the page allows the role
-    if (req.signedCookies['connect.sid'] && req.signedCookies['connect.sid'] === req.sessionID) {
+    if (utils.checkSession(req)) {
         let userId = req.session.userData.userid;
         let pagePath = req.body.pagepath;
 
@@ -22,7 +24,7 @@ router.post('/authorize', async function (req, res, next) {
 
     } else {
         console.log("fail 2")
-        res.clearCookie('connect.sid');
+        utils.clearCookie(res);
         res.json({ "status": false, "msg": "Unauthorized!" });
     }
 

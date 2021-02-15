@@ -19,7 +19,7 @@ const RequireAuth = (Component) => {
             this.authorizeRole();
         }
 
-        async authorizeRole() {
+        authorizeRole = async () => {
             const axiosConfig = {
                 withCredentials: true,
                 timeout: 10000
@@ -49,16 +49,14 @@ const RequireAuth = (Component) => {
         render() {
 
             const { isAuthenticated, isLoading } = this.state;
-            console.log(isLoading, isAuthenticated)
-            if (isLoading) {
-                return <Spinner />
+
+            if (isLoading || isAuthenticated) {
+                return <Component />
             }
             if (!isAuthenticated) {
 
                 return <Redirect to="/login" />
             }
-            return <Component />
-
 
         }
     }

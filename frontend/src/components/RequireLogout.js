@@ -19,7 +19,7 @@ const RequireLogout = (Component) => {
             this.checkIfLogout();
         }
 
-        async checkIfLogout() {
+        checkIfLogout = async () => {
             const axiosConfig = {
                 withCredentials: true,
                 timeout: 10000
@@ -38,7 +38,7 @@ const RequireLogout = (Component) => {
                 }
 
             } catch (error) {
-                retryRequest(this.authorizeRole);
+                retryRequest(this.checkIfLogout);
             }
         }
 

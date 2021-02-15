@@ -1,6 +1,7 @@
 "use strict";
 const UserService = require('../../services/UserService.js');
 
+const utils = require('../../utils/session.js');
 const express = require('express');
 const router = express.Router();
 
@@ -18,14 +19,15 @@ router.post('/insert', async function (req, res, next) {
 });
 
 router.post('/login', async function (req, res, next) {
+
     // console.log(req.signedCookies['connect.sid']);
     // console.log(req.sessionID + " sessionID");
     // console.log(req.session.userData);
-    if (req.signedCookies['connect.sid'] && req.signedCookies['connect.sid'] === req.sessionID) {
+    if (utils.checkSession(req)) {
 
         res.json({ "status": false, "msg": "Already logged in!" });
     } else {
-        res.clearCookie('connect.sid');
+        utils.clearCookie(res);
         let body = req.body, uname = body.username, pwd = body.password;
 
         // check if user credentials are true
@@ -43,10 +45,11 @@ router.post('/login', async function (req, res, next) {
 });
 
 router.get('/cookie', async function (req, res, next) {
-    if (req.signedCookies['connect.sid'] && req.signedCookies['connect.sid'] === req.sessionID) {
+
+    if (utils.checkSession(req)) {
         res.json({ "status": true, "msg": "Cookie exists" });
     } else {
-        res.clearCookie('connect.sid');
+        utils.clearCookie(res);
         res.json({ "status": false, "msg": "Cookie does not exist" });
 
     }
