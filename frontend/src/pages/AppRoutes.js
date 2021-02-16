@@ -6,7 +6,7 @@ import RequireAuth from '../components/RequireAuth';
 import RequireLogout from '../components/RequireLogout';
 
 import Login from './Login/Login.lazy';
-import User from './User/User.lazy';
+import Users from './Users/Users.lazy';
 import Home from './Home/Home.lazy';
 import Navbar from '../components/Navbar/Navbar';
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -17,43 +17,6 @@ class AppRoutes extends Component {
     super();
   }
 
-  loginContainer() {
-    return (
-      <div className="container-scroller">
-        <div className="container-fluid page-body-wrapper full-page-wrapper">
-          <div className="main-panel">
-            <div className="content-wrapper">
-              <Login />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  defaultContainer() {
-    return (
-      <div className="container-scroller">
-        <Sidebar />
-        <div className="container-fluid page-body-wrapper">
-          <Navbar />
-          <div className="main-panel">
-            <div className="content-wrapper">
-              <Switch>
-                <Route path="/home" component={Home} />
-                <Route path="/user" component={User} />
-                <Redirect to="/home" />
-              </Switch>
-            </div>
-            <Footer />
-          </div>
-        </div>
-      </div>
-
-
-    )
-  }
-
   render() {
 
     // let loginMiddleware = compose(RequireLogout, PlainPageLayout);
@@ -61,8 +24,9 @@ class AppRoutes extends Component {
     return (
       <Suspense fallback={<Spinner />}>
         <Switch>
-          <Route path="/login" component={RequireLogout(this.loginContainer)} />
-          <Route component={RequireAuth(this.defaultContainer)} />
+          <Route path="/login" component={RequireLogout(LoginContainer)} />
+
+          <Route component={DefaultContainer} />
 
         </Switch>
       </Suspense>
@@ -70,5 +34,41 @@ class AppRoutes extends Component {
   }
 }
 
+function LoginContainer() {
+  return (
+    <div className="container-scroller">
+      <div className="container-fluid page-body-wrapper full-page-wrapper">
+        <div className="main-panel">
+          <div className="content-wrapper">
+            <Login />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
+
+function DefaultContainer() {
+  return (
+    <div className="container-scroller">
+      <Sidebar />
+      <div className="container-fluid page-body-wrapper">
+        <Navbar />
+        <div className="main-panel">
+          <div className="content-wrapper">
+            <Switch>
+              <Route path="/home" component={RequireAuth(Home)} />
+              <Route path="/users" component={RequireAuth(Users)} />
+              <Redirect to="/home" />
+            </Switch>
+          </div>
+          <Footer />
+        </div>
+      </div>
+    </div>
+
+
+  );
+}
 export default withRouter(AppRoutes);

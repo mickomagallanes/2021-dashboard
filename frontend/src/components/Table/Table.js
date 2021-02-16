@@ -1,6 +1,6 @@
 import React from 'react';
 import './Table.css';
-
+import Spinner from '../Spinner/Spinner';
 class Table extends React.Component {
 
   constructor() {
@@ -10,54 +10,43 @@ class Table extends React.Component {
 
   render() {
     return (
-      <div className="col-lg-6 grid-margin stretch-card">
-        <div className="card">
-          <div className="card-body">
-            <h4 className="card-title">Basic Table</h4>
-            <div className="table-responsive">
-              <table className={`table ${this.props.tblClass}`}>
-                <thead>
-                  <tr>
-                    {this.props.thData.map(x => <th>{x}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Jacob</td>
-                    <td>53275531</td>
-                    <td>12 May 2017</td>
-                    <td><label className="badge badge-danger">Pending</label></td>
-                  </tr>
-                  <tr>
-                    <td>Messsy</td>
-                    <td>53275532</td>
-                    <td>15 May 2017</td>
-                    <td><label className="badge badge-warning">In progress</label></td>
-                  </tr>
-                  <tr>
-                    <td>John</td>
-                    <td>53275533</td>
-                    <td>14 May 2017</td>
-                    <td><label className="badge badge-info">Fixed</label></td>
-                  </tr>
-                  <tr>
-                    <td>Peter</td>
-                    <td>53275534</td>
-                    <td>16 May 2017</td>
-                    <td><label className="badge badge-success">Completed</label></td>
-                  </tr>
-                  <tr>
-                    <td>Dave</td>
-                    <td>53275535</td>
-                    <td>20 May 2017</td>
-                    <td><label className="badge badge-warning">In progress</label></td>
-                  </tr>
-                </tbody>
-              </table>
+      <div>
+        <div className="page-header">
+          <h3 className="page-title"> {this.props.title} Page</h3>
+        </div>
+        <div className="row">
+          <div className="col-lg-12 grid-margin stretch-card">
+            <div className="card">
+              <div className="card-body">
+                <h4 className="card-title">{this.props.title} Table</h4>
+                <div className="table-responsive">
+                  <table className={`table ${this.props.tblClass}`}>
+                    <thead>
+                      <tr>
+                        {this.props.colData.map(x => <th key={x.id}>{x.name}</th>)}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        // data from database used for tr key
+                        // td key used combination of data from db and hardcoded data
+                        // e.g: "rname2" where "rname" is hardcoded id and "2" is the row id from db
+                        this.props.data !== false
+                        && this.props.data.map(x =>
+                          <tr key={x.id}>
+                            {this.props.colData.map(y => <td key={y.id + x.id}>{x[y.id]}</td>)}
+                          </tr>
+                        )
+                      }
+                    </tbody>
+                  </table>
+                  {this.props.data === false && <Spinner />}
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </div >
     );
   }
 

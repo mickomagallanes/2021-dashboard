@@ -50,14 +50,14 @@ const RequireAuth = (Component) => {
 
             const { isAuthenticated, isLoading } = this.state;
 
-            if (isLoading || isAuthenticated) {
-                return <Component />
+            if (isLoading) {
+                return <Spinner />
             }
             if (!isAuthenticated) {
 
                 return <Redirect to="/login" />
             }
-
+            return <Component />
         }
     }
 

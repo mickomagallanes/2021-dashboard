@@ -1,11 +1,11 @@
 import React, { lazy, Suspense } from 'react';
 
-const LazyUser = lazy(() => import('./User'));
+const LazyUser = lazy(() => import('./Users'));
 
-const User = props => (
+const Users = props => (
   <Suspense fallback={null}>
     <LazyUser {...props} />
   </Suspense>
 );
 
-export default User;
+export default Users;

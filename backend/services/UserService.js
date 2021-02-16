@@ -10,6 +10,16 @@ class UserService {
     }
 
     /**
+     * get all user data
+     */
+
+    static async getAllUser() {
+        let ret = await UserModel.getAllUser();
+
+        return ret;
+    }
+
+    /**
       * inserts username and password to the database
       * @param {String} username username of the user
       * @param {String} password plain password of the user

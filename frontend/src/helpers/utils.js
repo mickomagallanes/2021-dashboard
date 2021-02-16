@@ -67,9 +67,10 @@ function createSelectItems(dataArr) {
  * @param {Function} callback function to be executed after the timer expires
  */
 function retryRequest(callback) {
+    console.log("dopsgasgas")
     setTimeout(() => {
         callback();
-    }, 10000);
+    }, 3000);
 }
 
 export {

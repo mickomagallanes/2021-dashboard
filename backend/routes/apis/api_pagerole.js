@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/authorize', async function (req, res, next) {
 
     // TODO: get user roleid and check if the page allows the role
-    if (utils.checkSession(req)) {
+    if (req.session.userData) {
         let userId = req.session.userData.userid;
         let pagePath = req.body.pagepath;
 

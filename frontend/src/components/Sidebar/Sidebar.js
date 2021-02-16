@@ -125,9 +125,9 @@ class Sidebar extends React.Component {
             </Link>
           </li>
           <li className={this.isPathActive('/dashboard') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
-            <Link className="nav-link" to="/user">
-              <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
-              <span className="menu-title"><Trans>Userr</Trans></span>
+            <Link className="nav-link" to="/users">
+              <span className="menu-icon"><i className="mdi mdi-table"></i></span>
+              <span className="menu-title"><Trans>Users</Trans></span>
             </Link>
           </li>
           <li className={this.isPathActive('/dashboard') ? 'nav-item menu-items active' : 'nav-item menu-items'}>

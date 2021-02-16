@@ -5,6 +5,16 @@ const utils = require('../../utils/session.js');
 const express = require('express');
 const router = express.Router();
 
+router.get('/get/all', async function (req, res, next) {
+
+    let result = await UserService.getAllUser();
+    if (result === false) {
+        res.sendStatus(403);
+    } else {
+        res.json({ "status": true, "data": result });
+    }
+});
+
 router.post('/insert', async function (req, res, next) {
 
     let body = req.body, uname = body.username, pwd = body.password, role = body.roleid;
@@ -14,7 +24,7 @@ router.post('/insert', async function (req, res, next) {
     if (result === false) {
         res.sendStatus(403);
     } else {
-        res.json({ status: 1 });
+        res.json({ "status": true, "msg": "Success" });
     }
 });
 
@@ -23,7 +33,7 @@ router.post('/login', async function (req, res, next) {
     // console.log(req.signedCookies['connect.sid']);
     // console.log(req.sessionID + " sessionID");
     // console.log(req.session.userData);
-    if (utils.checkSession(req)) {
+    if (req.session.userData) {
 
         res.json({ "status": false, "msg": "Already logged in!" });
     } else {
@@ -46,7 +56,7 @@ router.post('/login', async function (req, res, next) {
 
 router.get('/cookie', async function (req, res, next) {
 
-    if (utils.checkSession(req)) {
+    if (req.session.userData) {
         res.json({ "status": true, "msg": "Cookie exists" });
     } else {
         utils.clearCookie(res);

@@ -32,6 +32,50 @@ class UserModel {
     }
 
     /**
+     * get all user data from database
+     */
+
+    static async getAllUser() {
+        const stmt = `SELECT 
+               b.RoleName as rname,
+               a.Username as uname,
+               a.UserID as id
+            FROM
+                Users as a INNER JOIN Roles as b ON a.RoleID = b.RoleID`;
+        try {
+            const result = await mysql_conn.query(stmt);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+    * get a row using by user id
+    * @param {Number} id id of the user
+    */
+
+    static async getUserById(id) {
+        const stmt = `SELECT 
+                b.RoleName as rname,
+                a.Username as uname,
+                a.UserID as id
+            FROM
+                Users as a INNER JOIN Roles as b ON a.RoleID = b.RoleID
+            WHERE
+                uid = ?;`;
+
+        try {
+            const result = await mysql_conn.query(stmt, [id]);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
      * get row by username
      * @param {String} username username of the user
      */
