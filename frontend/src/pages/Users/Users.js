@@ -40,13 +40,16 @@ class Users extends React.Component {
       if (resp.data.status === true) {
         this.setState({ data: resp.data.data });
       }
-      retryRequest(this.fetchData);
+
     } catch (error) {
       retryRequest(this.fetchData);
     }
   }
 
   render() {
+    // TODO: make new Table component with button edit and delete, 
+    // or just add it to the table component like pass prop the priv
+    console.log(this.props.priv)
     return (
       <Table data={this.state.data} title="Users" tblClass="table-bordered" colData={this.colData} />
     );

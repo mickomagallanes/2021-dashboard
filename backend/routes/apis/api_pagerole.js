@@ -15,15 +15,15 @@ router.post('/authorize', async function (req, res, next) {
         let resp = await PageRoleService.getPageRole(userId, pagePath);
 
         if (resp.status) {
-            console.log("success")
-            res.json({ "status": true, "msg": "User is authorized" });
+
+            res.json({ "status": true, "msg": "User is authorized", "priv": resp.priv });
         } else {
-            console.log("fail 1")
+
             res.json({ "status": false, "msg": "Unauthorized!" });
         }
 
     } else {
-        console.log("fail 2")
+
         utils.clearCookie(res);
         res.json({ "status": false, "msg": "Unauthorized!" });
     }

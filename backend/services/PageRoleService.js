@@ -18,7 +18,7 @@ class PageRoleService {
         let pageRoleObj = await PageRoleModel.getPageRole(userId, pagePath);
 
         if (pageRoleObj.length) {
-            return { status: true }
+            return { status: true, priv: pageRoleObj[0].Privilege }
         }
         return { status: false }
     }

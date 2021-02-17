@@ -11,7 +11,8 @@ const RequireAuth = (Component) => {
     return class extends React.Component {
         state = {
             isAuthenticated: false,
-            isLoading: true
+            isLoading: true,
+            priv: 0
         }
 
         componentDidMount() {
@@ -36,7 +37,7 @@ const RequireAuth = (Component) => {
                 );
 
                 if (resp.data.status === true) {
-                    this.setState({ isAuthenticated: true, isLoading: false });
+                    this.setState({ isAuthenticated: true, isLoading: false, priv: resp.data.priv });
                 } else {
                     this.setState({ isAuthenticated: false, isLoading: false });
                 }
@@ -57,7 +58,7 @@ const RequireAuth = (Component) => {
 
                 return <Redirect to="/login" />
             }
-            return <Component />
+            return <Component priv={this.state.priv} />
         }
     }
 
