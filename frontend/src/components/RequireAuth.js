@@ -6,7 +6,7 @@ import Spinner from '../components/Spinner/Spinner';
 
 const pageRoleURL = "http://localhost:3000/API/pagerole/authorize";
 
-const RequireAuth = (Component) => {
+const RequireAuth = (Component, apiURL = false) => {
 
     return class extends React.Component {
         state = {
@@ -27,7 +27,7 @@ const RequireAuth = (Component) => {
             }
 
             const { location } = this.props;
-            const param = { "pagepath": location.pathname };
+            const param = { "pagepath": !!apiURL ? apiURL : location.pathname };
 
             try {
                 const resp = await axios.post(
@@ -58,7 +58,7 @@ const RequireAuth = (Component) => {
 
                 return <Redirect to="/login" />
             }
-            return <Component priv={this.state.priv} />
+            return <Component priv={this.state.priv} {...this.props} />
         }
     }
 

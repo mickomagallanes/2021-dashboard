@@ -81,7 +81,7 @@ class Login extends React.Component {
 
       if (resp.data.status === true) {
         // LESSON: You can use the 'window' object from the browser as long as 
-        // you're not doing server-side rendering
+        // you're not doing server-side rendering, but it reloads the page
         window.location = resp.data.redirect;
 
       }

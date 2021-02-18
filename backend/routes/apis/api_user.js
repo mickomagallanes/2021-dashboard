@@ -15,6 +15,15 @@ router.get('/get/all', async function (req, res, next) {
     }
 });
 
+router.get('/get/:id', async function (req, res, next) {
+    let result = await UserService.getUserById(req.params.id);
+    if (result === false) {
+        res.sendStatus(403);
+    } else {
+        res.json({ "status": true, "data": result });
+    }
+});
+
 router.post('/insert', async function (req, res, next) {
 
     let body = req.body, uname = body.username, pwd = body.password, role = body.roleid;

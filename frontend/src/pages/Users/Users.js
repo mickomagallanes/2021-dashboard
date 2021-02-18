@@ -49,9 +49,15 @@ class Users extends React.Component {
   render() {
     // TODO: make new Table component with button edit and delete, 
     // or just add it to the table component like pass prop the priv
-    console.log(this.props.priv)
+
     return (
-      <Table data={this.state.data} title="Users" tblClass="table-bordered" colData={this.colData} />
+      <Table
+        urlRedirect="/users/form"
+        isWriteable={this.props.priv == "RW"}
+        data={this.state.data}
+        title="Users"
+        tblClass="table-bordered"
+        colData={this.colData} />
     );
   }
 

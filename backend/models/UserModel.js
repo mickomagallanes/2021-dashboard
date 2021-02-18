@@ -64,7 +64,7 @@ class UserModel {
             FROM
                 Users as a INNER JOIN Roles as b ON a.RoleID = b.RoleID
             WHERE
-                uid = ?;`;
+                a.UserID = ?;`;
 
         try {
             const result = await mysql_conn.query(stmt, [id]);

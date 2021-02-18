@@ -1,6 +1,7 @@
 import React from 'react';
 import './Table.css';
 import Spinner from '../Spinner/Spinner';
+import { Link } from 'react-router-dom';
 class Table extends React.Component {
 
   constructor() {
@@ -24,6 +25,7 @@ class Table extends React.Component {
                     <thead>
                       <tr>
                         {this.props.colData.map(x => <th key={x.id}>{x.name}</th>)}
+                        <th>Action/s</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -35,9 +37,17 @@ class Table extends React.Component {
                         && this.props.data.map(x =>
                           <tr key={x.id}>
                             {this.props.colData.map(y => <td key={y.id + x.id}>{x[y.id]}</td>)}
+
+                            <td>
+                              <Link to={`${this.props.urlRedirect}/${x.id}`} className="btn btn-icon-text btn-outline-secondary">
+                                {this.props.isWriteable ? "Edit" : "Read"}
+                                <i className={`mdi ${this.props.isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+                              </Link>
+                            </td>
                           </tr>
                         )
                       }
+
                     </tbody>
                   </table>
                   {this.props.data === false && <Spinner />}

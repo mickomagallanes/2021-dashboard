@@ -7,6 +7,7 @@ import RequireLogout from '../components/RequireLogout';
 
 import Login from './Login/Login.lazy';
 import Users from './Users/Users.lazy';
+import UsersForm from './Users/UsersForm/UsersForm.lazy';
 import Home from './Home/Home.lazy';
 import Navbar from '../components/Navbar/Navbar';
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -59,7 +60,8 @@ function DefaultContainer() {
           <div className="content-wrapper">
             <Switch>
               <Route path="/home" component={RequireAuth(Home)} />
-              <Route path="/users" component={RequireAuth(Users)} />
+              <Route exact path="/users" component={RequireAuth(Users)} />
+              <Route path="/users/form/:id" component={RequireAuth(UsersForm, "/users")} />
               <Redirect to="/home" />
             </Switch>
           </div>

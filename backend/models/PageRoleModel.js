@@ -2,8 +2,6 @@ const mysql_conn = require("./db.js");
 
 "use strict";
 
-// TODO: decide whether to store all page-role relations data in redux
-// or just call auth API everytime a user visits a page
 class PageRoleModel {
 
     constructor() {
