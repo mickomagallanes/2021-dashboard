@@ -4,6 +4,9 @@ import { compose } from 'redux';
 import Spinner from '../components/Spinner/Spinner';
 import RequireAuth from '../components/RequireAuth';
 import RequireLogout from '../components/RequireLogout';
+import PlainPageLayout from '../components/PlainPageLayout';
+import FullPageLayout from '../components/FullPageLayout';
+import RequireLogin from '../components/RequireLogin';
 
 import Login from './Login/Login.lazy';
 import Users from './Users/Users.lazy';
@@ -13,6 +16,8 @@ import Navbar from '../components/Navbar/Navbar';
 import Sidebar from '../components/Sidebar/Sidebar';
 import Footer from '../components/Footer/Footer';
 
+const LoggedInContainer = RequireLogin(DefaultContainer);
+
 class AppRoutes extends Component {
   constructor() {
     super();
@@ -20,14 +25,14 @@ class AppRoutes extends Component {
 
   render() {
 
-    // let loginMiddleware = compose(RequireLogout, PlainPageLayout);
-    // let otherMiddleware = compose(RequireAuth, FullPageLayout);
+
     return (
       <Suspense fallback={<Spinner />}>
+
         <Switch>
           <Route path="/login" component={RequireLogout(LoginContainer)} />
 
-          <Route component={DefaultContainer} />
+          <Route component={LoggedInContainer} />
 
         </Switch>
       </Suspense>
@@ -51,6 +56,8 @@ function LoginContainer() {
 
 
 function DefaultContainer() {
+  // let loginMiddleware = compose(RequireLogout, PlainPageLayout);
+  // let otherMiddleware = compose(RequireAuth, FullPageLayout);
   return (
     <div className="container-scroller">
       <Sidebar />
@@ -58,18 +65,19 @@ function DefaultContainer() {
         <Navbar />
         <div className="main-panel">
           <div className="content-wrapper">
+
             <Switch>
               <Route path="/home" component={RequireAuth(Home)} />
               <Route exact path="/users" component={RequireAuth(Users)} />
               <Route path="/users/form/:id" component={RequireAuth(UsersForm, "/users")} />
               <Redirect to="/home" />
             </Switch>
+
           </div>
           <Footer />
         </div>
       </div>
     </div>
-
 
   );
 }

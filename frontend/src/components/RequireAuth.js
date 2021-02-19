@@ -51,14 +51,14 @@ const RequireAuth = (Component, apiURL = false) => {
 
             const { isAuthenticated, isLoading } = this.state;
 
-            if (isLoading) {
-                return <Spinner />
+            if (isLoading || isAuthenticated) {
+                return <Component priv={this.state.priv} {...this.props} />
             }
             if (!isAuthenticated) {
 
                 return <Redirect to="/login" />
             }
-            return <Component priv={this.state.priv} {...this.props} />
+
         }
     }
 
