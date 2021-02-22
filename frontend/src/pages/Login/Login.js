@@ -11,7 +11,6 @@ const loginURL = "http://localhost:3000/API/user/login";
 
 class Login extends React.Component {
 
-
   constructor() {
     super();
     this.state = {

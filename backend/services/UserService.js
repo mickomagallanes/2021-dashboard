@@ -33,14 +33,14 @@ class UserService {
       * inserts username and password to the database
       * @param {String} username username of the user
       * @param {String} password plain password of the user
-      * @param {String} roleId id from roles table if it is admin, etc
+      * @param {String} roleid id from roles table if it is admin, etc
       */
 
-    static async insertUser(username, password, roleId) {
+    static async insertUser({ username, password, roleid }) {
         const saltRounds = 10;
 
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        let ret = await UserModel.insertUser(username, hashedPassword, roleId);
+        let ret = await UserModel.insertUser(username, hashedPassword, roleid);
 
         return ret;
     }
@@ -51,7 +51,7 @@ class UserService {
      * @param {String} password plain password of the user
      */
 
-    static async loginUser(username, password) {
+    static async loginUser({ username, password }) {
         let userObj = await UserModel.getByUsername(username);
         if (userObj.length) {
             const result = await bcrypt.compare(password, userObj[0].Password);

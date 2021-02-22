@@ -5,6 +5,7 @@ const utils = require('../../utils/session.js');
 const express = require('express');
 const router = express.Router();
 
+
 router.post('/authorize', async function (req, res, next) {
 
     if (req.session.userData) {

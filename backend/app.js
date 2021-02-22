@@ -22,6 +22,8 @@ const app = express();
 
 app.use(helmet());
 
+// TODO: secure with csurf middleware
+
 // middleware for limiter
 app.use(limiter.perMinuteLimit);
 
