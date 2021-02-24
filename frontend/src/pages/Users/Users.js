@@ -47,8 +47,6 @@ class Users extends React.Component {
   }
 
   render() {
-    // TODO: make new Table component with button edit and delete, 
-    // or just add it to the table component like pass prop the priv
 
     return (
       <Table

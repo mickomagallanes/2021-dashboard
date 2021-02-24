@@ -1,9 +1,10 @@
 const Joi = require('joi');
 
 function userInsertSchema(req, res, next) {
+
     const schema = Joi.object({
         username: Joi.string().max(45).required(),
-        password: Joi.string().required(),
+        password: Joi.string().min(12).required(),
         roleid: Joi.alternatives().try(Joi.number().max(1).required(), Joi.string().max(1).required())
     });
     validateRequest(req, res, next, schema);
@@ -11,15 +12,10 @@ function userInsertSchema(req, res, next) {
 
 function userLoginSchema(req, res, next) {
     const schema = Joi.object({
-        title: Joi.string().required(),
-        firstName: Joi.string().required(),
-        lastName: Joi.string().required(),
-        email: Joi.string().email().required(),
-        password: Joi.string().min(6).required(),
-        confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
-        role: Joi.string().valid('Admin', 'User').required()
+        username: Joi.string().max(45).required(),
+        password: Joi.string().required(),
     });
-    validateRequest(req, next, schema);
+    validateRequest(req, res, next, schema);
 }
 
 // TODO: continue JOI

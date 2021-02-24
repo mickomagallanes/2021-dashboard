@@ -2,7 +2,7 @@
 const UserService = require('../../services/UserService.js');
 
 const utils = require('../../utils/session.js');
-const { userInsertSchema } = require('../../middlewares/validator.js');
+const { userInsertSchema, userLoginSchema } = require('../../middlewares/validator.js');
 const express = require('express');
 const router = express.Router();
 
@@ -36,7 +36,7 @@ router.post('/insert', userInsertSchema, async function (req, res, next) {
     }
 });
 
-router.post('/login', async function (req, res, next) {
+router.post('/login', userLoginSchema, async function (req, res, next) {
 
     // console.log(req.signedCookies['connect.sid']);
     // console.log(req.sessionID + " sessionID");
