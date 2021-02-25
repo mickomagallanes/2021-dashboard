@@ -2,10 +2,17 @@ import React from 'react';
 
 import './Login.css';
 
-import { Form } from 'react-bootstrap';
+import { Form, Alert } from 'react-bootstrap';
 import logo from "../../assets/images/logo.svg";
 import axios from 'axios';
+import { Formik } from 'formik';
+import * as yup from 'yup';
 import { retryRequest } from "../../helpers/utils";
+
+const schema = yup.object().shape({
+  username: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
+  password: yup.string().required('Required')
+});
 
 const loginURL = "http://localhost:3000/API/user/login";
 
@@ -16,10 +23,12 @@ class Login extends React.Component {
     this.state = {
       username: undefined,
       password: undefined,
-      isLoggedIn: false
+      isLoggedIn: false,
+      errorMsg: false
     }
   }
   render() {
+
     return (
       <div>
         <div className="d-flex align-items-center auth px-0">
@@ -31,31 +40,63 @@ class Login extends React.Component {
                 </div>
                 <h4>Hello! let's get started</h4>
                 <h6 className="font-weight-light">Sign in to continue.</h6>
-                <Form className="pt-3" onKeyPress={e => e.key === 'Enter' && this.signIn()}>
-                  <Form.Group className="d-flex search-field">
-                    <Form.Control type="text"
-                      placeholder="Username"
-                      size="lg"
-                      className="h-auto"
-                      autoComplete="username"
-                      onChange={(e) => this.setState({ username: e.target.value })} />
-                  </Form.Group>
-                  <Form.Group className="d-flex search-field">
-                    <Form.Control
-                      type="password"
-                      placeholder="Password"
-                      size="lg"
-                      className="h-auto"
-                      autoComplete="current-password"
-                      onChange={(e) => this.setState({ password: e.target.value })} />
-                  </Form.Group>
-                  <div className="mt-3">
-                    <button type="button" className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"
-                      onClick={this.signIn}>SIGN IN</button>
+                <Formik
+                  validationSchema={schema}
+                  initialValues={{
+                    username: "",
+                    password: ""
+                  }}
+                >
+                  {props => (
+                    <Form className="pt-3" onKeyPress={e => e.key === 'Enter' && this.signIn()}>
+                      <Alert
+                        className="p-1"
+                        variant="danger"
+                        show={this.state.errorMsg}
+                        transition={false}
+                      >
+                        {this.state.errorMsg}
+                      </Alert>
+                      <Form.Group>
+                        <Form.Control
+                          type="text"
+                          name="username"
+                          placeholder="Username"
+                          size="lg"
+                          className="h-auto"
+                          autoComplete="username"
+                          onBlur={props.handleBlur}
+                          isInvalid={(props.errors.username && props.touched.username) || this.state.errorMsg}
+                          onChange={(e) => { this.setState({ username: e.target.value, errorMsg: false }); props.handleChange(e) }} />
+                        <Form.Control.Feedback type="invalid">
+                          {this.state.errorMsg ? null : props.errors.username}
+                        </Form.Control.Feedback>
+                      </Form.Group>
 
-                  </div>
+                      <Form.Group>
+                        <Form.Control
+                          type="password"
+                          name="password"
+                          placeholder="Password"
+                          size="lg"
+                          className="h-auto"
+                          autoComplete="current-password"
+                          onBlur={props.handleBlur}
+                          isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg}
+                          onChange={(e) => { this.setState({ password: e.target.value, errorMsg: false }); props.handleChange(e) }} />
+                        <Form.Control.Feedback type="invalid">
+                          {this.state.errorMsg ? null : props.errors.password}
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                      <div className="mt-3">
+                        <button type="button" className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"
+                          onClick={this.signIn}>SIGN IN</button>
 
-                </Form>
+                      </div>
+
+                    </Form>
+                  )}
+                </Formik>
               </div>
             </div>
           </div>
@@ -83,10 +124,12 @@ class Login extends React.Component {
         // you're not doing server-side rendering, but it reloads the page
         window.location = resp.data.redirect;
 
+      } else {
+        this.setState({ errorMsg: resp.data.msg });
       }
 
     } catch (error) {
-      retryRequest(this.signIn);
+      // retryRequest(this.signIn);
     }
 
   }
