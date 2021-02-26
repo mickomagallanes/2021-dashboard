@@ -21,8 +21,8 @@ class Login extends React.Component {
   constructor() {
     super();
     this.state = {
-      username: undefined,
-      password: undefined,
+      username: "",
+      password: "",
       isLoggedIn: false,
       errorMsg: false
     }

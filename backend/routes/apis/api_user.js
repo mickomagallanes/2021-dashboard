@@ -2,11 +2,12 @@
 const UserService = require('../../services/UserService.js');
 
 const utils = require('../../utils/session.js');
+const { checkSession } = require('../../middlewares/routesauth.js');
 const { userInsertSchema, userLoginSchema } = require('../../middlewares/validator.js');
 const express = require('express');
 const router = express.Router();
 
-router.get('/get/all', async function (req, res, next) {
+router.get('/get/all', checkSession, async function (req, res, next) {
 
     let result = await UserService.getAllUser();
     if (result === false) {
@@ -16,7 +17,7 @@ router.get('/get/all', async function (req, res, next) {
     }
 });
 
-router.get('/get/:id', async function (req, res, next) {
+router.get('/get/:id', checkSession, async function (req, res, next) {
     let result = await UserService.getUserById(req.params.id);
     if (result === false) {
         res.sendStatus(403);
@@ -25,7 +26,7 @@ router.get('/get/:id', async function (req, res, next) {
     }
 });
 
-router.post('/insert', userInsertSchema, async function (req, res, next) {
+router.post('/insert', [checkSession, userInsertSchema], async function (req, res, next) {
 
     // insert username, password and role id
     let result = await UserService.insertUser(req.body);

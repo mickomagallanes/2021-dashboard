@@ -1,5 +1,4 @@
 const PageRoleModel = require('../models/PageRoleModel.js');
-const bcrypt = require('bcrypt');
 
 "use strict";
 

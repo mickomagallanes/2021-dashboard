@@ -58,6 +58,7 @@ class UserModel {
 
     static async getUserById(id) {
         const stmt = `SELECT 
+                b.RoleID as rid,
                 b.RoleName as rname,
                 a.Username as uname,
                 a.UserID as id

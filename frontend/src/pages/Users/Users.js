@@ -11,7 +11,7 @@ class Users extends React.Component {
   constructor() {
     super();
     this.state = {
-      data: false
+      data: []
     }
 
     this.colData = [
@@ -28,6 +28,7 @@ class Users extends React.Component {
 
   fetchData = async () => {
     const axiosConfig = {
+      withCredentials: true,
       timeout: 10000
     }
 
@@ -51,7 +52,7 @@ class Users extends React.Component {
     return (
       <Table
         urlRedirect="/users/form"
-        isWriteable={this.props.priv == "RW"}
+        isWriteable={this.props.priv === "RW"}
         data={this.state.data}
         title="Users"
         tblClass="table-bordered"
