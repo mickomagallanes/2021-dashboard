@@ -9,14 +9,16 @@ class Select extends React.Component {
   }
 
   render() {
+    // TODO: make a default blank OPTION
     return (
       <select
-        className="form-control h4"
+        id={this.props.id}
+        className="form-control"
         value={this.props.value}
-        onChange={this.props.handleChange}>
+        onChange={this.props.onChange}>
 
         {this.props.data.map(x =>
-          <option className="h5" key={x[this.props.idKey]} value={x[this.props.idKey]}>{x[this.props.valueKey]}</option>
+          <option key={x[this.props.idKey]} value={x[this.props.idKey]}>{x[this.props.valueKey]}</option>
         )}
 
       </select>

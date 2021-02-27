@@ -23,10 +23,39 @@ class Login extends React.Component {
     this.state = {
       username: "",
       password: "",
-      isLoggedIn: false,
       errorMsg: false
     }
   }
+
+  signIn = async () => {
+    let axiosConfig = {
+      withCredentials: true,
+      timeout: 10000
+    };
+    let param = { "username": this.state.username, "password": this.state.password };
+
+    try {
+      const resp = await axios.post(
+        loginURL,
+        param,
+        axiosConfig
+      );
+
+      if (resp.data.status === true) {
+        // LESSON: You can use the 'window' object from the browser as long as 
+        // you're not doing server-side rendering, but it reloads the page
+        window.location = resp.data.redirect;
+
+      } else {
+        this.setState({ errorMsg: resp.data.msg });
+      }
+
+    } catch (error) {
+      // retryRequest(this.signIn);
+    }
+
+  }
+
   render() {
 
     return (
@@ -105,34 +134,7 @@ class Login extends React.Component {
     );
   }
 
-  signIn = async () => {
-    let axiosConfig = {
-      withCredentials: true,
-      timeout: 10000
-    };
-    let param = { "username": this.state.username, "password": this.state.password };
 
-    try {
-      const resp = await axios.post(
-        loginURL,
-        param,
-        axiosConfig
-      );
-
-      if (resp.data.status === true) {
-        // LESSON: You can use the 'window' object from the browser as long as 
-        // you're not doing server-side rendering, but it reloads the page
-        window.location = resp.data.redirect;
-
-      } else {
-        this.setState({ errorMsg: resp.data.msg });
-      }
-
-    } catch (error) {
-      // retryRequest(this.signIn);
-    }
-
-  }
 }
 
 export default Login;

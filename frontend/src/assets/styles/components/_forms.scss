@@ -26,6 +26,7 @@
   border-radius: 2px;
   color: #ffffff;
   &:focus {
+    color: #dedede;
     border: 1px solid rgba(71, 164, 71, 0.5);
     background-color: $input-bg;
   }
@@ -58,8 +59,12 @@ select {
     padding: .4375rem .75rem;
     border: 0;
     outline: 1px solid #322f2f;
-    color: $input-placeholder-color;
+    color: #ffffff;
+    option {
+      font-size: 1.24rem;
+    }
     &:focus {
+      color: #dedede;
       outline: 1px solid $border-color;
     }
     @each $color, $value in $theme-colors {
@@ -71,6 +76,7 @@ select {
       }
     }
   }
+  
 }
 .form-group {
   label {

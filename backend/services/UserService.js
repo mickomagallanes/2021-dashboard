@@ -11,6 +11,7 @@ class UserService {
 
     /**
      * get all user data
+     *  * @return all rows of users
      */
 
     static async getAllUser() {
@@ -21,12 +22,13 @@ class UserService {
 
     /**
      * get all user data
+     * @return one row of user
      */
 
     static async getUserById(id) {
         let ret = await UserModel.getUserById(id);
 
-        return ret;
+        return ret[0];
     }
 
     /**
