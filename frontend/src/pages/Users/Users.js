@@ -3,6 +3,7 @@ import './Users.css';
 import axios from 'axios';
 import Table from '../../components/Table/Table.lazy';
 import { retryRequest } from "../../helpers/utils";
+import { Link } from 'react-router-dom';
 
 const userURL = "http://localhost:3000/API/user/get/all";
 
@@ -50,13 +51,20 @@ class Users extends React.Component {
   render() {
 
     return (
-      <Table
-        urlRedirect="/users/form"
-        isWriteable={this.props.priv === "RW"}
-        data={this.state.data}
-        title="Users"
-        tblClass="table-bordered"
-        colData={this.colData} />
+      <>
+        <Table
+          urlRedirect="/users/form"
+          isWriteable={this.props.priv === "RW"}
+          data={this.state.data}
+          title="Users"
+          tblClass="table-bordered"
+          colData={this.colData} />
+
+        <Link to="/users/form/add" className="btn btn-outline-secondary btn-lg">
+          <i className="mdi mdi-account-plus"> </i>
+        Add User
+        </Link>
+      </>
     );
   }
 

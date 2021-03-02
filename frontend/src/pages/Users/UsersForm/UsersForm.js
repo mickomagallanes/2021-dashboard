@@ -15,12 +15,12 @@ const schema = yup.object().shape({
 
 const userURL = "http://localhost:3000/API/user/get/";
 const roleURL = "http://localhost:3000/API/role/get/all";
-const submitFormURL = "http://localhost:3000/API/user/insert";
+const addUserURL = "http://localhost:3000/API/user/insert";
 
 class UsersForm extends React.Component {
   // TODO: make add and edit functionality
 
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       userData: [],
@@ -30,12 +30,22 @@ class UsersForm extends React.Component {
       password: "",
       errorMsg: false
     }
+    this.urlParam = props.match.params.id;
+  }
 
+  componentWillUnmount() {
+    // fix Warning: Can't perform a React state update on an unmounted component
+    this.setState = () => {
+      return;
+    };
   }
 
   componentDidMount() {
+    // check if is on add mode
+    if (this.urlParam != "add") {
+      this.fetchUserData();
+    }
 
-    this.fetchUserData();
     this.fetchRoleData();
   }
 
@@ -47,7 +57,7 @@ class UsersForm extends React.Component {
 
     try {
       const resp = await axios.get(
-        userURL + this.props.match.params.id,
+        userURL + this.urlParam,
         axiosConfig
       );
 
@@ -58,6 +68,8 @@ class UsersForm extends React.Component {
           username: resp.data.data.uname,
           selectedRole: resp.data.data.rid
         });
+      } else {
+        this.props.history.push('/users');
       }
 
     } catch (error) {
@@ -83,7 +95,8 @@ class UsersForm extends React.Component {
       }
 
     } catch (error) {
-      retryRequest(this.fetchRoleData);
+      console.log(error)
+      // retryRequest(this.fetchRoleData);
     }
   }
 
@@ -93,11 +106,14 @@ class UsersForm extends React.Component {
       timeout: 10000
     }
 
-    let param = {
+    const param = {
       "username": this.state.username,
       "password": this.state.password,
       "roleid": this.state.selectedRole,
     }
+
+    const submitFormURL = this.urlParam == "add" ? addUserURL : "test";
+
     try {
       const resp = await axios.post(
         submitFormURL,
@@ -106,13 +122,16 @@ class UsersForm extends React.Component {
       );
 
       if (resp.data.status === true) {
+        // TODO: create a success alert after adding user or editing
+        this.props.history.push('/users');
         this.setState({ roleData: resp.data.data });
       } else {
         this.setState({ errorMsg: resp.data.msg });
       }
 
     } catch (error) {
-      retryRequest(this.fetchUserData);
+      console.log(error)
+      // retryRequest(this.fetchUserData);
     }
 
   }
@@ -190,7 +209,7 @@ class UsersForm extends React.Component {
                         ></Select>
 
                         <div className="mt-4">
-                          <button type="submit" className="btn btn-primary mr-2" onClick={this.submitForm}>Submit</button>
+                          <button type="button" className="btn btn-primary mr-2" onClick={this.submitForm}>Submit</button>
                           {/* <button className="btn btn-dark">Cancel</button> */}
                         </div>
 

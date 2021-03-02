@@ -1,4 +1,4 @@
-// TODO: create authorization for API
+
 const RouteRoleModel = require('../models/RouteRoleModel.js');
 const utils = require('../utils/session.js');
 

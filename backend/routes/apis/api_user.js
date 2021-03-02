@@ -20,7 +20,7 @@ router.get('/get/all', checkSession, async function (req, res, next) {
 router.get('/get/:id', checkSession, async function (req, res, next) {
     let result = await UserService.getUserById(req.params.id);
     if (result === false) {
-        res.sendStatus(403);
+        res.json({ "status": false });
     } else {
         res.json({ "status": true, "data": result });
     }

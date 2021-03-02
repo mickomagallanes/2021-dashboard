@@ -27,8 +27,12 @@ class UserService {
 
     static async getUserById(id) {
         let ret = await UserModel.getUserById(id);
+        if (ret.length) {
+            return ret[0];
+        } else {
+            return false;
+        }
 
-        return ret[0];
     }
 
     /**
