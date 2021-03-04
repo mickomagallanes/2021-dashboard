@@ -11,13 +11,22 @@ class UserService {
 
     /**
      * get all user data
-     *  * @return all rows of users
+     * @return all rows of users
      */
 
-    static async getAllUser() {
-        let ret = await UserModel.getAllUser();
+    static async getAllUser({ page, limit }) {
+        let isPaged = !!page && !!limit;
+        const startIndex = isPaged ? (page - 1) * limit : false;
+        const endIndex = isPaged ? page * limit : false;
 
-        return ret;
+        const userData = await UserModel.getAllUser(startIndex, endIndex);
+
+        if (isPaged) {
+            const userCount = await UserModel.getAllUserCount();
+            return { "count": userCount[0].count, "users": userData };
+        } else {
+            return userData;
+        }
     }
 
     /**

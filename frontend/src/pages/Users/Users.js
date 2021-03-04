@@ -4,6 +4,13 @@ import axios from 'axios';
 import Table from '../../components/Table/Table.lazy';
 import { retryRequest } from "../../helpers/utils";
 import { Link } from 'react-router-dom';
+import Pagination from '../../components/Pagination/Pagination';
+import * as yup from 'yup';
+import { Formik } from 'formik';
+
+const schema = yup.object().shape({
+  currentEntries: yup.string().max(45, 'Must be 45 characters or less').required('Required')
+});
 
 const userURL = "http://localhost:3000/API/user/get/all";
 
@@ -12,7 +19,10 @@ class Users extends React.Component {
   constructor() {
     super();
     this.state = {
-      data: []
+      data: [],
+      maxPage: null,
+      currentPage: 1,
+      currentEntries: 5
     }
 
     this.colData = [
@@ -24,10 +34,11 @@ class Users extends React.Component {
 
   componentDidMount() {
 
-    this.fetchData();
+    this.fetchData(this.state.currentPage);
   }
 
-  fetchData = async () => {
+  // passed pageNumber as param to prevent executing render twice when setting state twice
+  fetchData = async (pageNumber) => {
     const axiosConfig = {
       withCredentials: true,
       timeout: 10000
@@ -35,21 +46,28 @@ class Users extends React.Component {
 
     try {
       const resp = await axios.get(
-        userURL,
+        userURL + `?page=${pageNumber}&limit=${this.state.currentEntries}`,
         axiosConfig
       );
 
-      if (resp.data.status === true) {
-        this.setState({ data: resp.data.data });
+      const { data } = resp;
+
+      if (data.status === true) {
+        this.setState({ currentPage: pageNumber, data: data.data.users, maxPage: Math.ceil(data.data.count / this.state.currentEntries) });
       }
 
     } catch (error) {
-      retryRequest(this.fetchData);
+      // retryRequest(this.fetchData);
     }
   }
 
-  render() {
+  paginationClick = async (pageNumber) => {
+    this.fetchData(pageNumber);
+  }
 
+  render() {
+    const { maxPage, currentPage } = this.state;
+    console.log("dogs")
     return (
       <>
         <Table
@@ -60,15 +78,40 @@ class Users extends React.Component {
           tblClass="table-bordered"
           colData={this.colData} />
 
-        <Link to="/users/form/add" className="btn btn-outline-secondary btn-lg">
-          <i className="mdi mdi-account-plus"> </i>
-        Add User
-        </Link>
+        <div className="row">
+          <div className="col">
+            <Link to="/users/form/add" className="btn btn-outline-secondary btn-lg">
+              <i className="mdi mdi-account-plus"> </i>
+            Add User
+            </Link>
+          </div>
+          <div className="col-lg-6">
+            <Pagination currentPage={currentPage} maxPage={maxPage} onClick={this.paginationClick} />
+          </div>
+          <div className="col">
+            <span className="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
+              Show
+              <input
+                className="form-control"
+                value={this.state.currentEntries}
+                onChange={(e) => { this.setState({ currentEntries: e.target.value }) }}
+                type="text" style={style.inputEntry}
+              />
+              of 57 entries
+            </span>
+          </div>
+        </div>
       </>
     );
   }
 
 }
 
-
+const style = {
+  inputEntry: {
+    'maxWidth': '4rem',
+    'width': 'auto',
+    'display': 'inline-block'
+  }
+}
 export default Users;

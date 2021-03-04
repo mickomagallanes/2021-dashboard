@@ -3,13 +3,13 @@ const UserService = require('../../services/UserService.js');
 
 const utils = require('../../utils/session.js');
 const { checkSession } = require('../../middlewares/routesauth.js');
-const { userInsertSchema, userLoginSchema } = require('../../middlewares/validator.js');
+const { userInsertSchema, userLoginSchema, userGetAllSchema } = require('../../middlewares/validator.js');
 const express = require('express');
 const router = express.Router();
 
-router.get('/get/all', checkSession, async function (req, res, next) {
-
-    let result = await UserService.getAllUser();
+router.get('/get/all', [checkSession, userGetAllSchema], async function (req, res, next) {
+    console.log(req.query)
+    let result = await UserService.getAllUser(req.query);
     if (result === false) {
         res.sendStatus(403);
     } else {

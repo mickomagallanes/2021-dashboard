@@ -88,6 +88,7 @@ class Login extends React.Component {
                       </Alert>
                       <Form.Group>
                         <Form.Control
+                          value={this.state.username}
                           type="text"
                           name="username"
                           placeholder="Username"
@@ -104,6 +105,7 @@ class Login extends React.Component {
 
                       <Form.Group>
                         <Form.Control
+                          value={this.state.password}
                           type="password"
                           name="password"
                           placeholder="Password"

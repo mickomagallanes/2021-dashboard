@@ -8,9 +8,10 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
 
+
 const schema = yup.object().shape({
   username: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
-  password: yup.string().required('Required')
+  password: yup.string().min(12, 'Must be longer than 12').required('Required')
 });
 
 const userURL = "http://localhost:3000/API/user/get/";
@@ -69,11 +70,12 @@ class UsersForm extends React.Component {
           selectedRole: resp.data.data.rid
         });
       } else {
+        // if no user is found, like param as 'add', redirect back to history or user page
         this.props.history.push('/users');
       }
 
     } catch (error) {
-      // TODO: if no user is found, like param as 'add', redirect back to history or user page
+
       retryRequest(this.fetchUserData);
     }
   }
@@ -91,7 +93,10 @@ class UsersForm extends React.Component {
       );
 
       if (resp.data.status === true) {
-        this.setState({ roleData: resp.data.data });
+        this.setState({
+          roleData: resp.data.data,
+          selectedRole: resp.data.data[0].RoleID
+        });
       }
 
     } catch (error) {
@@ -170,12 +175,12 @@ class UsersForm extends React.Component {
                         <Form.Group>
                           <label htmlFor="username">Username</label>
                           <Form.Control
-                            type="text"
                             value={this.state.username}
-                            autoComplete="username"
-                            className="form-control"
-                            id="username"
+                            type="text"
+                            name="username"
                             placeholder="Username"
+                            autoComplete="username"
+                            onBlur={props.handleBlur}
                             isInvalid={(props.errors.username && props.touched.username) || this.state.errorMsg}
                             onChange={(e) => { this.setState({ username: e.target.value, errorMsg: false }); props.handleChange(e) }}
                           />
@@ -187,15 +192,18 @@ class UsersForm extends React.Component {
                         <Form.Group>
                           <label htmlFor="passwordId">Create New Password</label>
                           <Form.Control
-                            type="password"
                             value={this.state.password}
-                            autoComplete="current-password"
-                            className="form-control"
-                            id="passwordId"
+                            type="password"
+                            name="password"
                             placeholder="Password"
+                            autoComplete="current-password"
+                            onBlur={props.handleBlur}
                             isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg}
                             onChange={(e) => { this.setState({ password: e.target.value, errorMsg: false }); props.handleChange(e) }}
                           />
+                          <Form.Control.Feedback type="invalid">
+                            {this.state.errorMsg ? null : props.errors.password}
+                          </Form.Control.Feedback>
                         </Form.Group>
 
                         <label htmlFor="roleSelect">Role</label>
@@ -216,6 +224,7 @@ class UsersForm extends React.Component {
                       </Form>
                     )}
                   </Formik>
+
                 </div>
               </div>
             </div>

@@ -3,13 +3,7 @@ import './Select.css';
 
 class Select extends React.Component {
 
-  constructor() {
-    super();
-
-  }
-
   render() {
-    // TODO: make a default blank OPTION
     return (
       <select
         id={this.props.id}

@@ -4,11 +4,6 @@ import Spinner from '../Spinner/Spinner';
 import { Link } from 'react-router-dom';
 class Table extends React.Component {
 
-  constructor() {
-    super();
-
-  }
-
   render() {
     return (
       <div>
