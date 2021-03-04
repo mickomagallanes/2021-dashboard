@@ -21,6 +21,7 @@ class Users extends React.Component {
     this.state = {
       data: [],
       maxPage: null,
+      maxUsers: null,
       currentPage: 1,
       currentEntries: 5
     }
@@ -53,7 +54,12 @@ class Users extends React.Component {
       const { data } = resp;
 
       if (data.status === true) {
-        this.setState({ currentPage: pageNumber, data: data.data.users, maxPage: Math.ceil(data.data.count / this.state.currentEntries) });
+        this.setState({
+          currentPage: pageNumber,
+          data: data.data.users,
+          maxPage: Math.ceil(data.data.count / this.state.currentEntries),
+          maxUsers: data.data.count
+        });
       }
 
     } catch (error) {
@@ -97,7 +103,7 @@ class Users extends React.Component {
                 onChange={(e) => { this.setState({ currentEntries: e.target.value }) }}
                 type="text" style={style.inputEntry}
               />
-              of 57 entries
+              of {this.state.maxUsers} entries
             </span>
           </div>
         </div>
