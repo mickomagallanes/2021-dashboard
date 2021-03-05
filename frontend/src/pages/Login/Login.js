@@ -72,8 +72,8 @@ class Login extends React.Component {
                 <Formik
                   validationSchema={schema}
                   initialValues={{
-                    username: "",
-                    password: ""
+                    username: this.state.username,
+                    password: this.state.password
                   }}
                 >
                   {props => (

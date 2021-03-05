@@ -5,7 +5,6 @@ import Spinner from '../Spinner/Spinner';
 
 class Pagination extends React.Component {
 
-
   // pass the page number to the event listener
   handleClick = (pageNumber) => {
     return () =>
@@ -55,7 +54,6 @@ class Pagination extends React.Component {
         cond: () => {
           let pageInterval = null;
 
-          // TODO: fix if else, use switch
           if (currentPage === 2) {
             pageInterval = currentPage - 1;
           } else if (currentPage === 1) {

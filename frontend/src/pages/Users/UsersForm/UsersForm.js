@@ -8,15 +8,31 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
 
-
-const schema = yup.object().shape({
-  username: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
-  password: yup.string().min(12, 'Must be longer than 12').required('Required')
-});
-
 const userURL = "http://localhost:3000/API/user/get/";
 const roleURL = "http://localhost:3000/API/role/get/all";
 const addUserURL = "http://localhost:3000/API/user/insert";
+const editUserURL = "http://localhost:3000/API/user/modify";
+
+const axiosConfig = {
+  withCredentials: true,
+  timeout: 10000
+}
+
+function equalTo(ref, msg) {
+  return this.test({
+    name: 'equalTo',
+    exclusive: false,
+    message: msg,
+    params: {
+      reference: ref.path
+    },
+    test: function (value) {
+      return value === this.resolve(ref)
+    }
+  })
+};
+
+yup.addMethod(yup.string, 'equalTo', equalTo);
 
 class UsersForm extends React.Component {
   // TODO: make add and edit functionality
@@ -29,9 +45,32 @@ class UsersForm extends React.Component {
       selectedRole: "",
       username: "",
       password: "",
+      confirmPassword: "",
       errorMsg: false
     }
+
     this.urlParam = props.match.params.id;
+
+    // send back to users page when Privilege is Read and accessing add mode
+    if (this.isAddMode() && props.priv == "R") {
+      props.history.push('/users');
+    }
+
+    // dont require password field when edit mode
+    if (!this.isAddMode()) {
+      this.schema = yup.object().shape({
+        username: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
+        password: yup.string().min(12, 'Must be longer than 12'),
+        confirmPassword: yup.string()
+      });
+    } else {
+      this.schema = yup.object().shape({
+        username: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
+        password: yup.string().min(12, 'Must be longer than 12').required('Required'),
+        confirmPassword: yup.string().equalTo(yup.ref('password'), "Passwords don't match!").required('Required')
+      });
+    }
+
   }
 
   componentWillUnmount() {
@@ -43,19 +82,18 @@ class UsersForm extends React.Component {
 
   componentDidMount() {
     // check if is on add mode
-    if (this.urlParam != "add") {
+    if (!this.isAddMode()) {
       this.fetchUserData();
     }
 
     this.fetchRoleData();
   }
 
-  fetchUserData = async () => {
-    const axiosConfig = {
-      withCredentials: true,
-      timeout: 10000
-    }
+  isAddMode() {
+    return this.urlParam === "add";
+  }
 
+  fetchUserData = async () => {
     try {
       const resp = await axios.get(
         userURL + this.urlParam,
@@ -75,17 +113,12 @@ class UsersForm extends React.Component {
       }
 
     } catch (error) {
-
-      retryRequest(this.fetchUserData);
+      console.log(error)
+      // retryRequest(this.fetchUserData);
     }
   }
 
   fetchRoleData = async () => {
-    const axiosConfig = {
-      withCredentials: true,
-      timeout: 10000
-    }
-
     try {
       const resp = await axios.get(
         roleURL,
@@ -105,23 +138,16 @@ class UsersForm extends React.Component {
     }
   }
 
-  submitForm = async () => {
-    const axiosConfig = {
-      withCredentials: true,
-      timeout: 10000
-    }
-
+  submitFormAdd = async () => {
     const param = {
       "username": this.state.username,
       "password": this.state.password,
       "roleid": this.state.selectedRole,
     }
 
-    const submitFormURL = this.urlParam == "add" ? addUserURL : "test";
-
     try {
       const resp = await axios.post(
-        submitFormURL,
+        addUserURL,
         param,
         axiosConfig
       );
@@ -135,10 +161,66 @@ class UsersForm extends React.Component {
       }
 
     } catch (error) {
-      console.log(error)
-      // retryRequest(this.fetchUserData);
+      this.setState({ errorMsg: `${error}` });
     }
 
+  }
+
+  submitFormEdit = async () => {
+    const param = {
+      "username": this.state.username,
+      "password": this.state.password,
+      "roleid": this.state.selectedRole,
+      "userid": this.urlParam
+    }
+
+    try {
+      const resp = await axios.put(
+        editUserURL,
+        param,
+        axiosConfig
+      );
+
+      if (resp.data.status === true) {
+        // TODO: create a success alert after adding user or editing
+        this.props.history.push('/users');
+        this.setState({ roleData: resp.data.data });
+      } else {
+        this.setState({ errorMsg: resp.data.msg });
+      }
+
+    } catch (error) {
+      this.setState({ errorMsg: `${error}` });
+    }
+
+  }
+
+  handleChangeUsername = (e, formikProps) => {
+    this.setState({ username: e.target.value, errorMsg: false });
+    formikProps.handleChange(e);
+  }
+
+  handleChangePassword = (e, formikProps) => {
+    this.setState({ password: e.target.value, errorMsg: false });
+    formikProps.handleChange(e);
+  }
+
+  handleChangeConfirm = (e, formikProps) => {
+    this.setState({ confirmPassword: e.target.value, errorMsg: false });
+    formikProps.handleChange(e);
+  }
+
+  handleChangeRole = (e, formikProps) => {
+    this.setState({ selectedRole: e.target.value, errorMsg: false });
+    formikProps.handleChange(e);
+  }
+
+  handleSubmitForm = () => {
+    if (this.isAddMode()) {
+      this.submitFormAdd();
+    } else {
+      this.submitFormEdit();
+    }
   }
 
   // TODO: make animation transition on routing using Framer Motion
@@ -153,16 +235,18 @@ class UsersForm extends React.Component {
             <div className="col-12 grid-margin stretch-card">
               <div className="card px-4 px-sm-5">
                 <div className="card-body">
-                  <h4 className="card-title">User information</h4>
+                  <h4 className="card-title">{this.isAddMode() ? 'Add' : 'Edit'} User</h4>
                   <Formik
-                    validationSchema={schema}
+                    validationSchema={this.schema}
                     initialValues={{
-                      username: "",
-                      password: ""
+                      username: this.state.username,
+                      password: this.state.password,
+                      confirmPassword: this.state.confirmPassword
                     }}
+                    enableReinitialize
                   >
                     {props => (
-                      <Form className="forms-sample" onKeyPress={e => e.key === 'Enter' && this.submitForm()}>
+                      <Form className="forms-sample" onKeyPress={e => e.key === 'Enter' && this.handleSubmitForm()}>
                         <Alert
                           className="p-1"
                           variant="danger"
@@ -178,33 +262,61 @@ class UsersForm extends React.Component {
                             value={this.state.username}
                             type="text"
                             name="username"
+                            id="username"
                             placeholder="Username"
                             autoComplete="username"
                             onBlur={props.handleBlur}
                             isInvalid={(props.errors.username && props.touched.username) || this.state.errorMsg}
-                            onChange={(e) => { this.setState({ username: e.target.value, errorMsg: false }); props.handleChange(e) }}
+                            onChange={(e) => this.handleChangeUsername(e, props)}
+                            disabled={this.props.priv === "R"}
                           />
                           <Form.Control.Feedback type="invalid">
                             {this.state.errorMsg ? null : props.errors.username}
                           </Form.Control.Feedback>
                         </Form.Group>
 
-                        <Form.Group>
-                          <label htmlFor="passwordId">Create New Password</label>
-                          <Form.Control
-                            value={this.state.password}
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            autoComplete="current-password"
-                            onBlur={props.handleBlur}
-                            isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg}
-                            onChange={(e) => { this.setState({ password: e.target.value, errorMsg: false }); props.handleChange(e) }}
-                          />
-                          <Form.Control.Feedback type="invalid">
-                            {this.state.errorMsg ? null : props.errors.password}
-                          </Form.Control.Feedback>
-                        </Form.Group>
+                        { // dont show password fields if Privilege is READ
+                          this.props.priv === "RW"
+                          &&
+                          <>
+                            <Form.Group>
+                              <label htmlFor="password">{!this.isAddMode() && '(Optional) Create New '}Password</label>
+                              <Form.Control
+                                value={this.state.password}
+                                type="password"
+                                name="password"
+                                id="password"
+                                placeholder="Password"
+                                autoComplete="current-password"
+                                onBlur={props.handleBlur}
+                                isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg}
+                                onChange={(e) => this.handleChangePassword(e, props)}
+                              />
+                              <Form.Control.Feedback type="invalid">
+                                {this.state.errorMsg ? null : props.errors.password}
+                              </Form.Control.Feedback>
+                            </Form.Group>
+
+                            <Form.Group>
+                              <label htmlFor="confirmPassword">{!this.isAddMode() && '(Optional) '}Confirm Password</label>
+                              <Form.Control
+                                value={this.state.confirmPassword}
+                                type="password"
+                                name="confirmPassword"
+                                id="confirmPassword"
+                                placeholder="Confirm Password"
+                                onBlur={props.handleBlur}
+                                isInvalid={(props.errors.confirmPassword && props.touched.confirmPassword) || this.state.errorMsg}
+                                onChange={(e) => this.handleChangeConfirm(e, props)}
+                              />
+                              <Form.Control.Feedback type="invalid">
+                                {this.state.errorMsg ? null : props.errors.confirmPassword}
+                              </Form.Control.Feedback>
+                            </Form.Group>
+                          </>
+                        }
+
+
 
                         <label htmlFor="roleSelect">Role</label>
                         <Select
@@ -213,11 +325,13 @@ class UsersForm extends React.Component {
                           data={this.state.roleData}
                           idKey="RoleID"
                           valueKey="RoleName"
-                          onChange={(e) => { this.setState({ selectedRole: e.target.value, errorMsg: false }); props.handleChange(e) }}
+                          onChange={(e) => this.handleChangeRole(e, props)}
+                          disabled={this.props.priv === "R"}
                         ></Select>
 
                         <div className="mt-4">
-                          <button type="button" className="btn btn-primary mr-2" onClick={this.submitForm}>Submit</button>
+                          {this.props.priv === "RW" && <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}
+
                           {/* <button className="btn btn-dark">Cancel</button> */}
                         </div>
 
@@ -231,8 +345,6 @@ class UsersForm extends React.Component {
           </div>
         </div>
 
-
-        // this.state.data && this.state.data.map(x => <p key={x.id}>{x.rname} | {x.uname}</p>)
       );
     }
   }

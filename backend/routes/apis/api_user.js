@@ -2,13 +2,13 @@
 const UserService = require('../../services/UserService.js');
 
 const utils = require('../../utils/session.js');
-const { checkSession } = require('../../middlewares/routesauth.js');
-const { userInsertSchema, userLoginSchema, userGetAllSchema } = require('../../middlewares/validator.js');
+const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../../middlewares/routesauth.js');
+const { userInsertSchema, userLoginSchema, userGetAllSchema, userModifySchema } = require('../../middlewares/validator.js');
 const express = require('express');
 const router = express.Router();
 
-router.get('/get/all', [checkSession, userGetAllSchema], async function (req, res, next) {
-    console.log(req.query)
+router.get('/get/all', [checkSession, userGetAllSchema, authorizeReadRoute], async function (req, res, next) {
+
     let result = await UserService.getAllUser(req.query);
     if (result === false) {
         res.sendStatus(403);
@@ -17,7 +17,7 @@ router.get('/get/all', [checkSession, userGetAllSchema], async function (req, re
     }
 });
 
-router.get('/get/:id', checkSession, async function (req, res, next) {
+router.get('/get/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
     let result = await UserService.getUserById(req.params.id);
     if (result === false) {
         res.json({ "status": false });
@@ -26,10 +26,31 @@ router.get('/get/:id', checkSession, async function (req, res, next) {
     }
 });
 
-router.post('/insert', [checkSession, userInsertSchema], async function (req, res, next) {
+router.get('/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
+
+    let result = await UserService.getAllCount();
+    if (result === false) {
+        res.sendStatus(403);
+    } else {
+        res.json({ "status": true, "data": result });
+    }
+});
+
+router.post('/insert', [checkSession, userInsertSchema, authorizeWriteRoute], async function (req, res, next) {
 
     // insert username, password and role id
     let result = await UserService.insertUser(req.body);
+    if (result === false) {
+        res.sendStatus(403);
+    } else {
+        res.json({ "status": true, "msg": "Success" });
+    }
+});
+
+router.put('/modify', [checkSession, userModifySchema, authorizeWriteRoute], async function (req, res, next) {
+
+    // insert username, password and role id
+    let result = await UserService.modifyUser(req.body);
     if (result === false) {
         res.sendStatus(403);
     } else {

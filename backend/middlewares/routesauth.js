@@ -2,11 +2,14 @@
 const RouteRoleModel = require('../models/RouteRoleModel.js');
 const utils = require('../utils/session.js');
 
-function authorizeReadRoute(req, res, next) {
-    let userId = req.session.userData.userid;
+async function authorizeReadRoute(req, res, next) {
+    const userId = req.session.userData.userid;
 
-    let userPriv = RouteRoleModel.getRouteRole(userId, req.originalUrl);
-    if (userPriv == "RW" || userPriv == "R") {
+    const resp = await RouteRoleModel.getRouteRole(userId, req.baseUrl);
+
+    const { Privilege } = resp[0];
+
+    if (Privilege == "RW" || Privilege == "R") {
 
         next();
     } else {
@@ -17,11 +20,14 @@ function authorizeReadRoute(req, res, next) {
 
 }
 
-function authorizeWriteRoute(req, res, next) {
-    let userId = req.session.userData.userid;
+async function authorizeWriteRoute(req, res, next) {
+    const userId = req.session.userData.userid;
 
-    let userPriv = RouteRoleModel.getRouteRole(userId, req.originalUrl);
-    if (userPriv == "RW") {
+    let resp = await RouteRoleModel.getRouteRole(userId, req.baseUrl);
+
+    const { Privilege } = resp[0];
+
+    if (Privilege == "RW") {
         next();
     } else {
         res.sendStatus(403);

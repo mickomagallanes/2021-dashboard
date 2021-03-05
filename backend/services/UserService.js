@@ -17,9 +17,8 @@ class UserService {
     static async getAllUser({ page, limit }) {
         let isPaged = !!page && !!limit;
         const startIndex = isPaged ? (page - 1) * limit : false;
-        const endIndex = isPaged ? page * limit : false;
 
-        const userData = await UserModel.getAllUser(startIndex, endIndex);
+        const userData = await UserModel.getAllUser(startIndex, limit);
 
         if (isPaged) {
             const userCount = await UserModel.getAllUserCount();
@@ -45,6 +44,18 @@ class UserService {
     }
 
     /**
+    * get total count of user rows
+    * @return count of all rows
+    */
+
+    static async getAllCount() {
+
+        const userCount = await UserModel.getAllUserCount();
+        return userCount[0];
+
+    }
+
+    /**
       * inserts username and password to the database
       * @param {String} username username of the user
       * @param {String} password plain password of the user
@@ -56,6 +67,23 @@ class UserService {
 
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         let ret = await UserModel.insertUser(username, hashedPassword, roleid);
+
+        return ret;
+    }
+
+    /**
+      * modify user data
+      * @param {String} userid id of the user
+      * @param {String} username username of the user
+      * @param {String} password plain password of the user
+      * @param {String} roleid id from roles table if it is admin, etc
+      */
+
+    static async modifyUser({ userid, username, password, roleid }) {
+        const saltRounds = 10;
+
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        let ret = await UserModel.modifyUser(userid, username, hashedPassword, roleid);
 
         return ret;
     }

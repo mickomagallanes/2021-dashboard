@@ -9,7 +9,9 @@ class Select extends React.Component {
         id={this.props.id}
         className="form-control"
         value={this.props.value}
-        onChange={this.props.onChange}>
+        onChange={this.props.onChange}
+        disabled={this.props.disabled}
+      >
 
         {this.props.data.map(x =>
           <option key={x[this.props.idKey]} value={x[this.props.idKey]}>{x[this.props.valueKey]}</option>

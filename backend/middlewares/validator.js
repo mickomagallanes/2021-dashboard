@@ -5,9 +5,20 @@ function userInsertSchema(req, res, next) {
     const schema = Joi.object({
         username: Joi.string().max(45).required(),
         password: Joi.string().min(12).required(),
-        roleid: Joi.alternatives().try(Joi.number().max(1).required(), Joi.string().max(1).required())
+        roleid: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
     });
-    validateRequest(req, res, next, schema);
+    validateRequestBody(req, res, next, schema);
+}
+
+function userModifySchema(req, res, next) {
+
+    const schema = Joi.object({
+        username: Joi.string().max(45).required(),
+        password: Joi.string().min(12).required(),
+        roleid: Joi.alternatives().try(Joi.number().required(), Joi.string().required()),
+        userid: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
+    });
+    validateRequestBody(req, res, next, schema);
 }
 
 function userLoginSchema(req, res, next) {
@@ -20,7 +31,7 @@ function userLoginSchema(req, res, next) {
 
 function userGetAllSchema(req, res, next) {
     const schema = Joi.object({
-        page: Joi.number(),
+        page: Joi.number().integer(),
         limit: Joi.number().integer().min(5).max(100),
     });
     validateRequestQuery(req, res, next, schema);
@@ -28,6 +39,7 @@ function userGetAllSchema(req, res, next) {
 
 // TODO: continue JOI
 function validateRequestBody(req, res, next, schema) {
+    console.log(req.body)
     const options = {
         abortEarly: false // include all errors
     };
@@ -68,5 +80,6 @@ function validateRequestParams(req, res, next, schema) {
 module.exports = {
     userInsertSchema,
     userLoginSchema,
-    userGetAllSchema
+    userGetAllSchema,
+    userModifySchema
 }

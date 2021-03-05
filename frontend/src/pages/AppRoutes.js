@@ -4,8 +4,6 @@ import { compose } from 'redux';
 import Spinner from '../components/Spinner/Spinner';
 import RequireAuth from '../components/RequireAuth';
 import RequireLogout from '../components/RequireLogout';
-import PlainPageLayout from '../components/PlainPageLayout';
-import FullPageLayout from '../components/FullPageLayout';
 import RequireLogin from '../components/RequireLogin';
 
 import Login from './Login/Login.lazy';

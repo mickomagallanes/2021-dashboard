@@ -30,6 +30,11 @@
     border: 1px solid rgba(71, 164, 71, 0.5);
     background-color: $input-bg;
   }
+  &:disabled {
+    color: #dedede;
+    border: 1px solid rgba(71, 164, 71, 0.5);
+    background-color: #424242;
+  }
   &.form-control-lg {
     padding: 0.94rem .75rem;
     height: calc(2.875rem + 2px);

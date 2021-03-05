@@ -16,13 +16,30 @@ class UserModel {
      */
 
     static async insertUser(username, password, roleId) {
+        const stmt = `INSERT INTO Users (Username, Password, RoleID) VALUES (?, ?, ?)`;
+        try {
+            const result = await mysql_conn.query(stmt, [username, password, roleId]);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+     * inserts username and password to the database
+     * @param {String} userid id of the user
+     * @param {String} username username of the user
+     * @param {String} password plain password of the user
+     * @param {String} roleid id from roles table if it is admin, etc
+     */
+
+    static async modifyUser(userid, username, password, roleid) {
+        const stmt = `UPDATE Users SET Username = ?, Password = ?, RoleID = ? WHERE UserID = ?`;
 
         try {
-            const result = await mysql_conn.insert("Users", {
-                Username: username,
-                Password: password,
-                RoleID: roleId
-            });
+            const result = await mysql_conn.query(stmt, [username, password, roleid, userid]);
             return result;
 
         } catch (err) {
@@ -52,11 +69,12 @@ class UserModel {
     /**
      * get all user data from database
      * @param {Number} [startIndex] start of limit
-     * @param {Number} [endIndex] end of limit
+     * @param {Number} [limit] limit count
      */
 
-    static async getAllUser(startIndex = null, endIndex = null) {
-        const limitClause = startIndex !== false && !!endIndex !== false ? ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(endIndex)}` : "";
+    static async getAllUser(startIndex, limit) {
+
+        const limitClause = startIndex !== false ? ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}` : "";
 
         const stmt = `SELECT 
                a.UserID as id,

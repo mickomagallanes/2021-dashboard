@@ -5,14 +5,10 @@ import Table from '../../components/Table/Table.lazy';
 import { retryRequest } from "../../helpers/utils";
 import { Link } from 'react-router-dom';
 import Pagination from '../../components/Pagination/Pagination';
-import * as yup from 'yup';
-import { Formik } from 'formik';
-
-const schema = yup.object().shape({
-  currentEntries: yup.string().max(45, 'Must be 45 characters or less').required('Required')
-});
+import { Alert } from 'react-bootstrap';
 
 const userURL = "http://localhost:3000/API/user/get/all";
+const userCountURL = "http://localhost:3000/API/user/get/all/count";
 
 class Users extends React.Component {
 
@@ -23,7 +19,8 @@ class Users extends React.Component {
       maxPage: null,
       maxUsers: null,
       currentPage: 1,
-      currentEntries: 5
+      currentEntries: 5,
+      errorMsg: false
     }
 
     this.colData = [
@@ -35,17 +32,42 @@ class Users extends React.Component {
 
   componentDidMount() {
 
-    this.fetchData(this.state.currentPage);
+    this.fetchData();
   }
 
   // passed pageNumber as param to prevent executing render twice when setting state twice
-  fetchData = async (pageNumber) => {
+  fetchData = async (pageNumber = this.state.currentPage) => {
     const axiosConfig = {
       withCredentials: true,
       timeout: 10000
     }
 
+    // first, fetch count first to send the right page on the next request
+    let rowCount;
     try {
+      const respCount = await axios.get(
+        userCountURL,
+        axiosConfig
+      );
+
+      rowCount = respCount.data.data.count;
+    } catch (error) {
+      this.setState({
+        errorMsg: `${error}`
+      });
+      return;
+    }
+
+    // second, fetch the users data
+    try {
+      const maxPage = Math.ceil(rowCount / this.state.currentEntries);
+
+      // if state.currentPage is higher than the maxPage, for instance when
+      // state.currentEntries is changed with higher state.currentPage
+      if (pageNumber > maxPage) {
+        pageNumber = 1;
+      }
+
       const resp = await axios.get(
         userURL + `?page=${pageNumber}&limit=${this.state.currentEntries}`,
         axiosConfig
@@ -57,13 +79,20 @@ class Users extends React.Component {
         this.setState({
           currentPage: pageNumber,
           data: data.data.users,
-          maxPage: Math.ceil(data.data.count / this.state.currentEntries),
-          maxUsers: data.data.count
+          maxPage: maxPage,
+          maxUsers: data.data.count,
+          errorMsg: false
+        });
+      } else {
+        this.setState({
+          errorMsg: data.msg
         });
       }
 
     } catch (error) {
-      // retryRequest(this.fetchData);
+      this.setState({
+        errorMsg: `${error}`
+      });
     }
   }
 
@@ -71,9 +100,15 @@ class Users extends React.Component {
     this.fetchData(pageNumber);
   }
 
+  entryOnChange = async (e) => {
+    await this.setState({ currentEntries: e.target.value });
+    this.fetchData();
+  }
+
+
   render() {
     const { maxPage, currentPage } = this.state;
-    console.log("dogs")
+
     return (
       <>
         <Table
@@ -83,13 +118,20 @@ class Users extends React.Component {
           title="Users"
           tblClass="table-bordered"
           colData={this.colData} />
-
+        <Alert
+          className="p-1"
+          variant="danger"
+          show={this.state.errorMsg}
+          transition={false}
+        >
+          {this.state.errorMsg}
+        </Alert>
         <div className="row">
           <div className="col">
-            <Link to="/users/form/add" className="btn btn-outline-secondary btn-lg">
+            {this.props.priv === "RW" && <Link to="/users/form/add" className="btn btn-outline-secondary btn-lg">
               <i className="mdi mdi-account-plus"> </i>
             Add User
-            </Link>
+            </Link>}
           </div>
           <div className="col-lg-6">
             <Pagination currentPage={currentPage} maxPage={maxPage} onClick={this.paginationClick} />
@@ -100,7 +142,7 @@ class Users extends React.Component {
               <input
                 className="form-control"
                 value={this.state.currentEntries}
-                onChange={(e) => { this.setState({ currentEntries: e.target.value }) }}
+                onChange={(e) => { this.entryOnChange(e) }}
                 type="text" style={style.inputEntry}
               />
               of {this.state.maxUsers} entries

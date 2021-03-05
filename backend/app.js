@@ -11,6 +11,7 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
+
 const sessionStore = new MySQLStore({
   // Whether or not to automatically check for and clear expired sessions:
   clearExpired: true,
@@ -39,7 +40,7 @@ app.use(limiter.perMinuteLimit);
 
 app.use(cors({
   origin: 'http://localhost:3006',
-  methods: 'GET,HEAD,POST',
+  methods: 'GET,HEAD,POST,PUT',
   preflightContinue: false,
   credentials: true
 }));

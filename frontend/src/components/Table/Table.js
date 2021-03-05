@@ -1,6 +1,5 @@
 import React from 'react';
 import './Table.css';
-import Spinner from '../Spinner/Spinner';
 import { Link } from 'react-router-dom';
 class Table extends React.Component {
 
@@ -28,8 +27,7 @@ class Table extends React.Component {
                         // data from database used for tr key
                         // td key used combination of data from db and hardcoded data
                         // e.g: "rname2" where "rname" is hardcoded id and "2" is the row id from db
-                        !!this.props.data.length
-                        && this.props.data.map(x =>
+                        this.props.data.map(x =>
                           <tr key={x.id}>
                             {this.props.colData.map(y => <td key={y.id + x.id}>{x[y.id]}</td>)}
 
@@ -45,7 +43,7 @@ class Table extends React.Component {
 
                     </tbody>
                   </table>
-                  {!this.props.data.length && <Spinner />}
+
                 </div>
               </div>
             </div>
