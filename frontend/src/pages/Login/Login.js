@@ -8,6 +8,7 @@ import axios from 'axios';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { retryRequest } from "../../helpers/utils";
+import { withRouter } from 'react-router-dom';
 
 const schema = yup.object().shape({
   username: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
@@ -42,16 +43,13 @@ class Login extends React.Component {
       );
 
       if (resp.data.status === true) {
-        // LESSON: You can use the 'window' object from the browser as long as 
-        // you're not doing server-side rendering, but it reloads the page
-        window.location = resp.data.redirect;
-
+        this.props.history.push('/home');
       } else {
         this.setState({ errorMsg: resp.data.msg });
       }
 
     } catch (error) {
-      // retryRequest(this.signIn);
+      this.setState({ errorMsg: `${error}` });
     }
 
   }
@@ -139,4 +137,4 @@ class Login extends React.Component {
 
 }
 
-export default Login;
+export default withRouter(Login);

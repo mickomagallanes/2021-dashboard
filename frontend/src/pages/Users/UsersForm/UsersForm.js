@@ -7,6 +7,7 @@ import Select from '../../../components/Select/Select';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
+import { Link } from 'react-router-dom';
 
 const userURL = "http://localhost:3000/API/user/get/";
 const roleURL = "http://localhost:3000/API/role/get/all";
@@ -46,13 +47,16 @@ class UsersForm extends React.Component {
       username: "",
       password: "",
       confirmPassword: "",
-      errorMsg: false
+      errorMsg: false,
+
+      // just to not connect the initialValues to main state username to prevent forced reinitialize, used after backend fetch userdata
+      formikUsername: ""
     }
 
     this.urlParam = props.match.params.id;
 
     // send back to users page when Privilege is Read and accessing add mode
-    if (this.isAddMode() && props.priv == "R") {
+    if (this.isAddMode() && props.priv === "R") {
       props.history.push('/users');
     }
 
@@ -105,7 +109,8 @@ class UsersForm extends React.Component {
         this.setState({
           userData: resp.data.data,
           username: resp.data.data.uname,
-          selectedRole: resp.data.data.rid
+          selectedRole: resp.data.data.rid,
+          formikUsername: resp.data.data.uname
         });
       } else {
         // if no user is found, like param as 'add', redirect back to history or user page
@@ -195,18 +200,18 @@ class UsersForm extends React.Component {
 
   }
 
-  handleChangeUsername = (e, formikProps) => {
-    this.setState({ username: e.target.value, errorMsg: false });
+  handleChangeUsername = async (e, formikProps) => {
+    await this.setState({ username: e.target.value, errorMsg: false }); // set first the state to update on formik validation
     formikProps.handleChange(e);
   }
 
-  handleChangePassword = (e, formikProps) => {
-    this.setState({ password: e.target.value, errorMsg: false });
+  handleChangePassword = async (e, formikProps) => {
+    await this.setState({ password: e.target.value, errorMsg: false });
     formikProps.handleChange(e);
   }
 
-  handleChangeConfirm = (e, formikProps) => {
-    this.setState({ confirmPassword: e.target.value, errorMsg: false });
+  handleChangeConfirm = async (e, formikProps) => {
+    await this.setState({ confirmPassword: e.target.value, errorMsg: false });
     formikProps.handleChange(e);
   }
 
@@ -230,19 +235,30 @@ class UsersForm extends React.Component {
       return (<Spinner />)
     } else {
       return (
-        <div className="d-flex align-items-center px-0">
+        <div>
+          <div className="page-header">
+            <Link className="btn btn-outline-light btn-icon-text btn-md" to="/users">
+              <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
+              <span className="d-inline-block text-left">
+                Back
+              </span>
+            </Link>
+
+          </div>
           <div className="row w-100 mx-0">
             <div className="col-12 grid-margin stretch-card">
               <div className="card px-4 px-sm-5">
+
                 <div className="card-body">
+
                   <h4 className="card-title">{this.isAddMode() ? 'Add' : 'Edit'} User</h4>
                   <Formik
-                    validationSchema={this.schema}
                     initialValues={{
-                      username: this.state.username,
-                      password: this.state.password,
-                      confirmPassword: this.state.confirmPassword
+                      username: this.state.formikUsername,
+                      password: "",
+                      confirmPassword: ""
                     }}
+                    validationSchema={this.schema}
                     enableReinitialize
                   >
                     {props => (
@@ -292,7 +308,9 @@ class UsersForm extends React.Component {
                                 isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg}
                                 onChange={(e) => this.handleChangePassword(e, props)}
                               />
+
                               <Form.Control.Feedback type="invalid">
+                                {/* put null to prevent showing error message from backend to each input boxes */}
                                 {this.state.errorMsg ? null : props.errors.password}
                               </Form.Control.Feedback>
                             </Form.Group>
@@ -305,6 +323,7 @@ class UsersForm extends React.Component {
                                 name="confirmPassword"
                                 id="confirmPassword"
                                 placeholder="Confirm Password"
+
                                 onBlur={props.handleBlur}
                                 isInvalid={(props.errors.confirmPassword && props.touched.confirmPassword) || this.state.errorMsg}
                                 onChange={(e) => this.handleChangeConfirm(e, props)}
@@ -316,8 +335,6 @@ class UsersForm extends React.Component {
                           </>
                         }
 
-
-
                         <label htmlFor="roleSelect">Role</label>
                         <Select
                           id="roleSelect"
@@ -328,7 +345,8 @@ class UsersForm extends React.Component {
                           onChange={(e) => this.handleChangeRole(e, props)}
                           disabled={this.props.priv === "R"}
                         ></Select>
-
+                        {/* TODO: add image to users */}
+                        <Form.Control type="file" name="file" />
                         <div className="mt-4">
                           {this.props.priv === "RW" && <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}
 

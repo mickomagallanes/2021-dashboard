@@ -142,8 +142,6 @@ class mysql_conn {
                         });
 
                         let sql_str = `UPDATE ${tablename} SET ${columns} ${wheres} ;`;
-                        //console.log(sql_str);
-                        //console.log(values);
                         connection.query(sql_str, values, (err, rows) => {
 
                             if (err) {

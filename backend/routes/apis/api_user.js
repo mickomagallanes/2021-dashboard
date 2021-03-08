@@ -60,9 +60,6 @@ router.put('/modify', [checkSession, userModifySchema, authorizeWriteRoute], asy
 
 router.post('/login', userLoginSchema, async function (req, res, next) {
 
-    // console.log(req.signedCookies['connect.sid']);
-    // console.log(req.sessionID + " sessionID");
-    // console.log(req.session.userData);
     if (req.session.userData) {
 
         res.json({ "status": false, "msg": "Already logged in!" });

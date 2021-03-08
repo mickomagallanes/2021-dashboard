@@ -39,7 +39,6 @@ function userGetAllSchema(req, res, next) {
 
 // TODO: continue JOI
 function validateRequestBody(req, res, next, schema) {
-    console.log(req.body)
     const options = {
         abortEarly: false // include all errors
     };
