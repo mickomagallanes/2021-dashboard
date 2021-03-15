@@ -4,6 +4,20 @@ import { Link } from 'react-router-dom';
 import { Trans } from 'react-i18next';
 import logoMini from '../../assets/images/logo-mini.svg';
 import profPic from '../../assets/images/faces/face15.jpg';
+import Select from '../Select/Select';
+import { connect } from 'react-redux';
+import { THEMES } from '../../helpers/constants';
+import { themeChange } from '../../actions';
+
+const mapStateToProps = (state) => {
+  return { theme: state.themeReducer.theme };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return ({
+    changeTheme: (id) => { dispatch(themeChange(id)) }
+  })
+}
 
 class Navbar extends React.Component {
   toggleOffcanvas() {
@@ -24,7 +38,7 @@ class Navbar extends React.Component {
           <button className="navbar-toggler align-self-center" type="button" onClick={() => document.body.classList.toggle('sidebar-icon-only')}>
             <span className="mdi mdi-menu"></span>
           </button>
-          <ul className="navbar-nav w-100">
+          <ul className="navbar-nav w-50">
             <li className="nav-item w-100">
               <form className="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
                 <input type="text" className="form-control" placeholder="Search products" />
@@ -32,6 +46,19 @@ class Navbar extends React.Component {
             </li>
           </ul>
           <ul className="navbar-nav navbar-nav-right">
+            <li className="nav-item dropdown">
+              <Select
+                id="themeSelect"
+                value={this.props.theme}
+                className="form-control btn w-100"
+                data={THEMES}
+                idKey="id"
+                valueKey="value"
+                onChange={(e) => this.props.changeTheme(e.target.value)}
+              ></Select>
+            </li>
+
+
             <Dropdown alignRight as="li" className="nav-item d-none d-lg-block">
               <Dropdown.Toggle className="nav-link btn btn-success create-new-button no-caret">
                 + <Trans>Create New Project</Trans>
@@ -228,4 +255,4 @@ class Navbar extends React.Component {
   }
 }
 
-export default Navbar;
+export default connect(mapStateToProps, mapDispatchToProps)(Navbar);

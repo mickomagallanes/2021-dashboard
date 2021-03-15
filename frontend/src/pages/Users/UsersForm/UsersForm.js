@@ -215,9 +215,8 @@ class UsersForm extends React.Component {
     formikProps.handleChange(e);
   }
 
-  handleChangeRole = (e, formikProps) => {
+  handleChangeRole = (e) => {
     this.setState({ selectedRole: e.target.value, errorMsg: false });
-    formikProps.handleChange(e);
   }
 
   handleSubmitForm = () => {
@@ -228,10 +227,39 @@ class UsersForm extends React.Component {
     }
   }
 
+  handleFileChange = e => {
+    const files = Array.from(e.target.files);
+
+    const reader = new FileReader();
+    reader.onload = function () {
+      document.querySelector("#userImg").src = reader.result;
+    };
+    reader.readAsDataURL(e.target.files[0]);
+    // this.setState({ uploading: true });
+
+    const formData = new FormData();
+
+    files.forEach((file, i) => {
+      formData.append(i, file);
+    })
+
+    // fetch(`${API_URL}/image-upload`, {
+    //   method: 'POST',
+    //   body: formData
+    // })
+    // .then(res => res.json())
+    // .then(images => {
+    //   this.setState({ 
+    //     uploading: false,
+    //     images
+    //   })
+    // })
+  }
+
   // TODO: make animation transition on routing using Framer Motion
   // and use Unit Testing with Jest
   render() {
-    if (!!this.state.userData.length && !!this.state.roleData.length) {
+    if (!this.state.roleData.length) {
       return (<Spinner />)
     } else {
       return (
@@ -340,13 +368,17 @@ class UsersForm extends React.Component {
                           id="roleSelect"
                           value={this.state.selectedRole}
                           data={this.state.roleData}
+                          className="form-control btn"
                           idKey="RoleID"
                           valueKey="RoleName"
-                          onChange={(e) => this.handleChangeRole(e, props)}
+                          onChange={(e) => this.handleChangeRole(e)}
                           disabled={this.props.priv === "R"}
                         ></Select>
+
                         {/* TODO: add image to users */}
-                        <Form.Control type="file" name="file" />
+                        <Form.Control type="file" name="file" onChange={this.handleFileChange} />
+                        <img id="userImg" src="#" alt="your image" />
+
                         <div className="mt-4">
                           {this.props.priv === "RW" && <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}
 

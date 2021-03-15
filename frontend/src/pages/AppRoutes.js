@@ -1,4 +1,4 @@
-import React, { Component, Suspense } from 'react';
+import React, { PureComponent, Suspense } from 'react';
 import { Redirect, Switch, Route, withRouter } from 'react-router-dom';
 import { compose } from 'redux';
 import Spinner from '../components/Spinner/Spinner';
@@ -16,39 +16,41 @@ import Footer from '../components/Footer/Footer';
 
 const LoggedInContainer = RequireLogin(DefaultContainer);
 
-class AppRoutes extends Component {
+class AppRoutes extends PureComponent {
   constructor() {
     super();
   }
 
   render() {
-
-
     return (
+
       <Suspense fallback={<Spinner />}>
 
         <Switch>
+
           <Route path="/login" component={RequireLogout(LoginContainer)} />
 
           <Route component={LoggedInContainer} />
 
         </Switch>
+
       </Suspense>
+
     );
   }
 }
 
 function LoginContainer() {
   return (
-    <div className="container-scroller">
-      <div className="container-fluid page-body-wrapper full-page-wrapper">
-        <div className="main-panel">
-          <div className="content-wrapper">
-            <Login />
-          </div>
+
+    <div className="container-fluid page-body-wrapper full-page-wrapper">
+      <div className="main-panel">
+        <div className="content-wrapper">
+          <Login />
         </div>
       </div>
     </div>
+
   );
 }
 
@@ -57,7 +59,7 @@ function DefaultContainer() {
   // let loginMiddleware = compose(RequireLogout, PlainPageLayout);
   // let otherMiddleware = compose(RequireAuth, FullPageLayout);
   return (
-    <div className="container-scroller">
+    <>
       <Sidebar />
       <div className="container-fluid page-body-wrapper">
         <Navbar />
@@ -75,7 +77,7 @@ function DefaultContainer() {
           <Footer />
         </div>
       </div>
-    </div>
+    </>
 
   );
 }

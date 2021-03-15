@@ -6,9 +6,12 @@ import logo from "../../assets/images/logo.svg";
 import logoMini from '../../assets/images/logo-mini.svg';
 import profPic from '../../assets/images/faces/face15.jpg';
 
+
 class Sidebar extends React.Component {
 
-  state = {};
+  state = {
+    isSidebarActive: false
+  };
 
   toggleMenuState(menuState) {
     if (this.state[menuState]) {
@@ -118,7 +121,7 @@ class Sidebar extends React.Component {
           <li className="nav-item nav-category">
             <span className="nav-link"><Trans>Navigation</Trans></span>
           </li>
-          <li className={this.isPathActive('/dashboard') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
+          <li className={this.isPathActive('/home') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
             <Link className="nav-link" to="/home">
               <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
               <span className="menu-title"><Trans>Dashboard</Trans></span>

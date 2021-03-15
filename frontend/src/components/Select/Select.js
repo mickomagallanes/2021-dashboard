@@ -4,10 +4,11 @@ import './Select.css';
 class Select extends React.Component {
 
   render() {
+
     return (
       <select
         id={this.props.id}
-        className="form-control"
+        className={this.props.className}
         value={this.props.value}
         onChange={this.props.onChange}
         disabled={this.props.disabled}
