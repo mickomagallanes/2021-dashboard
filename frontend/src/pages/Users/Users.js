@@ -111,45 +111,60 @@ class Users extends React.Component {
 
     return (
       <>
-
-        <Table
-          urlRedirect="/users/form"
-          isWriteable={this.props.priv === "RW"}
-          data={this.state.data}
-          title="Users"
-          tblClass="table-bordered"
-          colData={this.colData} />
-        <Alert
-          className="p-1"
-          variant="danger"
-          show={this.state.errorMsg}
-          transition={false}
-        >
-          {this.state.errorMsg}
-        </Alert>
-        <div className="row">
-          <div className="col mt-3">
-            {this.props.priv === "RW" && <Link to="/users/form/add" className="btn btn-outline-secondary btn-lg float-sm-left d-block">
-              <i className="mdi mdi-account-plus"> </i>
-            Add User
-            </Link>}
+        <div>
+          <div className="page-header">
+            <h3 className="page-title">Users Page</h3>
           </div>
-          <div className="col-lg-6 mt-3">
-            <Pagination currentPage={currentPage} maxPage={maxPage} onClick={this.paginationClick} />
-          </div>
-          <div className="col mt-3">
-            <span className="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
-              Show
-              <input
-                className="form-control"
-                value={this.state.currentEntries}
-                onChange={(e) => { this.entryOnChange(e) }}
-                type="text" style={style.inputEntry}
-              />
-              of {this.state.maxUsers} entries
-            </span>
+          <Alert
+            className="p-1"
+            variant="danger"
+            show={this.state.errorMsg}
+            transition={false}
+          >
+            {this.state.errorMsg}
+          </Alert>
+          <div className="row">
+            <div className="col-lg-12 grid-margin stretch-card">
+              <div className="card">
+                <div className="card-body">
+                  <h4 className="card-title">Users Table</h4>
+                  <div className="row mb-4">
+                    <div className="col mt-3">
+                      {this.props.priv === "RW" && <Link to="/users/form/add" className="btn btn-outline-secondary btn-lg float-sm-left d-block">
+                        <i className="mdi mdi-account-plus"> </i>
+                        Add User
+                        </Link>}
+                    </div>
+                    <div className="col-lg-6 mt-3">
+                      <Pagination currentPage={currentPage} maxPage={maxPage} onClick={this.paginationClick} />
+                    </div>
+                    <div className="col mt-3">
+                      <span className="float-sm-right d-block mt-1 mt-sm-0 text-center">
+                        Show
+                       <input
+                          className="form-control"
+                          value={this.state.currentEntries}
+                          onChange={(e) => { this.entryOnChange(e) }}
+                          type="text" style={style.inputEntry}
+                        />
+                          of {this.state.maxUsers} entries
+                        </span>
+                    </div>
+                  </div>
+                  <Table
+                    urlRedirect="/users/form"
+                    isWriteable={this.props.priv === "RW"}
+                    data={this.state.data}
+                    tblClass=""
+                    colData={this.colData} />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+
+
       </>
     );
   }

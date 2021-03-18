@@ -46,7 +46,7 @@ class Navbar extends React.Component {
             </li>
           </ul>
           <ul className="navbar-nav navbar-nav-right">
-            <li className="nav-item dropdown">
+            <li className="nav-item dropdown d-none d-lg-block">
               <Select
                 id="themeSelect"
                 value={this.props.theme}
