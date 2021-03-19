@@ -1,4 +1,5 @@
 // const createError = require('http-errors');
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -11,6 +12,7 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
+const { checkSession } = require('./middlewares/routesauth.js');
 
 const sessionStore = new MySQLStore({
   // Whether or not to automatically check for and clear expired sessions:
@@ -73,6 +75,7 @@ app.use(session({
 }));
 
 app.use('/api', apiRouter);
+app.use('/static', checkSession, express.static(__dirname + '/public'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

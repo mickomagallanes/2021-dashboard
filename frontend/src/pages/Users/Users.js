@@ -130,16 +130,7 @@ class Users extends React.Component {
                   <h4 className="card-title">Users Table</h4>
                   <div className="row mb-4">
                     <div className="col mt-3">
-                      {this.props.priv === "RW" && <Link to="/users/form/add" className="btn btn-outline-secondary btn-lg float-sm-left d-block">
-                        <i className="mdi mdi-account-plus"> </i>
-                        Add User
-                        </Link>}
-                    </div>
-                    <div className="col-lg-6 mt-3">
-                      <Pagination currentPage={currentPage} maxPage={maxPage} onClick={this.paginationClick} />
-                    </div>
-                    <div className="col mt-3">
-                      <span className="float-sm-right d-block mt-1 mt-sm-0 text-center">
+                      <span className="float-sm-left d-block mt-1 mt-sm-0 text-center">
                         Show
                        <input
                           className="form-control"
@@ -149,6 +140,16 @@ class Users extends React.Component {
                         />
                           of {this.state.maxUsers} entries
                         </span>
+                    </div>
+                    <div className="col-lg-6 mt-3">
+                      <Pagination currentPage={currentPage} maxPage={maxPage} onClick={this.paginationClick} />
+                    </div>
+                    <div className="col mt-3">
+                      {this.props.priv === "RW" && <Link to="/users/form/add" className="btn btn-outline-secondary float-sm-right d-block">
+                        <i className="mdi mdi-account-plus"> </i>
+                        Add User
+                        </Link>}
+
                     </div>
                   </div>
                   <Table
