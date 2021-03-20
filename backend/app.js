@@ -75,6 +75,7 @@ app.use(session({
 }));
 
 app.use('/api', apiRouter);
+
 app.use('/static', checkSession, express.static(__dirname + '/public'));
 
 // catch 404 and forward to error handler

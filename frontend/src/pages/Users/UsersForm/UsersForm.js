@@ -13,6 +13,7 @@ const userURL = "http://localhost:3000/API/user/get/";
 const roleURL = "http://localhost:3000/API/role/get/all";
 const addUserURL = "http://localhost:3000/API/user/insert";
 const editUserURL = "http://localhost:3000/API/user/modify";
+const uploadImgUserURL = "http://localhost:3000/API/user/upload/img";
 
 const axiosConfig = {
   withCredentials: true,
@@ -48,7 +49,8 @@ class UsersForm extends React.Component {
       password: "",
       confirmPassword: "",
       errorMsg: false,
-
+      imgSrc: "", // base 64 user image
+      imgFile: "", // pure user image file
       // just to not connect the initialValues to main state username to prevent forced reinitialize, used after backend fetch userdata
       formikUsername: ""
     }
@@ -200,6 +202,38 @@ class UsersForm extends React.Component {
 
   }
 
+  // executes after submitFormAdd or submitFormEdit
+  // @param {String} userId id of user
+  submitImage = async (userId) => {
+    const formData = new FormData();
+
+    this.state.imgFile.forEach((file, i) => {
+      formData.append(i, file);
+    })
+    formData.append("id", userId);
+
+    try {
+      const resp = await axios.post(
+        uploadImgUserURL,
+        formData,
+        { ...axiosConfig, headers: { 'Content-Type': "multipart/form-data" } } // add new property to axios config
+      );
+
+      if (resp.data.status === true) {
+
+        this.setState({
+          imgSrc: resp.data.path
+        });
+      } else {
+
+        this.setState({ errorMsg: resp.data.msg });
+      }
+
+    } catch (error) {
+      this.setState({ errorMsg: `${error}` });
+    }
+  }
+
   handleChangeUsername = async (e, formikProps) => {
     await this.setState({ username: e.target.value, errorMsg: false }); // set first the state to update on formik validation
     formikProps.handleChange(e);
@@ -232,28 +266,11 @@ class UsersForm extends React.Component {
 
     const reader = new FileReader();
     reader.onload = function () {
-      document.querySelector("#userImg").src = reader.result;
+      this.setState({ imgSrc: reader.result, imgFile: files });
     };
+
     reader.readAsDataURL(e.target.files[0]);
-    // this.setState({ uploading: true });
 
-    const formData = new FormData();
-
-    files.forEach((file, i) => {
-      formData.append(i, file);
-    })
-
-    // fetch(`${API_URL}/image-upload`, {
-    //   method: 'POST',
-    //   body: formData
-    // })
-    // .then(res => res.json())
-    // .then(images => {
-    //   this.setState({ 
-    //     uploading: false,
-    //     images
-    //   })
-    // })
   }
 
   // TODO: make animation transition on routing using Framer Motion
@@ -379,7 +396,7 @@ class UsersForm extends React.Component {
 
                             {/* TODO: add image to users */}
                             <Form.Control type="file" name="file" onChange={this.handleFileChange} />
-                            <img id="userImg" src="#" alt="your image" name="userImgUpload" />
+                            <img id="userImg" src={this.state.imgSrc} alt="your image" name="userImgUpload" />
 
                             <div className="mt-4">
                               {this.props.priv === "RW" && <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}
