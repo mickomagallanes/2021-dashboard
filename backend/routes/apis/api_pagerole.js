@@ -5,7 +5,10 @@ const utils = require('../../utils/session.js');
 const express = require('express');
 const router = express.Router();
 
-
+/**
+ * check if user is authorized to access frontend page
+ * @param {String} req.body.pagepath path of frontend page
+ */
 router.post('/authorize', async function (req, res, next) {
 
     if (req.session.userData) {

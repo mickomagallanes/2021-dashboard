@@ -50,11 +50,11 @@ class UsersForm extends React.Component {
       confirmPassword: "",
       errorMsg: false,
       imgSrc: "", // base 64 user image
-      imgFile: "", // pure user image file
       // just to not connect the initialValues to main state username to prevent forced reinitialize, used after backend fetch userdata
       formikUsername: ""
     }
 
+    this.imgFile = ""; // pure user image file, for submit image after handling file change
     this.urlParam = props.match.params.id;
 
     // send back to users page when Privilege is Read and accessing add mode
@@ -145,6 +145,7 @@ class UsersForm extends React.Component {
     }
   }
 
+  // submits form using add then returns insertId of user for submit image to use
   submitFormAdd = async () => {
     const param = {
       "username": this.state.username,
@@ -152,27 +153,31 @@ class UsersForm extends React.Component {
       "roleid": this.state.selectedRole,
     }
 
-    try {
-      const resp = await axios.post(
-        addUserURL,
-        param,
-        axiosConfig
-      );
+    return new Promise(async (resolve, reject) => {
+      try {
+        const resp = await axios.post(
+          addUserURL,
+          param,
+          axiosConfig
+        );
 
-      if (resp.data.status === true) {
-        // TODO: create a success alert after adding user or editing
-        this.props.history.push('/users');
-        this.setState({ roleData: resp.data.data });
-      } else {
-        this.setState({ errorMsg: resp.data.msg });
+        if (resp.data.status === true) {
+          // TODO: create a success alert after adding user or editing
+          resolve(resp.data.data.insertId);
+
+        } else {
+          this.setState({ errorMsg: resp.data.msg });
+          resolve(false);
+        }
+
+      } catch (error) {
+        this.setState({ errorMsg: `${error}` });
+        resolve(false);
       }
-
-    } catch (error) {
-      this.setState({ errorMsg: `${error}` });
-    }
-
+    });
   }
 
+  // submits form using edit then returns insertId of user for submit image to use
   submitFormEdit = async () => {
     const param = {
       "username": this.state.username,
@@ -180,26 +185,27 @@ class UsersForm extends React.Component {
       "roleid": this.state.selectedRole,
       "userid": this.urlParam
     }
+    return new Promise(async (resolve, reject) => {
+      try {
+        const resp = await axios.put(
+          editUserURL,
+          param,
+          axiosConfig
+        );
 
-    try {
-      const resp = await axios.put(
-        editUserURL,
-        param,
-        axiosConfig
-      );
+        if (resp.data.status === true) {
+          resolve(true);
 
-      if (resp.data.status === true) {
-        // TODO: create a success alert after adding user or editing
-        this.props.history.push('/users');
-        this.setState({ roleData: resp.data.data });
-      } else {
-        this.setState({ errorMsg: resp.data.msg });
+        } else {
+          this.setState({ errorMsg: resp.data.msg });
+          resolve();
+        }
+
+      } catch (error) {
+        this.setState({ errorMsg: `${error}` });
+        resolve();
       }
-
-    } catch (error) {
-      this.setState({ errorMsg: `${error}` });
-    }
-
+    });
   }
 
   // executes after submitFormAdd or submitFormEdit
@@ -207,31 +213,36 @@ class UsersForm extends React.Component {
   submitImage = async (userId) => {
     const formData = new FormData();
 
-    this.state.imgFile.forEach((file, i) => {
+    this.imgFile.forEach((file, i) => {
       formData.append(i, file);
     })
     formData.append("id", userId);
 
-    try {
-      const resp = await axios.post(
-        uploadImgUserURL,
-        formData,
-        { ...axiosConfig, headers: { 'Content-Type': "multipart/form-data" } } // add new property to axios config
-      );
+    return new Promise(async (resolve, reject) => {
+      try {
+        const resp = await axios.post(
+          uploadImgUserURL,
+          formData,
+          { ...axiosConfig, headers: { 'Content-Type': "multipart/form-data" } } // add new property to axios config
+        );
 
-      if (resp.data.status === true) {
+        if (resp.data.status === true) {
 
-        this.setState({
-          imgSrc: resp.data.path
-        });
-      } else {
+          this.setState({
+            imgSrc: resp.data.path
+          });
+        } else {
 
-        this.setState({ errorMsg: resp.data.msg });
+          this.setState({ errorMsg: resp.data.msg });
+        }
+        // TODO: make image upload and submit successful return and error fix
+        resolve();
+
+      } catch (error) {
+        this.setState({ errorMsg: `${error}` });
+        resolve();
       }
-
-    } catch (error) {
-      this.setState({ errorMsg: `${error}` });
-    }
+    });
   }
 
   handleChangeUsername = async (e, formikProps) => {
@@ -253,11 +264,18 @@ class UsersForm extends React.Component {
     this.setState({ selectedRole: e.target.value, errorMsg: false });
   }
 
-  handleSubmitForm = () => {
+  handleSubmitForm = async () => {
     if (this.isAddMode()) {
-      this.submitFormAdd();
+      let newUserId = await this.submitFormAdd();
+
+      if (newUserId !== false) {
+        await this.submitImage(newUserId);
+      }
+      this.props.history.push('/users');
     } else {
-      this.submitFormEdit();
+      await this.submitFormEdit();
+      await this.submitImage(this.urlParam);
+      this.props.history.push('/users');
     }
   }
 
@@ -265,8 +283,9 @@ class UsersForm extends React.Component {
     const files = Array.from(e.target.files);
 
     const reader = new FileReader();
-    reader.onload = function () {
-      this.setState({ imgSrc: reader.result, imgFile: files });
+    reader.onload = () => {
+      this.setState({ imgSrc: reader.result });
+      this.imgFile = files;
     };
 
     reader.readAsDataURL(e.target.files[0]);
@@ -396,7 +415,7 @@ class UsersForm extends React.Component {
 
                             {/* TODO: add image to users */}
                             <Form.Control type="file" name="file" onChange={this.handleFileChange} />
-                            <img id="userImg" src={this.state.imgSrc} alt="your image" name="userImgUpload" />
+                            <img id="userImg" src={this.state.imgSrc} alt="User Profile" name="userImgUpload" />
 
                             <div className="mt-4">
                               {this.props.priv === "RW" && <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}

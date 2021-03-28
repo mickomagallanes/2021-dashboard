@@ -8,6 +8,11 @@ const { userInsertSchema, userLoginSchema, userGetAllSchema, userModifySchema } 
 const express = require('express');
 const router = express.Router();
 
+/**
+ * get all user rows
+ * @param {number} [req.query.page] page number
+ * @param {number} [req.query.limit] row limit per page
+ */
 router.get('/get/all', [checkSession, userGetAllSchema, authorizeReadRoute], async function (req, res, next) {
 
     let result = await UserService.getAllUser(req.query);
@@ -18,6 +23,10 @@ router.get('/get/all', [checkSession, userGetAllSchema, authorizeReadRoute], asy
     }
 });
 
+/**
+ * get all user rows
+ * @param {number} req.params.id id of user
+ */
 router.get('/get/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
     let result = await UserService.getUserById(req.params.id);
     if (result === false) {
@@ -27,6 +36,9 @@ router.get('/get/:id', [checkSession, authorizeReadRoute], async function (req, 
     }
 });
 
+/**
+ * get  count of all user rows
+ */
 router.get('/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
 
     let result = await UserService.getAllCount();
@@ -59,7 +71,7 @@ router.put('/modify', [checkSession, userModifySchema, authorizeWriteRoute], asy
     if (result === false) {
         res.sendStatus(403);
     } else {
-        res.json({ "status": true, "msg": "Success" });
+        res.json({ "status": true, "msg": "Success", "id": result.insertId });
     }
 });
 
@@ -89,6 +101,7 @@ router.post('/login', userLoginSchema, async function (req, res, next) {
 router.get('/cookie', async function (req, res, next) {
 
     if (req.session.userData) {
+
         res.json({ "status": true, "msg": "Cookie exists" });
     } else {
         utils.clearCookie(res);
@@ -103,31 +116,31 @@ router.get('/cookie', async function (req, res, next) {
 
 // accepts user id and the image within multipart form
 // image name must be "userImgUpload"
-router.post("/upload/img", [checkSession, authorizeWriteRoute, createSingleImageUpload()], (req, res) => {
+router.post("/upload/img", [checkSession, authorizeWriteRoute, createSingleImageUpload()], function (req, res) {
 
     // res.send(req.file);
+    console.log(req.body)
+    // const tempPath = req.file.path;
+    // const targetPath = path.join(__dirname, "public/uploads/tempImg8E1F.png");
 
-    const tempPath = req.file.path;
-    const targetPath = path.join(__dirname, "public/uploads/tempImg8E1F.png");
+    // fs.rename(tempPath, targetPath, async err => {
+    //     if (err) {
+    //         res.json({ "status": false, "msg": err });
+    //     } else {
 
-    fs.rename(tempPath, targetPath, err => {
-        if (err) {
-            res.json({ "status": false, "msg": err });
-        } else {
+    //         // insert user image src to database
+    //         let result = await UserService.modifyUser(req.body);
+    //         if (result === false) {
+    //             res.sendStatus(403);
+    //         } else {
+    //             res.json({ "status": true, "msg": "Success" });
+    //         }
 
-            // insert user image src to database
-            let result = await UserService.modifyUser(req.body);
-            if (result === false) {
-                res.sendStatus(403);
-            } else {
-                res.json({ "status": true, "msg": "Success" });
-            }
-
-            res.json({ "status": true, "msg": "Success", "path": targetPath });
-        }
+    //         res.json({ "status": true, "msg": "Success", "path": targetPath });
+    //     }
 
 
-    });
+    // });
 
 
 

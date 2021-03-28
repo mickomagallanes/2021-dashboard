@@ -14,7 +14,7 @@ function userModifySchema(req, res, next) {
 
     const schema = Joi.object({
         username: Joi.string().max(45).required(),
-        password: Joi.string().min(12).required(),
+        password: Joi.string().min(12).allow('').optional(),
         roleid: Joi.alternatives().try(Joi.number().required(), Joi.string().required()),
         userid: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
     });

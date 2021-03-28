@@ -31,15 +31,24 @@ class UserModel {
      * inserts username and password to the database
      * @param {String} userid id of the user
      * @param {String} username username of the user
-     * @param {String} password plain password of the user
      * @param {String} roleid id from roles table if it is admin, etc
+     * @param {String} [password] plain password of the user
+  
      */
 
-    static async modifyUser(userid, username, password, roleid) {
-        const stmt = `UPDATE Users SET Username = ?, Password = ?, RoleID = ? WHERE UserID = ?`;
+    static async modifyUser(userid, username, roleid, password = "") {
+        let params;
+        let stmt;
+        if (password.length) {
+            stmt = `UPDATE Users SET Username = ?, Password = ?, RoleID = ? WHERE UserID = ?`;
+            params = [username, password, roleid, userid];
+        } else {
+            stmt = `UPDATE Users SET Username = ?, RoleID = ? WHERE UserID = ?`;
+            params = [username, roleid, userid];
+        }
 
         try {
-            const result = await mysql_conn.query(stmt, [username, password, roleid, userid]);
+            const result = await mysql_conn.query(stmt, params);
             return result;
 
         } catch (err) {

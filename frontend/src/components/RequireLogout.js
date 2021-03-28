@@ -20,6 +20,7 @@ const RequireLogout = (Component) => {
         }
 
         checkIfLogout = async () => {
+
             const axiosConfig = {
                 withCredentials: true,
                 timeout: 10000

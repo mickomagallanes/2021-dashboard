@@ -67,9 +67,8 @@ class Pagination extends React.Component {
           }
 
           let pageNumbers = maxPage > 0 && maxPage < 5 ? maxPage : 5;
-
           let arrElem = [];
-          for (let i = pageInterval, n = pageInterval + pageNumbers; i < n; i++) {
+          for (let i = pageInterval, n = 1 + pageNumbers; i < n; i++) {
             let isActive = (currentPage === i) ? "active" : "";
             arrElem.push(<li
               key={i}
@@ -125,8 +124,8 @@ class Pagination extends React.Component {
       <>
         {!maxPage && <Spinner />}
         {!!maxPage &&
-          <nav aria-label="Pagination" className="table-responsive mb-2 d-flex justify-content-center">
-            <ul id="page-numbers" className="pagination">
+          <nav aria-label="Pagination" className="mb-2 d-flex justify-content-center">
+            <ul id="page-numbers" className="pagination flex-wrap">
               {pageConditionals.map(obj => obj.cond())}
             </ul>
           </nav>

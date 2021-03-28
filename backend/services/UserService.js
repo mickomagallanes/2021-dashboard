@@ -80,10 +80,17 @@ class UserService {
       */
 
     static async modifyUser({ userid, username, password, roleid }) {
-        const saltRounds = 10;
+        let ret;
+        if (password.length) {
+            const saltRounds = 10;
 
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-        let ret = await UserModel.modifyUser(userid, username, hashedPassword, roleid);
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+            ret = await UserModel.modifyUser(userid, username, roleid, hashedPassword);
+
+        } else {
+            ret = await UserModel.modifyUser(userid, username, roleid);
+
+        }
 
         return ret;
     }

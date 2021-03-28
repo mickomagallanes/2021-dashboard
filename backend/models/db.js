@@ -7,23 +7,32 @@ class mysql_conn {
     // query with parameters, 
     // if there is ? in sql command, parameters must be specified in array
     static query(cmd, param = []) {
-        return new Promise((resolve, reject) => {
-            this.pool.getConnection(function (err, connection) {
-                if (err) {
-                    reject(err);
-                } else {
-                    connection.query(cmd, param, (err, rows) => {
+        try {
+            return new Promise((resolve, reject) => {
+                this.pool.getConnection(function (err, connection) {
+                    if (err) {
+                        console.log(err);
+                        reject(err);
+                    } else {
+                        connection.query(cmd, param, (err, rows) => {
 
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(rows);
-                        }
-                        connection.release();
-                    });
-                }
+                            if (err) {
+                                console.log(err);
+                                reject(err);
+                            } else {
+                                resolve(rows);
+                            }
+                            connection.release();
+                        });
+                    }
+                });
             });
-        });
+
+        } catch (e) {
+            console.log(e.message);
+            throw new RangeError(e.message);
+        }
+
 
     }
 
@@ -33,26 +42,32 @@ class mysql_conn {
     // query and return rows
     // if there is ? in sql command, parameters must be specified in array
     static rows(qfields = "", tablename = "", wheres = "", where_values = []) {
-        return new Promise((resolve, reject) => {
-            this.pool.getConnection(function (err, connection) {
-                if (err) {
-                    reject(err)
-                } else {
-                    // create select command
-                    let stmt = `SELECT ${qfields} FROM ${tablename} ${wheres};`;
-                    connection.query(stmt, where_values, (err, rows) => {
+        try {
+            return new Promise((resolve, reject) => {
+                this.pool.getConnection(function (err, connection) {
+                    if (err) {
+                        console.log(err);
+                        reject(err)
+                    } else {
+                        // create select command
+                        let stmt = `SELECT ${qfields} FROM ${tablename} ${wheres};`;
+                        connection.query(stmt, where_values, (err, rows) => {
 
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(rows);
-                        }
-                        connection.release();
-                    })
-                }
-            })
-        });
-
+                            if (err) {
+                                console.log(err);
+                                reject(err);
+                            } else {
+                                resolve(rows);
+                            }
+                            connection.release();
+                        })
+                    }
+                })
+            });
+        } catch (e) {
+            console.log(e.message);
+            throw new RangeError(e.message);
+        }
     }
 
     // ===================================================================
@@ -60,36 +75,42 @@ class mysql_conn {
     // query and return rows
     // if there is ? in sql command, parameters must be specified in array
     static insert(tablename = "", datas = {}) {
-        return new Promise((resolve, reject) => {
-            this.pool.getConnection(function (err, connection) {
-                if (err) {
-                    reject(err)
-                } else {
-                    // seperate the array
-                    let columns = "";
-                    let prep_values = "";
-                    let values = [];
-                    for (let key in datas) {
-                        columns += (columns == "") ? "" : ", ";
-                        columns += key;
-                        prep_values += (prep_values == "") ? "" : ", ";
-                        prep_values += "?";
-                        values.push(datas[key]);
-                    }
-                    let sql_str = `INSERT INTO ${tablename}(${columns}) VALUES(${prep_values}) ;`;
-                    connection.query(sql_str, values, (err, rows) => {
-
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(rows);
+        try {
+            return new Promise((resolve, reject) => {
+                this.pool.getConnection(function (err, connection) {
+                    if (err) {
+                        console.log(err);
+                        reject(err)
+                    } else {
+                        // seperate the array
+                        let columns = "";
+                        let prep_values = "";
+                        let values = [];
+                        for (let key in datas) {
+                            columns += (columns == "") ? "" : ", ";
+                            columns += key;
+                            prep_values += (prep_values == "") ? "" : ", ";
+                            prep_values += "?";
+                            values.push(datas[key]);
                         }
-                        connection.release();
-                    })
-                }
-            })
-        });
+                        let sql_str = `INSERT INTO ${tablename}(${columns}) VALUES(${prep_values}) ;`;
+                        connection.query(sql_str, values, (err, rows) => {
 
+                            if (err) {
+                                console.log(err);
+                                reject(err);
+                            } else {
+                                resolve(rows);
+                            }
+                            connection.release();
+                        })
+                    }
+                })
+            });
+        } catch (e) {
+            console.log(e.message);
+            throw new RangeError(e.message);
+        }
     }
 
     // ===================================================================
@@ -97,25 +118,31 @@ class mysql_conn {
     // query and return rows
     // if there is ? in sql command, parameters must be specified in array
     static delete(tablename = "", wheres = "", where_values = []) {
-        return new Promise((resolve, reject) => {
-            this.pool.getConnection(function (err, connection) {
-                if (err) {
-                    reject(err)
-                } else {
-                    let stmt = `DELETE FROM ${tablename} ${wheres}`;
-                    connection.query(stmt, where_values, (err, rows) => {
+        try {
+            return new Promise((resolve, reject) => {
+                this.pool.getConnection(function (err, connection) {
+                    if (err) {
+                        console.log(err);
+                        reject(err)
+                    } else {
+                        let stmt = `DELETE FROM ${tablename} ${wheres}`;
+                        connection.query(stmt, where_values, (err, rows) => {
 
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(rows);
-                        }
-                        connection.release();
-                    })
-                }
-            })
-        });
-
+                            if (err) {
+                                console.log(err);
+                                reject(err);
+                            } else {
+                                resolve(rows);
+                            }
+                            connection.release();
+                        })
+                    }
+                })
+            });
+        } catch (e) {
+            console.log(e.message);
+            throw new RangeError(e.message);
+        }
     }
 
     // ===================================================================
@@ -127,6 +154,7 @@ class mysql_conn {
             return new Promise((resolve, reject) => {
                 this.pool.getConnection(function (err, connection) {
                     if (err) {
+                        console.log(err);
                         reject(err);
                     } else {
                         // seperate the array
@@ -145,6 +173,7 @@ class mysql_conn {
                         connection.query(sql_str, values, (err, rows) => {
 
                             if (err) {
+                                console.log(err);
                                 reject(err);
                             } else {
                                 resolve(rows);
@@ -167,11 +196,13 @@ class mysql_conn {
             return new Promise((resolve, reject) => {
                 this.pool.getConnection(function (err, connection) {
                     if (err) {
+                        console.log(err);
                         reject(err);
                     } else {
                         connection.query(cmd, param, (err, rows) => {
 
                             if (err) {
+                                console.log(err);
                                 reject(err);
                             } else {
                                 resolve(rows.length >= 1);

@@ -2,6 +2,9 @@
 const RouteRoleModel = require('../models/RouteRoleModel.js');
 const utils = require('../utils/session.js');
 
+/**
+ * read if user has read privilege on the route path
+ */
 async function authorizeReadRoute(req, res, next) {
     const userId = req.session.userData.userid;
 
@@ -20,6 +23,9 @@ async function authorizeReadRoute(req, res, next) {
 
 }
 
+/**
+ * read if user has write privilege on the route path
+ */
 async function authorizeWriteRoute(req, res, next) {
     const userId = req.session.userData.userid;
 
@@ -36,6 +42,9 @@ async function authorizeWriteRoute(req, res, next) {
     }
 }
 
+/**
+ * check if user has valid session, if not then clear cookie
+ */
 function checkSession(req, res, next) {
 
     if (req.session.userData) {

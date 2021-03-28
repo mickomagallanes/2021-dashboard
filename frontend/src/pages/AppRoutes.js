@@ -22,6 +22,7 @@ class AppRoutes extends PureComponent {
   }
 
   render() {
+
     return (
 
       <Suspense fallback={<Spinner />}>
@@ -41,6 +42,7 @@ class AppRoutes extends PureComponent {
 }
 
 function LoginContainer() {
+
   return (
 
     <div className="container-fluid page-body-wrapper full-page-wrapper">

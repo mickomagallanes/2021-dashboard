@@ -5,7 +5,9 @@ const { checkSession } = require('../../middlewares/routesauth.js');
 const express = require('express');
 const router = express.Router();
 
-
+/**
+ * get all roles
+ */
 router.get('/get/all', checkSession, async function (req, res, next) {
 
     let result = await RoleService.getAllRoles();
