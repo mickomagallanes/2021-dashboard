@@ -1,4 +1,5 @@
 const multer = require("multer");
+const path = require('path');
 
 function checkFileType(file, cb) {
     // Allowed ext
@@ -16,7 +17,8 @@ function checkFileType(file, cb) {
 }
 
 // TODO: check magic numbers to determine if it is really an image
-function createSingleImageUpload() {
+// @param {String} imgId matches the formdata id for the image
+function createSingleImageUpload(imgId) {
     return (req, res, next) => {
 
         const storage = multer.diskStorage({
@@ -34,7 +36,7 @@ function createSingleImageUpload() {
             fileFilter: function (_req, file, cb) {
                 checkFileType(file, cb);
             }
-        }).single("userImgUpload");
+        }).single(imgId);
 
         upload(req, res, (err) => {
             if (err) {

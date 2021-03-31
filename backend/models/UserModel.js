@@ -30,25 +30,37 @@ class UserModel {
     /**
      * inserts username and password to the database
      * @param {String} userid id of the user
-     * @param {String} username username of the user
-     * @param {String} roleid id from roles table if it is admin, etc
+     * @param {String} [username] username of the user
+     * @param {String} [roleid] id from roles table if it is admin, etc
+     * @param {String} [imagePath] image path of user profile
      * @param {String} [password] plain password of the user
   
      */
 
-    static async modifyUser(userid, username, roleid, password = "") {
-        let params;
-        let stmt;
-        if (password.length) {
-            stmt = `UPDATE Users SET Username = ?, Password = ?, RoleID = ? WHERE UserID = ?`;
-            params = [username, password, roleid, userid];
-        } else {
-            stmt = `UPDATE Users SET Username = ?, RoleID = ? WHERE UserID = ?`;
-            params = [username, roleid, userid];
+    static async modifyUser(userid, username = undefined, roleid = undefined, imagePath = undefined, password = undefined) {
+        let whereParams = [userid];
+        let setObj = {};
+        let stmtWhere = ` WHERE UserID = ?`
+
+        if (username !== undefined) {
+            setObj.Username = username
         }
 
+        if (roleid !== undefined) {
+            setObj.RoleID = roleid;
+        }
+
+        if (password !== undefined) {
+            setObj.Password = password;
+        }
+
+        if (imagePath !== undefined) {
+            setObj.Image = imagePath;
+        }
+
+        console.log(setObj)
         try {
-            const result = await mysql_conn.query(stmt, params);
+            const result = await mysql_conn.update("Users", setObj, stmtWhere, whereParams);
             return result;
 
         } catch (err) {
@@ -110,7 +122,8 @@ class UserModel {
                 b.RoleID as rid,
                 b.RoleName as rname,
                 a.Username as uname,
-                a.UserID as id
+                a.UserID as id,
+                a.Image as img
             FROM
                 Users as a INNER JOIN Roles as b ON a.RoleID = b.RoleID
             WHERE
@@ -135,7 +148,8 @@ class UserModel {
                Password,
                RoleID,
                Username,
-               UserID
+               UserID,
+               Image
             FROM
                 Users
             WHERE

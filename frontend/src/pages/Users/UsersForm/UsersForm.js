@@ -49,7 +49,7 @@ class UsersForm extends React.Component {
       password: "",
       confirmPassword: "",
       errorMsg: false,
-      imgSrc: "", // base 64 user image
+      imgSrc: "", // src of image
       // just to not connect the initialValues to main state username to prevent forced reinitialize, used after backend fetch userdata
       formikUsername: ""
     }
@@ -105,14 +105,15 @@ class UsersForm extends React.Component {
         userURL + this.urlParam,
         axiosConfig
       );
-
+      console.log(resp.data.data)
       if (resp.data.status === true) {
 
         this.setState({
           userData: resp.data.data,
           username: resp.data.data.uname,
           selectedRole: resp.data.data.rid,
-          formikUsername: resp.data.data.uname
+          formikUsername: resp.data.data.uname,
+          imgSrc: resp.data.data.img
         });
       } else {
         // if no user is found, like param as 'add', redirect back to history or user page
@@ -198,12 +199,12 @@ class UsersForm extends React.Component {
 
         } else {
           this.setState({ errorMsg: resp.data.msg });
-          resolve();
+          resolve(false);
         }
 
       } catch (error) {
         this.setState({ errorMsg: `${error}` });
-        resolve();
+        resolve(false);
       }
     });
   }
@@ -212,10 +213,7 @@ class UsersForm extends React.Component {
   // @param {String} userId id of user
   submitImage = async (userId) => {
     const formData = new FormData();
-
-    this.imgFile.forEach((file, i) => {
-      formData.append(i, file);
-    })
+    formData.append("userImgUpload", this.imgFile[0]);
     formData.append("id", userId);
 
     return new Promise(async (resolve, reject) => {
@@ -231,16 +229,17 @@ class UsersForm extends React.Component {
           this.setState({
             imgSrc: resp.data.path
           });
+
+          resolve(true);
         } else {
 
           this.setState({ errorMsg: resp.data.msg });
+          resolve(false);
         }
-        // TODO: make image upload and submit successful return and error fix
-        resolve();
 
       } catch (error) {
         this.setState({ errorMsg: `${error}` });
-        resolve();
+        resolve(false);
       }
     });
   }
@@ -269,13 +268,24 @@ class UsersForm extends React.Component {
       let newUserId = await this.submitFormAdd();
 
       if (newUserId !== false) {
-        await this.submitImage(newUserId);
+        let isImageSuccess = await this.submitImage(newUserId);
+
+        if (isImageSuccess) {
+          this.props.history.push('/users');
+        }
       }
-      this.props.history.push('/users');
+
     } else {
-      await this.submitFormEdit();
-      await this.submitImage(this.urlParam);
-      this.props.history.push('/users');
+      let isEditSuccess = await this.submitFormEdit();
+
+      if (isEditSuccess) {
+        let isImageSuccess = await this.submitImage(this.urlParam);
+
+        if (isImageSuccess) {
+          this.props.history.push('/users');
+        }
+      }
+
     }
   }
 
@@ -338,85 +348,101 @@ class UsersForm extends React.Component {
                               {this.state.errorMsg}
                             </Alert>
 
-                            <Form.Group>
-                              <label htmlFor="username">Username</label>
-                              <Form.Control
-                                value={this.state.username}
-                                type="text"
-                                name="username"
-                                id="username"
-                                placeholder="Username"
-                                autoComplete="username"
-                                onBlur={props.handleBlur}
-                                isInvalid={(props.errors.username && props.touched.username) || this.state.errorMsg}
-                                onChange={(e) => this.handleChangeUsername(e, props)}
-                                disabled={this.props.priv === "R"}
-                              />
-                              <Form.Control.Feedback type="invalid">
-                                {this.state.errorMsg ? null : props.errors.username}
-                              </Form.Control.Feedback>
-                            </Form.Group>
+                            <div className="row">
+                              <div className="col">
+                                <Form.Group>
+                                  <label htmlFor="username">Username</label>
+                                  <Form.Control
+                                    value={this.state.username}
+                                    type="text"
+                                    name="username"
+                                    id="username"
+                                    placeholder="Username"
+                                    autoComplete="username"
+                                    onBlur={props.handleBlur}
+                                    isInvalid={(props.errors.username && props.touched.username) || this.state.errorMsg}
+                                    onChange={(e) => this.handleChangeUsername(e, props)}
+                                    disabled={this.props.priv === "R"}
+                                  />
+                                  <Form.Control.Feedback type="invalid">
+                                    {this.state.errorMsg ? null : props.errors.username}
+                                  </Form.Control.Feedback>
+                                </Form.Group>
+                              </div>
+                            </div>
 
                             { // dont show password fields if Privilege is READ
                               this.props.priv === "RW"
                               &&
                               <>
-                                <Form.Group>
-                                  <label htmlFor="password">{!this.isAddMode() && '(Optional) Create New '}Password</label>
-                                  <Form.Control
-                                    value={this.state.password}
-                                    type="password"
-                                    name="password"
-                                    id="password"
-                                    placeholder="Password"
-                                    autoComplete="current-password"
-                                    onBlur={props.handleBlur}
-                                    isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg}
-                                    onChange={(e) => this.handleChangePassword(e, props)}
-                                  />
+                                <div className="row">
+                                  <div className="col">
+                                    <Form.Group>
+                                      <label htmlFor="password">{!this.isAddMode() && '(Optional) Create New '}Password</label>
+                                      <Form.Control
+                                        value={this.state.password}
+                                        type="password"
+                                        name="password"
+                                        id="password"
+                                        placeholder="Password"
+                                        autoComplete="current-password"
+                                        onBlur={props.handleBlur}
+                                        isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg}
+                                        onChange={(e) => this.handleChangePassword(e, props)}
+                                      />
 
-                                  <Form.Control.Feedback type="invalid">
-                                    {/* put null to prevent showing error message from backend to each input boxes */}
-                                    {this.state.errorMsg ? null : props.errors.password}
-                                  </Form.Control.Feedback>
-                                </Form.Group>
+                                      <Form.Control.Feedback type="invalid">
+                                        {/* put null to prevent showing error message from backend to each input boxes */}
+                                        {this.state.errorMsg ? null : props.errors.password}
+                                      </Form.Control.Feedback>
+                                    </Form.Group>
+                                  </div>
+                                </div>
+                                <div className="row">
+                                  <div className="col">
+                                    <Form.Group>
+                                      <label htmlFor="confirmPassword">{!this.isAddMode() && '(Optional) '}Confirm Password</label>
+                                      <Form.Control
+                                        value={this.state.confirmPassword}
+                                        type="password"
+                                        name="confirmPassword"
+                                        id="confirmPassword"
+                                        placeholder="Confirm Password"
 
-                                <Form.Group>
-                                  <label htmlFor="confirmPassword">{!this.isAddMode() && '(Optional) '}Confirm Password</label>
-                                  <Form.Control
-                                    value={this.state.confirmPassword}
-                                    type="password"
-                                    name="confirmPassword"
-                                    id="confirmPassword"
-                                    placeholder="Confirm Password"
-
-                                    onBlur={props.handleBlur}
-                                    isInvalid={(props.errors.confirmPassword && props.touched.confirmPassword) || this.state.errorMsg}
-                                    onChange={(e) => this.handleChangeConfirm(e, props)}
-                                  />
-                                  <Form.Control.Feedback type="invalid">
-                                    {this.state.errorMsg ? null : props.errors.confirmPassword}
-                                  </Form.Control.Feedback>
-                                </Form.Group>
+                                        onBlur={props.handleBlur}
+                                        isInvalid={(props.errors.confirmPassword && props.touched.confirmPassword) || this.state.errorMsg}
+                                        onChange={(e) => this.handleChangeConfirm(e, props)}
+                                      />
+                                      <Form.Control.Feedback type="invalid">
+                                        {this.state.errorMsg ? null : props.errors.confirmPassword}
+                                      </Form.Control.Feedback>
+                                    </Form.Group>
+                                  </div>
+                                </div>
                               </>
                             }
-
-                            <label htmlFor="roleSelect">Role</label>
-                            <Select
-                              id="roleSelect"
-                              value={this.state.selectedRole}
-                              data={this.state.roleData}
-                              className="form-control btn"
-                              idKey="RoleID"
-                              valueKey="RoleName"
-                              onChange={(e) => this.handleChangeRole(e)}
-                              disabled={this.props.priv === "R"}
-                            ></Select>
-
-                            {/* TODO: add image to users */}
-                            <Form.Control type="file" name="file" onChange={this.handleFileChange} />
-                            <img id="userImg" src={this.state.imgSrc} alt="User Profile" name="userImgUpload" />
-
+                            <div className="row mb-4">
+                              <div className="col">
+                                <label htmlFor="roleSelect">Role</label>
+                                <Select
+                                  id="roleSelect"
+                                  value={this.state.selectedRole}
+                                  data={this.state.roleData}
+                                  className="form-control btn"
+                                  idKey="RoleID"
+                                  valueKey="RoleName"
+                                  onChange={(e) => this.handleChangeRole(e)}
+                                  disabled={this.props.priv === "R"}
+                                ></Select>
+                              </div>
+                            </div>
+                            <div className="row">
+                              <div className="col">
+                                {/* TODO: add image to users */}
+                                <Form.Control type="file" name="file" onChange={this.handleFileChange} />
+                                <img className="img-fluid" id="userImg" src={this.state.imgSrc} alt="User Profile" name="userImgUpload" />
+                              </div>
+                            </div>
                             <div className="mt-4">
                               {this.props.priv === "RW" && <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}
 

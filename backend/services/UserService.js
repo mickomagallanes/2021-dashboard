@@ -35,7 +35,9 @@ class UserService {
 
     static async getUserById(id) {
         let ret = await UserModel.getUserById(id);
+
         if (ret.length) {
+            ret[0].img = `/public/uploads/${ret[0].img}`;
             return ret[0];
         } else {
             return false;
@@ -79,16 +81,16 @@ class UserService {
       * @param {String} roleid id from roles table if it is admin, etc
       */
 
-    static async modifyUser({ userid, username, password, roleid }) {
+    static async modifyUser({ userid, username, password, roleid, imagePath }) {
         let ret;
-        if (password.length) {
+        if (password !== undefined && password.length) {
             const saltRounds = 10;
 
             const hashedPassword = await bcrypt.hash(password, saltRounds);
-            ret = await UserModel.modifyUser(userid, username, roleid, hashedPassword);
+            ret = await UserModel.modifyUser(userid, username, roleid, imagePath, hashedPassword);
 
         } else {
-            ret = await UserModel.modifyUser(userid, username, roleid);
+            ret = await UserModel.modifyUser(userid, username, roleid, imagePath);
 
         }
 

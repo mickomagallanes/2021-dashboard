@@ -7,6 +7,8 @@ const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../..
 const { userInsertSchema, userLoginSchema, userGetAllSchema, userModifySchema } = require('../../middlewares/validator.js');
 const express = require('express');
 const router = express.Router();
+const path = require('path');
+const fs = require('fs');
 
 /**
  * get all user rows
@@ -111,40 +113,24 @@ router.get('/cookie', async function (req, res, next) {
 
 });
 
-//TODO: make image upload
+//TODO: delete current image stored on user row if replaced by new
 
 
 // accepts user id and the image within multipart form
 // image name must be "userImgUpload"
-router.post("/upload/img", [checkSession, authorizeWriteRoute, createSingleImageUpload()], function (req, res) {
+router.post("/upload/img", [checkSession, authorizeWriteRoute, createSingleImageUpload("userImgUpload")], async function (req, res, next) {
 
-    // res.send(req.file);
-    console.log(req.body)
-    // const tempPath = req.file.path;
-    // const targetPath = path.join(__dirname, "public/uploads/tempImg8E1F.png");
+    let fileName = req.file.filename;
+    let result = await UserService.modifyUser({ "imagePath": fileName, "userid": req.body.id });
 
-    // fs.rename(tempPath, targetPath, async err => {
-    //     if (err) {
-    //         res.json({ "status": false, "msg": err });
-    //     } else {
+    if (result === false) {
+        res.json({ "status": false, "msg": "Error on inserting user image filename occurred" });
+    } else {
+        let filePath = `/public/uploads/${fileName}`;
 
-    //         // insert user image src to database
-    //         let result = await UserService.modifyUser(req.body);
-    //         if (result === false) {
-    //             res.sendStatus(403);
-    //         } else {
-    //             res.json({ "status": true, "msg": "Success" });
-    //         }
+        res.json({ "status": true, "msg": "Success", "path": filePath });
+    }
 
-    //         res.json({ "status": true, "msg": "Success", "path": targetPath });
-    //     }
-
-
-    // });
-
-
-
-}
-);
+});
 
 module.exports = router;
