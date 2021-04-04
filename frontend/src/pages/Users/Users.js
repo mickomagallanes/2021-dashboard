@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom';
 import Pagination from '../../components/Pagination/Pagination';
 import { Alert } from 'react-bootstrap';
 
-const userURL = "http://localhost:3000/API/user/get/all";
-const userCountURL = "http://localhost:3000/API/user/get/all/count";
+const userURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/user/get/all`;
+const userCountURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/user/get/all/count`;
 
 class Users extends React.Component {
 

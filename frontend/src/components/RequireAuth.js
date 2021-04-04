@@ -4,7 +4,7 @@ import axios from 'axios';
 import { retryRequest } from "../helpers/utils";
 import Spinner from '../components/Spinner/Spinner';
 
-const pageRoleURL = "http://localhost:3000/API/pagerole/authorize";
+const pageRoleURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/pagerole/authorize`;
 
 const RequireAuth = (Component, apiURL = false) => {
 

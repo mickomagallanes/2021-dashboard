@@ -37,7 +37,7 @@ class UserService {
         let ret = await UserModel.getUserById(id);
 
         if (ret.length) {
-            ret[0].img = `/public/uploads/${ret[0].img}`;
+            ret[0].img = `/uploads/${ret[0].img}`;
             return ret[0];
         } else {
             return false;

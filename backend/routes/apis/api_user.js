@@ -113,14 +113,22 @@ router.get('/cookie', async function (req, res, next) {
 
 });
 
-//TODO: delete current image stored on user row if replaced by new
-
-
 // accepts user id and the image within multipart form
 // image name must be "userImgUpload"
 router.post("/upload/img", [checkSession, authorizeWriteRoute, createSingleImageUpload("userImgUpload")], async function (req, res, next) {
 
     let fileName = req.file.filename;
+
+    // delete current img stored, to free space
+    let currentImgObj = await UserService.getUserById(req.body.id);
+
+    if (currentImgObj.img) {
+        fs.unlink("public/" + currentImgObj.img, function (err) {
+            if (err) return console.log(err);
+            console.log('file deleted successfully');
+        });
+    }
+
     let result = await UserService.modifyUser({ "imagePath": fileName, "userid": req.body.id });
 
     if (result === false) {

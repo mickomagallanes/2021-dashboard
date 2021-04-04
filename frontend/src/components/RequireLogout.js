@@ -4,7 +4,7 @@ import axios from 'axios';
 import { retryRequest } from "../helpers/utils";
 import Spinner from './Spinner/Spinner';
 
-const pageRoleURL = "http://localhost:3000/API/user/cookie";
+const pageRoleURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/user/cookie`;
 
 const RequireLogout = (Component) => {
 

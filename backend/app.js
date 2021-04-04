@@ -41,7 +41,7 @@ app.use(limiter.perMinuteLimit);
 // })
 
 app.use(cors({
-  origin: 'http://localhost:3006',
+  origin: `http://${process.env.FRONTEND_HOST}:3006`,
   methods: 'GET,HEAD,POST,PUT',
   preflightContinue: false,
   credentials: true
@@ -55,7 +55,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("53l3po$@lAr93E$!a&G3lE54"));
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
   genid: function (req) {
@@ -76,7 +76,7 @@ app.use(session({
 
 app.use('/api', apiRouter);
 
-app.use('/static', checkSession, express.static(__dirname + '/public'));
+app.use('/uploads', checkSession, express.static(path.join(__dirname, 'public/uploads')));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

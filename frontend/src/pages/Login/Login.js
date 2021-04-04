@@ -15,7 +15,7 @@ const schema = yup.object().shape({
   password: yup.string().required('Required')
 });
 
-const loginURL = "http://localhost:3000/API/user/login";
+const loginURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/user/login`;
 
 class Login extends React.Component {
 

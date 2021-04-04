@@ -9,11 +9,12 @@ import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
 
-const userURL = "http://localhost:3000/API/user/get/";
-const roleURL = "http://localhost:3000/API/role/get/all";
-const addUserURL = "http://localhost:3000/API/user/insert";
-const editUserURL = "http://localhost:3000/API/user/modify";
-const uploadImgUserURL = "http://localhost:3000/API/user/upload/img";
+const userURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/user/get/`;
+const roleURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/role/get/all`;
+const addUserURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/user/insert`;
+const editUserURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/user/modify`;
+const uploadImgUserURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/user/upload/img`;
+const imgSrcMainPath = `http://${process.env.REACT_APP_BACKEND_HOST}:3000`;
 
 const axiosConfig = {
   withCredentials: true,
@@ -37,7 +38,6 @@ function equalTo(ref, msg) {
 yup.addMethod(yup.string, 'equalTo', equalTo);
 
 class UsersForm extends React.Component {
-  // TODO: make add and edit functionality
 
   constructor(props) {
     super();
@@ -105,7 +105,7 @@ class UsersForm extends React.Component {
         userURL + this.urlParam,
         axiosConfig
       );
-      console.log(resp.data.data)
+
       if (resp.data.status === true) {
 
         this.setState({
@@ -113,7 +113,7 @@ class UsersForm extends React.Component {
           username: resp.data.data.uname,
           selectedRole: resp.data.data.rid,
           formikUsername: resp.data.data.uname,
-          imgSrc: resp.data.data.img
+          imgSrc: imgSrcMainPath + resp.data.data.img
         });
       } else {
         // if no user is found, like param as 'add', redirect back to history or user page
