@@ -67,6 +67,7 @@ body {
   background: $content-bg;
   padding: $content-padding;
   width: 100%;
+  min-height: 100vh;
   @include flex-grow(1);
 }
 

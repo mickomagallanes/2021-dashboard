@@ -1,0 +1,15 @@
+/* Miscellanoeous */
+
+$content-bg-light: #fafafb;
+$body-color-light: #000000;
+
+.light-theme > div{
+  .main-panel {
+    .content-wrapper { 
+      background: $content-bg-light;
+    }
+    .page-title {
+      color: $body-color-light;
+    }
+  }
+}
