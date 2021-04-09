@@ -6,6 +6,7 @@ import logo from "../../assets/images/logo.svg";
 import logoMini from '../../assets/images/logo-mini.svg';
 import profPic from '../../assets/images/faces/face15.jpg';
 
+//TODO: make profile pic sidebar
 
 class Sidebar extends React.Component {
 

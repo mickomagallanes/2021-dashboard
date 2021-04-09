@@ -3,7 +3,6 @@ import { Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { Trans } from 'react-i18next';
 import logoMini from '../../assets/images/logo-mini.svg';
-import profPic from '../../assets/images/faces/face15.jpg';
 import Select from '../Select/Select';
 import { connect } from 'react-redux';
 import { THEMES } from '../../helpers/constants';
