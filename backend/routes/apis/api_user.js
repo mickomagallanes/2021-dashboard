@@ -93,7 +93,7 @@ router.post('/login', userLoginSchema, async function (req, res, next) {
         } else {
             req.session.userData = result.data;
 
-            res.json({ "status": true, "msg": "Login successful" });
+            res.json({ "status": true, "msg": "Login successful", "data": result.data });
         }
     }
 

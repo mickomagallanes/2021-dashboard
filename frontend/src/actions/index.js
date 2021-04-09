@@ -6,5 +6,15 @@ const themeChange = (theme) => {
     };
 }
 
+const profileChange = (userName, userImg) => {
+    return {
+        type: "PROFILECHANGE",
+        payload: { username: userName, userimg: userImg }
+    };
+}
 
-export { themeChange }
+
+export {
+    themeChange,
+    profileChange
+}

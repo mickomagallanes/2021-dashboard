@@ -9,8 +9,14 @@ import { connect } from 'react-redux';
 import { THEMES } from '../../helpers/constants';
 import { themeChange } from '../../actions';
 
+const imgSrcMainPath = `http://${process.env.REACT_APP_BACKEND_HOST}:3000`;
+
 const mapStateToProps = (state) => {
-  return { theme: state.themeReducer.theme };
+  return {
+    theme: state.themeReducer.theme,
+    username: state.profileReducer.username,
+    userimg: state.profileReducer.userimg
+  };
 };
 
 const mapDispatchToProps = (dispatch) => {
@@ -20,6 +26,11 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 class Navbar extends React.Component {
+  constructor(props) {
+    super();
+    this.userImg = imgSrcMainPath + props.userimg;
+  }
+
   toggleOffcanvas() {
     document.querySelector('.sidebar-offcanvas').classList.toggle('active');
   }
@@ -211,8 +222,8 @@ class Navbar extends React.Component {
             <Dropdown alignRight as="li" className="nav-item">
               <Dropdown.Toggle as="a" className="nav-link cursor-pointer no-caret">
                 <div className="navbar-profile">
-                  <img className="img-xs rounded-circle" src={profPic} alt="profile" />
-                  <p className="mb-0 d-none d-sm-block navbar-profile-name"><Trans>Henry Klein</Trans></p>
+                  <img className="img-xs rounded-circle" src={this.userImg} alt="profile" />
+                  <p className="mb-0 d-none d-sm-block navbar-profile-name"><Trans>{this.props.username}</Trans></p>
                   <i className="mdi mdi-menu-down d-none d-sm-block"></i>
                 </div>
               </Dropdown.Toggle>

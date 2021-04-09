@@ -9,6 +9,18 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { retryRequest } from "../../helpers/utils";
 import { withRouter } from 'react-router-dom';
+import { profileChange } from '../../actions';
+import { connect } from 'react-redux';
+
+const mapStateToProps = (state) => {
+  return { userName: state.profileReducer.userName, userImg: state.profileReducer.userImg };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return ({
+    changeProfile: (userName, userImg) => { dispatch(profileChange(userName, userImg)) }
+  })
+}
 
 const schema = yup.object().shape({
   username: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
@@ -43,6 +55,8 @@ class Login extends React.Component {
       );
 
       if (resp.data.status === true) {
+        let { data } = resp;
+        this.props.changeProfile(data.data.uname, data.data.uimage);
         this.props.history.push('/home');
       } else {
         this.setState({ errorMsg: resp.data.msg });
@@ -137,4 +151,4 @@ class Login extends React.Component {
 
 }
 
-export default withRouter(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Login));;

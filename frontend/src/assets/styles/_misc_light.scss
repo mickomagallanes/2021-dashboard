@@ -11,5 +11,24 @@ $body-color-light: #000000;
     .page-title {
       color: $body-color-light;
     }
+
+    .page-header {
+      background: $content-bg-light;
+      color: $body-color-light;
+      border-color: $body-color-light;
+      > * {
+        background: $content-bg-light;
+        color: $body-color-light;
+        border-color: $body-color-light;
+      }
+      > a {
+          &:hover {
+            color: #ffffff;
+            border-color: #ffffff;
+            background: #000000;
+          }
+      }
+    }
   }
 }
+
