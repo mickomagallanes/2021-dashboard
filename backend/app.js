@@ -41,7 +41,7 @@ app.use(limiter.perMinuteLimit);
 // })
 
 app.use(cors({
-  origin: `http://${process.env.FRONTEND_HOST}:3006`,
+  origin: `${process.env.FRONTEND_HOST}`,
   methods: 'GET,HEAD,POST,PUT',
   preflightContinue: false,
   credentials: true

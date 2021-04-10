@@ -9,12 +9,12 @@ import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
 
-const userURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/user/get/`;
-const roleURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/role/get/all`;
-const addUserURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/user/insert`;
-const editUserURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/user/modify`;
-const uploadImgUserURL = `http://${process.env.REACT_APP_BACKEND_HOST}:3000/API/user/upload/img`;
-const imgSrcMainPath = `http://${process.env.REACT_APP_BACKEND_HOST}:3000`;
+const userURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/`;
+const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
+const addUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/insert`;
+const editUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/modify`;
+const uploadImgUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/upload/img`;
+const imgSrcMainPath = `${process.env.REACT_APP_BACKEND_HOST}`;
 
 const axiosConfig = {
   withCredentials: true,

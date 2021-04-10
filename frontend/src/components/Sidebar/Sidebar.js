@@ -4,15 +4,27 @@ import { Collapse, Dropdown } from 'react-bootstrap';
 import { Trans } from 'react-i18next';
 import logo from "../../assets/images/logo.svg";
 import logoMini from '../../assets/images/logo-mini.svg';
-import profPic from '../../assets/images/faces/face15.jpg';
+import { connect } from 'react-redux';
 
-//TODO: make profile pic sidebar
+const imgSrcMainPath = `${process.env.REACT_APP_BACKEND_HOST}`;
+
+const mapStateToProps = (state) => {
+  return {
+    username: state.profileReducer.username,
+    userimg: state.profileReducer.userimg
+  };
+};
+
 
 class Sidebar extends React.Component {
+  constructor(props) {
+    super();
+    this.state = {
+      isSidebarActive: false
+    };
+    this.userImg = imgSrcMainPath + props.userimg;
+  }
 
-  state = {
-    isSidebarActive: false
-  };
 
   toggleMenuState(menuState) {
     if (this.state[menuState]) {
@@ -70,11 +82,11 @@ class Sidebar extends React.Component {
             <div className="profile-desc">
               <div className="profile-pic">
                 <div className="count-indicator">
-                  <img className="img-xs rounded-circle " src={profPic} alt="profile" />
+                  <img className="img-xs rounded-circle " src={this.userImg} alt="profile" />
                   <span className="count bg-success"></span>
                 </div>
                 <div className="profile-name">
-                  <h5 className="mb-0 font-weight-normal"><Trans>Henry Klein</Trans></h5>
+                  <h5 className="mb-0 font-weight-normal"><Trans>{this.props.username}</Trans></h5>
                   <span><Trans>Gold Member</Trans></span>
                 </div>
               </div>
@@ -297,4 +309,4 @@ class Sidebar extends React.Component {
 
 }
 
-export default withRouter(Sidebar);
+export default connect(mapStateToProps)(withRouter(Sidebar));

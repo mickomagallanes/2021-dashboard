@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { THEMES } from '../../helpers/constants';
 import { themeChange } from '../../actions';
 
-const imgSrcMainPath = `http://${process.env.REACT_APP_BACKEND_HOST}:3000`;
+const imgSrcMainPath = `${process.env.REACT_APP_BACKEND_HOST}`;
 
 const mapStateToProps = (state) => {
   return {
