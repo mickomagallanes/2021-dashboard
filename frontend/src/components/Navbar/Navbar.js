@@ -7,8 +7,15 @@ import Select from '../Select/Select';
 import { connect } from 'react-redux';
 import { THEMES } from '../../helpers/constants';
 import { themeChange } from '../../actions';
+import axios from 'axios';
 
 const imgSrcMainPath = `${process.env.REACT_APP_BACKEND_HOST}`;
+const logoutPath = `${process.env.REACT_APP_BACKEND_HOST}/API/user/logout`;
+
+const axiosConfig = {
+  withCredentials: true,
+  timeout: 10000
+}
 
 const mapStateToProps = (state) => {
   return {
@@ -35,6 +42,23 @@ class Navbar extends React.Component {
   }
   toggleRightSidebar() {
     document.querySelector('.right-sidebar').classList.toggle('open');
+  }
+
+  logout = async () => {
+    try {
+      let ret = await axios.post(
+        logoutPath,
+        {},
+        axiosConfig
+      );
+
+      if (ret.data.status == true) {
+        window.location = '/login';
+      }
+    } catch (error) {
+      this.setState({ errorMsg: `${error}` });
+    }
+
   }
   render() {
     return (
@@ -248,7 +272,7 @@ class Navbar extends React.Component {
                     </div>
                   </div>
                   <div className="preview-item-content">
-                    <p className="preview-subject mb-1"><Trans>Log Out</Trans></p>
+                    <p className="preview-subject mb-1" onClick={this.logout}><Trans>Log Out</Trans></p>
                   </div>
                 </Dropdown.Item>
                 <Dropdown.Divider />

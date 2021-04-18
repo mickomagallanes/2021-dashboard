@@ -99,6 +99,17 @@ router.post('/login', userLoginSchema, async function (req, res, next) {
 
 });
 
+router.post('/logout', async function (req, res, next) {
+    if (req.session.userData) {
+        req.session.destroy();
+        utils.clearCookie(res);
+        res.json({ "status": true, "msg": "Successfully Logged out" });
+    } else {
+        res.json({ "status": false, "msg": "Already logged out" });
+    }
+
+});
+
 // check if user cookie exists
 router.get('/cookie', async function (req, res, next) {
 
