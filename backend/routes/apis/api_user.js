@@ -134,12 +134,12 @@ router.post("/upload/img", [checkSession, authorizeWriteRoute, createSingleImage
     let currentImgObj = await UserService.getUserById(req.body.id);
 
     if (currentImgObj.img) {
-        fs.unlink("public/" + currentImgObj.img, function (err) {
+        fs.unlink("public" + currentImgObj.img, function (err) {
             if (err) return console.log(err);
-            console.log('file deleted successfully');
+            console.log('File deleted successfully');
         });
     }
-
+    console.log(req.body.id)
     let result = await UserService.modifyUser({ "imagePath": fileName, "userid": req.body.id });
 
     if (result === false) {

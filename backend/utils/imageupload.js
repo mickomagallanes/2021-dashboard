@@ -1,7 +1,11 @@
 const multer = require("multer");
+const multer2 = require("multer");
 const path = require('path');
+const FileType = require('file-type');
+const fs = require('fs')
 
-function checkFileType(file, cb) {
+async function checkFileType(file, res, next) {
+
     // Allowed ext
     const filetypes = /jpeg|jpg|png|gif/;
     // Check ext
@@ -9,11 +13,44 @@ function checkFileType(file, cb) {
     // Check mime
     const mimetype = filetypes.test(file.mimetype);
 
-    if (mimetype && extname) {
-        return cb(null, true);
-    } else {
-        cb('Error: Images Only!');
+    if (!(mimetype && extname)) {
+        res.json({ "status": false, "msg": 'Error: Images Only!' });
     }
+
+    const newFileName = file.filename;
+
+    const oldPath = `tmp/${newFileName}`;
+    const newPath = `public/uploads/${newFileName}`;
+
+    // check file type with magic number
+    const fileTypeDeep = await FileType.fromFile(oldPath);
+    let isValidFile;
+
+    if (fileTypeDeep != undefined) {
+        isValidFile = filetypes.test(fileTypeDeep.ext);
+    }
+
+    if (isValidFile) {
+        // move from tmp to public/uploads
+        fs.rename(oldPath, newPath, function (err) {
+            if (err) {
+                res.json({ "status": false, "msg": err });
+            } else {
+                next();
+            }
+
+        })
+    } else {
+        fs.unlink(oldPath, function (err) {
+            if (err) { console.log(err); }
+            else {
+                res.json({ "status": false, "msg": "File Type is invalid" });
+            }
+        });
+
+    }
+
+
 }
 
 // TODO: check magic numbers to determine if it is really an image
@@ -21,31 +58,31 @@ function checkFileType(file, cb) {
 function createSingleImageUpload(imgId) {
     return (req, res, next) => {
 
+        // upload temporary image
         const storage = multer.diskStorage({
             destination: function (req, file, cb) {
-                cb(null, 'public/uploads')
+                cb(null, 'tmp');
             },
             filename: (req, file, cb) => {
-                cb(null, Date.now() + '-' + file.originalname)
+                let newFileName = Date.now() + '-' + file.originalname;
+                cb(null, newFileName);
             }
         })
 
         const upload = multer({
             storage: storage,
-            limits: { fileSize: 5 * 1024 * 1024 },
-            fileFilter: function (_req, file, cb) {
-                checkFileType(file, cb);
-            }
+            limits: { fileSize: 5 * 1024 * 1024 }
         }).single(imgId);
 
         upload(req, res, (err) => {
             if (err) {
                 res.json({ "status": false, "msg": err });
             } else {
-                next();
+                checkFileType(req.file, res, next);
             }
 
         });
+
     }
 
 
