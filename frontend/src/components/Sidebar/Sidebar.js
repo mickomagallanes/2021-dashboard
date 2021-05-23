@@ -5,16 +5,30 @@ import { Trans } from 'react-i18next';
 import logo from "../../assets/images/logo.svg";
 import logoMini from '../../assets/images/logo-mini.svg';
 import { connect } from 'react-redux';
+import { sidebarChange } from '../../actions';
+import axios from 'axios';
 
 const imgSrcMainPath = `${process.env.REACT_APP_BACKEND_HOST}`;
+const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/getPageByRole`;
+
+const axiosConfig = {
+  withCredentials: true,
+  timeout: 10000
+}
 
 const mapStateToProps = (state) => {
   return {
     username: state.profileReducer.username,
-    userimg: state.profileReducer.userimg
+    userimg: state.profileReducer.userimg,
+    sidebarData: state.sidebarReducer.sidebarData
   };
 };
 
+const mapDispatchToProps = (dispatch) => {
+  return ({
+    changeSidebar: (sidebarData) => { dispatch(sidebarChange(sidebarData)) }
+  })
+}
 
 class Sidebar extends React.Component {
   constructor(props) {
@@ -23,6 +37,30 @@ class Sidebar extends React.Component {
       isSidebarActive: false
     };
     this.userImg = imgSrcMainPath + props.userimg;
+    this.sidebarData = props.sidebarData;
+
+  }
+
+  // move fetchSidebar to root
+  fetchSidebarData = async () => {
+    try {
+      const resp = await axios.get(
+        pagesByRoleUrl,
+        axiosConfig
+      );
+
+      if (resp.data.status === true) {
+        this.props.changeSidebar(resp.data.data);
+
+      } else {
+        // if no sidebar data is found
+
+      }
+
+    } catch (error) {
+      console.log(error)
+      // retryRequest(this.fetchUserData);
+    }
   }
 
 
@@ -37,6 +75,30 @@ class Sidebar extends React.Component {
       });
       this.setState({ [menuState]: true });
     }
+  }
+
+
+  componentDidMount() {
+    this.onRouteChanged();
+    // add class 'hover-open' to sidebar navitem while hover in sidebar-icon-only menu
+    const body = document.querySelector('body');
+    document.querySelectorAll('.sidebar .nav-item').forEach((el) => {
+
+      el.addEventListener('mouseover', function () {
+        if (body.classList.contains('sidebar-icon-only')) {
+          el.classList.add('hover-open');
+        }
+      });
+      el.addEventListener('mouseout', function () {
+        if (body.classList.contains('sidebar-icon-only')) {
+          el.classList.remove('hover-open');
+        }
+      });
+    });
+    if (this.sidebarData.length) {
+      this.fetchSidebarData();
+    }
+
   }
 
   componentDidUpdate(prevProps) {
@@ -70,6 +132,7 @@ class Sidebar extends React.Component {
 
   }
 
+  //TODO: render Sidebar based on PageRoles of User, also add custom privilege for each User
   render() {
     return (
       <nav className="sidebar sidebar-offcanvas" id="sidebar">
@@ -131,27 +194,18 @@ class Sidebar extends React.Component {
               </Dropdown>
             </div>
           </li>
+
           <li className="nav-item nav-category">
             <span className="nav-link"><Trans>Navigation</Trans></span>
           </li>
-          <li className={this.isPathActive('/home') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
-            <Link className="nav-link" to="/home">
-              <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
-              <span className="menu-title"><Trans>Dashboard</Trans></span>
-            </Link>
-          </li>
-          <li className={this.isPathActive('/dashboard') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
-            <Link className="nav-link" to="/users">
-              <span className="menu-icon"><i className="mdi mdi-table"></i></span>
-              <span className="menu-title"><Trans>Users</Trans></span>
-            </Link>
-          </li>
-          <li className={this.isPathActive('/dashboard') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
-            <Link className="nav-link" to="/login">
-              <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
-              <span className="menu-title"><Trans>Login</Trans></span>
-            </Link>
-          </li>
+          {(this.sidebarData.length) && this.sidebarData.map(item =>
+            <li key={`${item.PagePath}`} className={this.isPathActive(`${item.PagePath}`) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
+              <Link className="nav-link" key={`${item.PagePath}`} to={`${item.PagePath}`}>
+                <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
+                <span className="menu-title"><Trans>{item.PageName}</Trans></span>
+              </Link>
+            </li>)}
+
           <li className={this.isPathActive('/basic-ui') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
             <div className={this.state.basicUiMenuOpen ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState('basicUiMenuOpen')} data-toggle="collapse">
               <span className="menu-icon">
@@ -288,25 +342,6 @@ class Sidebar extends React.Component {
     return this.props.location.pathname.startsWith(path);
   }
 
-  componentDidMount() {
-    this.onRouteChanged();
-    // add class 'hover-open' to sidebar navitem while hover in sidebar-icon-only menu
-    const body = document.querySelector('body');
-    document.querySelectorAll('.sidebar .nav-item').forEach((el) => {
-
-      el.addEventListener('mouseover', function () {
-        if (body.classList.contains('sidebar-icon-only')) {
-          el.classList.add('hover-open');
-        }
-      });
-      el.addEventListener('mouseout', function () {
-        if (body.classList.contains('sidebar-icon-only')) {
-          el.classList.remove('hover-open');
-        }
-      });
-    });
-  }
-
 }
 
-export default connect(mapStateToProps)(withRouter(Sidebar));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Sidebar));

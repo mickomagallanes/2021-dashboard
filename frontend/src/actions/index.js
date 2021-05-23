@@ -13,8 +13,15 @@ const profileChange = (userName, userImg) => {
     };
 }
 
+const sidebarChange = (sidebarData) => {
+    return {
+        type: "SIDEBARCHANGE",
+        payload: sidebarData
+    };
+}
 
 export {
     themeChange,
-    profileChange
+    profileChange,
+    sidebarChange
 }

@@ -22,6 +22,19 @@ class PageRoleService {
         return { status: false }
     }
 
+    /**
+    *  get pages based on logged-in user role
+    * @param {Number} userId id of the user
+    */
+    static async getPagesByRole(userId) {
+        let pagesArr = await PageRoleModel.getPagesByRole(userId);
+
+        if (pagesArr.length) {
+            return pagesArr
+        }
+        return false
+    }
+
 }
 
 

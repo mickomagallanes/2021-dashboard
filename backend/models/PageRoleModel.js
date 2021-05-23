@@ -27,6 +27,23 @@ class PageRoleModel {
         }
     }
 
+    /**
+     * get pages based on logged-in user role
+     * @param {Number} userId id of the user
+     */
+    static async getPagesByRole(userId) {
+        const stmt = `SELECT a.PageRolesID, b.PageName, b.PagePath FROM PageRoles as a INNER JOIN Pages as b ON a.PageID = b.PageID 
+        INNER JOIN Users as c ON a.RoleID = c.RoleID WHERE UserID = ?;`;
+
+        try {
+            const result = await mysql_conn.query(stmt, [userId]);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
 }
 
 

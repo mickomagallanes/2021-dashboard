@@ -438,7 +438,7 @@ class UsersForm extends React.Component {
                             </div>
                             <div className="row">
                               <div className="col">
-                                {/* TODO: add image to users */}
+
                                 <Form.Control type="file" name="file" onChange={this.handleFileChange} />
                                 <img className="img-fluid" id="userImg" src={this.state.imgSrc} alt="User Profile" name="userImgUpload" />
                               </div>

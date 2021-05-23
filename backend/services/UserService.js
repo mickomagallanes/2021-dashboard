@@ -15,7 +15,7 @@ class UserService {
      */
 
     static async getAllUser({ page, limit }) {
-        let isPaged = !!page && !!limit;
+        let isPaged = !!page && !!limit; // for pagination
         const startIndex = isPaged ? (page - 1) * limit : false;
 
         const userData = await UserModel.getAllUser(startIndex, limit);

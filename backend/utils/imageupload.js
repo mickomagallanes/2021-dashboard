@@ -53,7 +53,6 @@ async function checkFileType(file, res, next) {
 
 }
 
-// TODO: check magic numbers to determine if it is really an image
 // @param {String} imgId matches the formdata id for the image
 function createSingleImageUpload(imgId) {
     return (req, res, next) => {
