@@ -5,30 +5,18 @@ import { Trans } from 'react-i18next';
 import logo from "../../assets/images/logo.svg";
 import logoMini from '../../assets/images/logo-mini.svg';
 import { connect } from 'react-redux';
-import { sidebarChange } from '../../actions';
-import axios from 'axios';
 
 const imgSrcMainPath = `${process.env.REACT_APP_BACKEND_HOST}`;
-const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/getPageByRole`;
 
-const axiosConfig = {
-  withCredentials: true,
-  timeout: 10000
-}
 
 const mapStateToProps = (state) => {
   return {
     username: state.profileReducer.username,
     userimg: state.profileReducer.userimg,
-    sidebarData: state.sidebarReducer.sidebarData
+    sidebarData: state.sidebarReducer
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return ({
-    changeSidebar: (sidebarData) => { dispatch(sidebarChange(sidebarData)) }
-  })
-}
 
 class Sidebar extends React.Component {
   constructor(props) {
@@ -39,28 +27,6 @@ class Sidebar extends React.Component {
     this.userImg = imgSrcMainPath + props.userimg;
     this.sidebarData = props.sidebarData;
 
-  }
-
-  // move fetchSidebar to root
-  fetchSidebarData = async () => {
-    try {
-      const resp = await axios.get(
-        pagesByRoleUrl,
-        axiosConfig
-      );
-
-      if (resp.data.status === true) {
-        this.props.changeSidebar(resp.data.data);
-
-      } else {
-        // if no sidebar data is found
-
-      }
-
-    } catch (error) {
-      console.log(error)
-      // retryRequest(this.fetchUserData);
-    }
   }
 
 
@@ -95,9 +61,7 @@ class Sidebar extends React.Component {
         }
       });
     });
-    if (this.sidebarData.length) {
-      this.fetchSidebarData();
-    }
+
 
   }
 
@@ -344,4 +308,4 @@ class Sidebar extends React.Component {
 
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Sidebar));
+export default connect(mapStateToProps)(withRouter(Sidebar));

@@ -11,6 +11,14 @@ import { retryRequest } from "../../helpers/utils";
 import { withRouter } from 'react-router-dom';
 import { profileChange } from '../../actions';
 import { connect } from 'react-redux';
+import { sidebarChange } from '../../actions';
+
+const axiosConfig = {
+  withCredentials: true,
+  timeout: 10000
+}
+
+const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/getPageByRole`;
 
 const mapStateToProps = (state) => {
   return { userName: state.profileReducer.userName, userImg: state.profileReducer.userImg };
@@ -18,7 +26,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return ({
-    changeProfile: (userName, userImg) => { dispatch(profileChange(userName, userImg)) }
+    changeProfile: (userName, userImg) => { dispatch(profileChange(userName, userImg)) },
+    changeSidebar: (sidebarData) => { dispatch(sidebarChange(sidebarData)) }
   })
 }
 
@@ -29,6 +38,29 @@ const schema = yup.object().shape({
 
 const loginURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/login`;
 
+async function fetchSidebarData() {
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      const resp = await axios.get(
+        pagesByRoleUrl,
+        axiosConfig
+      );
+
+      if (resp.data.status === true) {
+
+        resolve(resp.data.data);
+      } else {
+        // if no sidebar data is found
+        resolve(false);
+      }
+
+    } catch (error) {
+      console.log(error)
+      resolve(false);
+    }
+  });
+}
 class Login extends React.Component {
 
   constructor() {
@@ -57,9 +89,19 @@ class Login extends React.Component {
       if (resp.data.status === true) {
         let { data } = resp;
         this.props.changeProfile(data.data.uname, data.data.uimage);
-        this.props.history.push('/home');
+
+        let sidebarData = await fetchSidebarData();
+
+        if (sidebarData != false) {
+          this.props.changeSidebar(sidebarData);
+          this.props.history.push('/home');
+
+        } else {
+          this.setState({ errorMsg: "Failed fetching sidebar data" });
+        }
+
       } else {
-        this.setState({ errorMsg: resp.data.msg });
+
       }
 
     } catch (error) {
