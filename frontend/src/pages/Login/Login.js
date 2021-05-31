@@ -93,6 +93,7 @@ class Login extends React.Component {
         let sidebarData = await fetchSidebarData();
 
         if (sidebarData != false) {
+          // TODO: filter sidebar data based on parentmenu
           this.props.changeSidebar(sidebarData);
           this.props.history.push('/home');
 

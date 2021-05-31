@@ -72,7 +72,6 @@ class UserModel {
     /**
     * get count of all user for pagination
     */
-
     static async getAllUserCount() {
         const stmt = `SELECT 
                count(UserID) as count

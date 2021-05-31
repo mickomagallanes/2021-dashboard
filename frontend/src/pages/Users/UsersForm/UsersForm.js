@@ -320,7 +320,16 @@ class UsersForm extends React.Component {
 
           </div>
           <div className="row w-100 mx-0">
-            <div className="col-12 grid-margin stretch-card">
+            <div className="col-lg-4 col-xlg-3 col-md-12">
+              <div className="row">
+                <div className="col">
+
+                  <Form.Control type="file" name="file" onChange={this.handleFileChange} />
+                  <img className="img-fluid" id="userImg" src={this.state.imgSrc} alt="User Profile" name="userImgUpload" />
+                </div>
+              </div>
+            </div>
+            <div className="col-lg-8 col-xlg-9 col-md-12">
               <div className="card px-4 px-sm-5">
 
                 <div className="card-body">
@@ -436,13 +445,7 @@ class UsersForm extends React.Component {
                                 ></Select>
                               </div>
                             </div>
-                            <div className="row">
-                              <div className="col">
 
-                                <Form.Control type="file" name="file" onChange={this.handleFileChange} />
-                                <img className="img-fluid" id="userImg" src={this.state.imgSrc} alt="User Profile" name="userImgUpload" />
-                              </div>
-                            </div>
                             <div className="mt-4">
                               {this.props.priv === "RW" && <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}
 

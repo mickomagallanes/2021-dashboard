@@ -1,5 +1,5 @@
 import React from 'react'
-import './Users.css';
+import './Roles.css';
 import axios from 'axios';
 import Table from '../../components/Table/Table.lazy';
 import { retryRequest } from "../../helpers/utils";
@@ -7,26 +7,25 @@ import { Link } from 'react-router-dom';
 import Pagination from '../../components/Pagination/Pagination';
 import { Alert } from 'react-bootstrap';
 
-const userURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/all`;
-const userCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/all/count`;
+const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
+const roleCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all/count`;
 
-class Users extends React.Component {
+class Roles extends React.Component {
 
   constructor() {
     super();
     this.state = {
       data: [],
       maxPage: null,
-      maxUsers: null,
+      maxRoles: null,
       currentPage: 1,
       currentEntries: 5,
       errorMsg: false
     }
 
     this.colData = [
-      { "id": "id", "name": "User ID" },
-      { "id": "uname", "name": "Username" },
-      { "id": "rname", "name": "Role Name" }
+      { "id": "id", "name": "Role ID" },
+      { "id": "rname", "name": "Role name" }
     ];
   }
 
@@ -46,7 +45,7 @@ class Users extends React.Component {
     let rowCount;
     try {
       const respCount = await axios.get(
-        userCountURL,
+        roleCountURL,
         axiosConfig
       );
 
@@ -58,7 +57,7 @@ class Users extends React.Component {
       return;
     }
 
-    // second, fetch the users data
+    // second, fetch the roles data
     try {
       const maxPage = Math.ceil(rowCount / this.state.currentEntries);
 
@@ -69,7 +68,7 @@ class Users extends React.Component {
       }
 
       const resp = await axios.get(
-        `${userURL}?page=${pageNumber}&limit=${this.state.currentEntries}`,
+        `${roleURL}?page=${pageNumber}&limit=${this.state.currentEntries}`,
         axiosConfig
       );
 
@@ -78,9 +77,9 @@ class Users extends React.Component {
       if (data.status === true) {
         this.setState({
           currentPage: pageNumber,
-          data: data.data.users,
+          data: data.data.roles,
           maxPage: maxPage,
-          maxUsers: data.data.count,
+          maxRoles: data.data.count,
           errorMsg: false
         });
       } else {
@@ -113,7 +112,7 @@ class Users extends React.Component {
       <>
         <div>
           <div className="page-header">
-            <h3 className="page-title">Users Page</h3>
+            <h3 className="page-title">Roles Page</h3>
           </div>
           <Alert
             className="p-1"
@@ -127,7 +126,7 @@ class Users extends React.Component {
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card">
                 <div className="card-body">
-                  <h4 className="card-title">Users Table</h4>
+                  <h4 className="card-title">Roles Table</h4>
                   <div className="row mb-4">
                     <div className="col mt-3">
                       <span className="float-sm-left d-block mt-1 mt-sm-0 text-center">
@@ -138,22 +137,22 @@ class Users extends React.Component {
                           onChange={(e) => { this.entryOnChange(e) }}
                           type="text" style={style.inputEntry}
                         />
-                          of {this.state.maxUsers} entries
+                          of {this.state.maxRoles} entries
                         </span>
                     </div>
                     <div className="col-lg-6 mt-3">
                       <Pagination currentPage={currentPage} maxPage={maxPage} onClick={this.paginationClick} />
                     </div>
                     <div className="col mt-3">
-                      {this.props.priv === "RW" && <Link to="/users/form/add" className="btn btn-outline-secondary float-sm-right d-block">
+                      {this.props.priv === "RW" && <Link to="/roles/form/add" className="btn btn-outline-secondary float-sm-right d-block">
                         <i className="mdi mdi-account-plus"> </i>
-                        Add User
+                        Add Role
                         </Link>}
 
                     </div>
                   </div>
                   <Table
-                    urlRedirect="/users/form"
+                    urlRedirect="/roles/form"
                     isWriteable={this.props.priv === "RW"}
                     data={this.state.data}
                     tblClass=""
@@ -179,4 +178,4 @@ const style = {
     'display': 'inline-block'
   }
 }
-export default Users;
+export default Roles;

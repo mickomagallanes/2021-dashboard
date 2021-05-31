@@ -9,6 +9,7 @@ import RequireLogin from '../components/RequireLogin';
 import Login from './Login/Login.lazy';
 import Users from './Users/Users.lazy';
 import UsersForm from './Users/UsersForm/UsersForm.lazy';
+import Roles from './Roles/Roles.lazy';
 import Home from './Home/Home.lazy';
 import Navbar from '../components/Navbar/Navbar';
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -56,7 +57,7 @@ function LoginContainer() {
   );
 }
 
-
+// TODO: make path connected to the database
 function DefaultContainer() {
   // let loginMiddleware = compose(RequireLogout, PlainPageLayout);
   // let otherMiddleware = compose(RequireAuth, FullPageLayout);
@@ -72,6 +73,7 @@ function DefaultContainer() {
               <Route path="/home" component={RequireAuth(Home)} />
               <Route exact path="/users" component={RequireAuth(Users)} />
               <Route path="/users/form/:id" component={RequireAuth(UsersForm, "/users")} />
+              <Route exact path="/roles" component={RequireAuth(Roles)} />
               <Redirect to="/home" />
             </Switch>
 
