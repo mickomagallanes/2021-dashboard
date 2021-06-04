@@ -54,7 +54,7 @@ const RequireLogin = (Component) => {
 
                 return <Redirect to="/login" />
             }
-            return <Component />
+            return <Component {...this.props} isLogin={isLogin} />
         }
     }
 

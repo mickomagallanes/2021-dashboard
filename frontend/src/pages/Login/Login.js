@@ -18,7 +18,7 @@ const axiosConfig = {
   timeout: 10000
 }
 
-const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/getPageByRole`;
+const menusByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/getMenusByRole`;
 
 const mapStateToProps = (state) => {
   return { userName: state.profileReducer.userName, userImg: state.profileReducer.userImg };
@@ -43,7 +43,7 @@ async function fetchSidebarData() {
   return new Promise(async (resolve, reject) => {
     try {
       const resp = await axios.get(
-        pagesByRoleUrl,
+        menusByRoleUrl,
         axiosConfig
       );
 

@@ -20,6 +20,13 @@ const RequireAuth = (Component, apiURL = false) => {
             this.authorizeRole();
         }
 
+        componentWillUnmount() {
+
+            this.setState = () => {
+                return;
+            }
+        }
+
         authorizeRole = async () => {
             const axiosConfig = {
                 withCredentials: true,

@@ -3,10 +3,6 @@
 /* === Plugin styles === */
 
 
-@import "~slick-carousel/slick/slick.css";
-@import "~slick-carousel/slick/slick-theme.css";
-
-
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 
@@ -61,7 +57,6 @@
 @import "../assets/styles/components/landing-screens/auth";
 
 /* === Plugin Overrides === */
-@import "../assets/styles/components/plugin-overrides/slick-carousel";
 @import "../assets/styles/components/plugin-overrides/jquery-jvectormap";
 
 /* === Layout === */

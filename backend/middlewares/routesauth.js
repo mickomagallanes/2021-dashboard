@@ -9,17 +9,23 @@ async function authorizeReadRoute(req, res, next) {
     const userId = req.session.userData.userid;
 
     const resp = await RouteRoleModel.getRouteRole(userId, req.baseUrl);
+    if (resp.length) {
+        const { Privilege } = resp[0];
 
-    const { Privilege } = resp[0];
+        if (Privilege == "RW" || Privilege == "R") {
 
-    if (Privilege == "RW" || Privilege == "R") {
+            next();
+        } else {
+            res.sendStatus(403);
+            return;
 
-        next();
+        }
     } else {
         res.sendStatus(403);
         return;
 
     }
+
 
 }
 
@@ -31,10 +37,16 @@ async function authorizeWriteRoute(req, res, next) {
 
     let resp = await RouteRoleModel.getRouteRole(userId, req.baseUrl);
 
-    const { Privilege } = resp[0];
+    if (resp.length) {
+        const { Privilege } = resp[0];
 
-    if (Privilege == "RW") {
-        next();
+        if (Privilege == "RW") {
+            next();
+        } else {
+            res.sendStatus(403);
+            return;
+
+        }
     } else {
         res.sendStatus(403);
         return;

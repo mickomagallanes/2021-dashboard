@@ -259,8 +259,8 @@ class UsersForm extends React.Component {
     formikProps.handleChange(e);
   }
 
-  handleChangeRole = (e) => {
-    this.setState({ selectedRole: e.target.value, errorMsg: false });
+  handleChangeRole = async (e) => {
+    await this.setState({ selectedRole: e.target.value, errorMsg: false });
   }
 
   handleSubmitForm = async () => {

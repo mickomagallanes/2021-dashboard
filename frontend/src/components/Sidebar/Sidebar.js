@@ -25,7 +25,36 @@ class Sidebar extends React.Component {
       isSidebarActive: false
     };
     this.userImg = imgSrcMainPath + props.userimg;
-    this.sidebarData = props.sidebarData;
+
+    this.sidebarData = props.sidebarData.reduce(function (o, cur) {
+
+      // Get the index of the key-value pair.
+      let occurs = o.reduce(function (n, item, i) {
+        return (item.ParentMenuName === cur.ParentMenuName) ? i : n;
+      }, -1);
+
+      // If the name is found,
+      if (occurs >= 0) {
+
+        // append the current value to its list of values.
+        o[occurs].MenuName = o[occurs].MenuName.concat(cur.MenuName);
+        o[occurs].PagePath = o[occurs].PagePath.concat(cur.PagePath);
+
+        // Otherwise,
+      } else {
+
+        // add the current item to o (but make sure the value is an array).
+        let obj = {
+          ParentMenuName: cur.ParentMenuName,
+          PagePath: [cur.PagePath],
+          MenuName: [cur.MenuName]
+        };
+        o = o.concat([obj]);
+      }
+
+      return o;
+    }, []);
+
 
   }
 
@@ -77,16 +106,17 @@ class Sidebar extends React.Component {
       this.setState({ [i]: false });
     });
 
-    const dropdownPaths = [
-      { path: '/user', state: 'appsMenuOpen' },
-      { path: '/basic-ui', state: 'basicUiMenuOpen' },
-      { path: '/form-elements', state: 'formElementsMenuOpen' },
-      { path: '/tables', state: 'tablesMenuOpen' },
-      { path: '/icons', state: 'iconsMenuOpen' },
-      { path: '/charts', state: 'chartsMenuOpen' },
-      { path: '/user-pages', state: 'userPagesMenuOpen' },
-      { path: '/error-pages', state: 'errorPagesMenuOpen' },
-    ];
+    const dropdownPaths = [];
+
+    for (let i = 0, n = this.sidebarData.length; i < n; i++) {
+      let parentMenuName = this.sidebarData[i].ParentMenuName;
+
+      let pathObj = {
+        path: parentMenuName,
+        state: `${parentMenuName}Open`
+      }
+      dropdownPaths.push(pathObj);
+    };
 
     dropdownPaths.forEach((obj => {
       if (this.isPathActive(obj.path)) {
@@ -162,13 +192,42 @@ class Sidebar extends React.Component {
           <li className="nav-item nav-category">
             <span className="nav-link"><Trans>Navigation</Trans></span>
           </li>
+
           {(this.sidebarData.length) && this.sidebarData.map(item =>
-            <li key={`${item.PagePath}`} className={this.isPathActive(`${item.PagePath}`) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
-              <Link className="nav-link" key={`${item.PagePath}`} to={`${item.PagePath}`}>
-                <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
-                <span className="menu-title"><Trans>{item.PageName}</Trans></span>
-              </Link>
-            </li>)}
+            (item.ParentMenuName != null)
+              ? <li key={item.ParentMenuName} className={this.isPathActive(item.ParentMenuName) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
+                <div className={this.state[`${item.ParentMenuName}Open`] ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState(`${item.ParentMenuName}Open`)} data-toggle="collapse">
+                  <span className="menu-icon">
+                    <i className="mdi mdi-laptop"></i>
+                  </span>
+                  <span className="menu-title"><Trans>{item.ParentMenuName}</Trans></span>
+                  <i className="menu-arrow"></i>
+                </div>
+                <Collapse in={this.state[`${item.ParentMenuName}Open`]}>
+                  <div>
+                    <ul className="nav flex-column sub-menu">
+                      {item.MenuName.map((item2, key2) => {
+                        <li className="nav-item"> <Link className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-link active' : 'nav-link'} to={`${item.PagePath[key2]}`}><Trans>{item2}</Trans></Link></li>
+                      })}
+
+
+                    </ul>
+                  </div>
+                </Collapse>
+              </li>
+
+              : item.MenuName.map((item2, key2) => {
+                <li key={`${item.PagePath[key2]}`} className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
+                  <Link className="nav-link" key={`${item.PagePath[key2]}`} to={`${item.PagePath[key2]}`}>
+                    <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
+                    <span className="menu-title"><Trans>{item2}</Trans></span>
+                  </Link>
+                </li>
+              })
+
+
+          )}
+
 
           <li className={this.isPathActive('/basic-ui') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
             <div className={this.state.basicUiMenuOpen ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState('basicUiMenuOpen')} data-toggle="collapse">
@@ -303,6 +362,7 @@ class Sidebar extends React.Component {
   }
 
   isPathActive(path) {
+
     return this.props.location.pathname.startsWith(path);
   }
 

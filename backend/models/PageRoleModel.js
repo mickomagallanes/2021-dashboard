@@ -32,8 +32,7 @@ class PageRoleModel {
      * @param {Number} userId id of the user
      */
     static async getPagesByRole(userId) {
-        const stmt = `SELECT a.PageRolesID, b.PageName, b.PagePath, c.ParentMenuName FROM PageRoles as a INNER JOIN Pages as b ON a.PageID = b.PageID 
-        LEFT JOIN ParentMenu as c ON b.ParentMenuID = c.ParentMenuID
+        const stmt = `SELECT a.PageRolesID, b.PageName, b.PagePath FROM PageRoles as a INNER JOIN Pages as b ON a.PageID = b.PageID 
                 INNER JOIN Users as d ON a.RoleID = d.RoleID WHERE UserID = ?`;
 
         try {
