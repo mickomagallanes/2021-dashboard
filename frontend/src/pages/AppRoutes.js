@@ -171,9 +171,11 @@ function DefaultContainer() {
                 <Route exact path={`${item.PagePath}`} key={`${item.PageRolesID}`} component={RequireAuth(matchComponentName(item.PageName))} />
               )}
               {(subPagesData.length) && subPagesData.map(item =>
-                <Route exact path={`${item.PagePath}`} key={`${item.PageRolesID}`} component={RequireAuth(matchComponentName(item.PageName))} />
+                <Route path={`${item.SubPagePath}`} key={`${item.PageRolesID}`} component={RequireAuth(matchComponentName(item.SubPageName), item.PagePath)} />
               )}
-              <Redirect to="/home" />
+              <Route>
+                <p>ERROR 404</p>
+              </Route>
             </Switch>
 
           </div>

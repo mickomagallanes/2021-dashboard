@@ -59,7 +59,7 @@ class Sidebar extends React.Component {
   }
 
 
-  toggleMenuState(menuState) {
+  async toggleMenuState(menuState) {
     if (this.state[menuState]) {
       this.setState({ [menuState]: false });
     } else if (Object.keys(this.state).length === 0) {
@@ -70,6 +70,7 @@ class Sidebar extends React.Component {
       });
       this.setState({ [menuState]: true });
     }
+
   }
 
 
@@ -131,8 +132,13 @@ class Sidebar extends React.Component {
     return (
       <nav className="sidebar sidebar-offcanvas" id="sidebar">
         <div className="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a className="sidebar-brand brand-logo" href="index.html"><img src={logo} alt="logo" /></a>
-          <a className="sidebar-brand brand-logo-mini" href="index.html"><img src={logoMini} alt="logo" /></a>
+          <Link className="sidebar-brand brand-logo" to="/home">
+            <img src={logo} alt="logo" />
+          </Link>
+          <Link className="sidebar-brand brand-logo-mini" to="/home">
+            <img src={logoMini} alt="logo" />
+          </Link>
+
         </div>
         <ul className="nav">
           <li className="nav-item profile">
@@ -196,18 +202,19 @@ class Sidebar extends React.Component {
           {(this.sidebarData.length) && this.sidebarData.map(item =>
             (item.ParentMenuName != null)
               ? <li key={item.ParentMenuName} className={this.isPathActive(item.ParentMenuName) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
-                <div className={this.state[`${item.ParentMenuName}Open`] ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState(`${item.ParentMenuName}Open`)} data-toggle="collapse">
+                <div className={!!this.state[`${item.ParentMenuName}Open`] ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState(`${item.ParentMenuName}Open`)} data-toggle="collapse">
                   <span className="menu-icon">
-                    <i className="mdi mdi-laptop"></i>
+                    <i className="mdi mdi-dashboard"></i>
                   </span>
                   <span className="menu-title"><Trans>{item.ParentMenuName}</Trans></span>
                   <i className="menu-arrow"></i>
                 </div>
-                <Collapse in={this.state[`${item.ParentMenuName}Open`]}>
+                <Collapse in={!!this.state[`${item.ParentMenuName}Open`]}>
                   <div>
                     <ul className="nav flex-column sub-menu">
+
                       {item.MenuName.map((item2, key2) => {
-                        <li className="nav-item"> <Link className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-link active' : 'nav-link'} to={`${item.PagePath[key2]}`}><Trans>{item2}</Trans></Link></li>
+                        return <li key={item.PagePath[key2]} className="nav-item"> <Link className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-link active' : 'nav-link'} to={`${item.PagePath[key2]}`}><Trans>{item2}</Trans></Link></li>
                       })}
 
 
@@ -215,9 +222,8 @@ class Sidebar extends React.Component {
                   </div>
                 </Collapse>
               </li>
-
               : item.MenuName.map((item2, key2) => {
-                <li key={`${item.PagePath[key2]}`} className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
+                return <li key={`${item.PagePath[key2]}`} className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
                   <Link className="nav-link" key={`${item.PagePath[key2]}`} to={`${item.PagePath[key2]}`}>
                     <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
                     <span className="menu-title"><Trans>{item2}</Trans></span>
@@ -230,6 +236,7 @@ class Sidebar extends React.Component {
 
 
           <li className={this.isPathActive('/basic-ui') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
+
             <div className={this.state.basicUiMenuOpen ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState('basicUiMenuOpen')} data-toggle="collapse">
               <span className="menu-icon">
                 <i className="mdi mdi-laptop"></i>
@@ -362,8 +369,13 @@ class Sidebar extends React.Component {
   }
 
   isPathActive(path) {
+    let matchedSidebarData = this.sidebarData.find(o => o.ParentMenuName === path);
 
-    return this.props.location.pathname.startsWith(path);
+    if (matchedSidebarData != undefined) {
+      return (this.props.location.pathname == path) ||
+        matchedSidebarData.PagePath.find((e) => this.props.location.pathname == e);
+    }
+    return this.props.location.pathname == path
   }
 
 }

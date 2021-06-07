@@ -32,7 +32,6 @@
 @import "../assets/styles/reset";
 @import "../assets/styles/responsive";
 @import "../assets/styles/misc";
-@import "../assets/styles/misc_light";
 @import "../assets/styles/utilities";
 @import "../assets/styles/demo";
 @import "../assets/styles/spinner";
@@ -61,9 +60,11 @@
 
 /* === Layout === */
 @import "../assets/styles/navbar";
-@import "../assets/styles/navbar_light";
 @import "../assets/styles/sidebar";
-@import "../assets/styles/sidebar_light";
 @import "../assets/styles/footer";
-@import "../assets/styles/footer_light";
 @import "../assets/styles/layout";
+
+
+/* === Custom Themes === */
+
+@import "../assets/styles/light_theme";
