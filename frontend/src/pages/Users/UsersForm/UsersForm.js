@@ -164,7 +164,7 @@ class UsersForm extends React.Component {
 
         if (resp.data.status === true) {
           // TODO: create a success alert after adding user or editing
-          resolve(resp.data.data.insertId);
+          resolve(resp.data.id);
 
         } else {
           this.setState({ errorMsg: resp.data.msg });

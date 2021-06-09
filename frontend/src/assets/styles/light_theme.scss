@@ -1,5 +1,5 @@
 /* Sidebar */
-$sidebar-bg-light: #fafafb;
+$sidebar-bg-light: #fff;
 $sidebar-menu-color-light: #535a60;
 $sidebar-menu-active-bg-light: darken($sidebar-bg-light, 10%);
 $sidebar-menu-active-color-light: #2c303a;
@@ -8,6 +8,7 @@ $sidebar-menu-hover-color-light: color(black);
 $sidebar-submenu-color-light: $sidebar-menu-color-light;
 $sidebar-submenu-hover-bg-light: initial;
 $sidebar-submenu-hover-color-light: #000000;
+$sidebar-submenu-active-color-light: #2c303a;
 $sidebar-menu-icon-color-light: #373138f5;
 $sidebar-menu-arrow-color-light: darken($sidebar-menu-color-light, 30%);
 $sidebar-submenu-font-size-light: 0.870rem;
@@ -115,7 +116,8 @@ $sidebar-submenu-font-size-light: 0.870rem;
           .nav-link {
             color: $sidebar-submenu-color-light;
             &.active {
-              color: $sidebar-menu-active-color-light;
+              color: $sidebar-submenu-active-color-light;
+              font-weight: 500;
             }
             &:hover {
               color: $sidebar-submenu-hover-color-light;
@@ -143,43 +145,9 @@ $sidebar-submenu-font-size-light: 0.870rem;
   }
 }
 
+// NAVBAR
 
-/* Miscellanoeous */
-
-$content-bg-light: #fafafb;
-$body-color-light: #000000;
-
-.light-theme > div{
-  .main-panel {
-    .content-wrapper { 
-      background: $content-bg-light;
-    }
-    .page-title {
-      color: $body-color-light;
-    }
-
-    .page-header {
-      background: $content-bg-light;
-      color: $body-color-light;
-      border-color: $body-color-light;
-      > * {
-        background: $content-bg-light;
-        color: $body-color-light;
-        border-color: $body-color-light;
-      }
-      > a {
-          &:hover {
-            color: #ffffff;
-            border-color: #ffffff;
-            background: #000000;
-          }
-      }
-    }
-  }
-}
-
-
-$navbar-bg-light: #fafafb;
+$navbar-bg-light: #fff;
 $navbar-menu-color-light: #000000;
 $navbar-box-shadow-light: 20px 19px 34px -15px rgba(255, 255, 255, 0.5);
 $navbar-muted-light: #535a60;
@@ -311,5 +279,84 @@ $footer-color-light: color(light);
             color: theme-color(success);
             }
         }
+    }
+}
+
+/* Miscellanoeous */
+
+$wrapper-bg-light: #fafafb;
+$table-bg-light: #fff;
+$body-color-light: #000000;
+$table-text-color-light: #2f3337;
+
+.light-theme > div{
+    .content-wrapper { 
+      background: $wrapper-bg-light;
+    }
+    .page-title {
+      color: $body-color-light;
+    }
+   
+    .page-header {
+      background: $wrapper-bg-light;
+      color: $body-color-light;
+      border-color: $body-color-light;
+      > * {
+        background: $wrapper-bg-light;
+        color: $body-color-light;
+        border-color: $body-color-light;
+      }
+      > a {
+          &:hover {
+            color: $wrapper-bg-light;;
+            border-color: $wrapper-bg-light;
+            background: $body-color-light;
+          }
+      }
+    }
+
+    .row {
+      background: $table-bg-light;
+
+      .card {
+        border: none;
+      }
+      // pagination
+      a {
+        background: $table-bg-light;
+        color: $body-color-light;
+        
+        &:hover {
+          color: $table-bg-light;
+          border-color: $table-bg-light;
+          background: $body-color-light;
+
+          span {
+            color: $table-bg-light;
+          }
+        }
+
+        span {
+          color: $body-color-light;
+        
+        }
+     }
+
+      div {
+        background: $table-bg-light;
+      }
+
+      input, nav, ul, li, select {
+        background: $table-bg-light;
+        color: $table-text-color-light;
+      }
+      
+      h4, span {
+        color: $table-text-color-light;
+      }
+
+      th, td, p {
+        color: $table-text-color-light;
+      }
     }
 }
