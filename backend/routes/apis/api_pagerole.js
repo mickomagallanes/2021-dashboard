@@ -15,7 +15,7 @@ router.post('/authorize', [checkSession], async function (req, res, next) {
     let userId = req.session.userData.userid;
     let pagePath = req.body.pagepath;
 
-    let resp = await PageRoleService.getPageRole(userId, pagePath);
+    let resp = await PageRoleService.getPagePrivBySession(userId, pagePath);
 
     if (resp.status) {
 
@@ -32,11 +32,11 @@ router.post('/authorize', [checkSession], async function (req, res, next) {
  * get pages based on the logged-in user role
  *
  */
-router.get('/getPageByRole', [checkSession], async function (req, res, next) {
+router.get('/getPagesBySession', [checkSession], async function (req, res, next) {
 
     let userId = req.session.userData.userid;
 
-    let resp = await PageRoleService.getPagesByRole(userId);
+    let resp = await PageRoleService.getPagesBySession(userId);
 
     if (resp !== false) {
 

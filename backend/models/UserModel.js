@@ -10,12 +10,13 @@ class UserModel {
 
     /**
      * inserts username and password to the database
-     * @param {String} username username of the user
-     * @param {String} password plain password of the user
-     * @param {String} roleId id from roles table if it is admin, etc
+     * @param {Object} obj - An object.
+     * @param {String} obj.username username of the user
+     * @param {String} obj.password plain password of the user
+     * @param {String} obj.roleId id from roles table if it is admin, etc
      */
 
-    static async insertUser(username, password, roleId) {
+    static async insertUser({ username, password, roleId }) {
         const stmt = `INSERT INTO Users (Username, Password, RoleID) VALUES (?, ?, ?)`;
         try {
             const result = await mysql_conn.query(stmt, [username, password, roleId]);
@@ -29,15 +30,16 @@ class UserModel {
 
     /**
      * inserts username and password to the database
-     * @param {String} userid id of the user
-     * @param {String} [username] username of the user
-     * @param {String} [roleid] id from roles table if it is admin, etc
-     * @param {String} [imagePath] image path of user profile
-     * @param {String} [password] plain password of the user
+     * @param {Object} obj - An object.
+     * @param {String} obj.userid id of the user
+     * @param {String} [obj.username] username of the user
+     * @param {String} [obj.roleid] id from roles table if it is admin, etc
+     * @param {String} [obj.imagePath] image path of user profile
+     * @param {String} [obj.password] plain password of the user
   
      */
 
-    static async modifyUser(userid, username = undefined, roleid = undefined, imagePath = undefined, password = undefined) {
+    static async modifyUser({ userid, username, roleid, imagePath, password }) {
         let whereParams = [userid];
         let setObj = {};
         let stmtWhere = ` WHERE UserID = ?`
@@ -58,7 +60,6 @@ class UserModel {
             setObj.Image = imagePath;
         }
 
-        console.log(setObj)
         try {
             const result = await mysql_conn.update("Users", setObj, stmtWhere, whereParams);
             return result;
@@ -88,13 +89,16 @@ class UserModel {
 
     /**
      * get all user data from database
-     * @param {Number} [startIndex] start of limit
-     * @param {Number} [limit] limit count
+     * @param {Object} obj - An object.
+     * @param {Number} [obj.startIndex] start of limit
+     * @param {Number} [obj.limit] limit count
      */
 
-    static async getAllUser(startIndex, limit) {
+    static async getAllUser({ startIndex, limit }) {
 
-        const limitClause = startIndex !== false ? ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}` : "";
+        const limitClause = (startIndex !== false || startIndex !== undefined)
+            ? ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`
+            : "";
 
         const stmt = `SELECT 
                a.UserID as id,

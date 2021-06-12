@@ -9,7 +9,7 @@ class RouteRoleModel {
     }
 
     /**
-     * check if user role has privilege on the route api
+     * get a row of routeRole based on the current user id
      * @param {Number} userId id of the user
      * @param {String} routePath main original path of the route, eg: "/user", not: "/user/:id"
      */

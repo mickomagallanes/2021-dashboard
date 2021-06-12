@@ -1,5 +1,6 @@
 const UserModel = require('../models/UserModel.js');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
 
 "use strict";
 
@@ -11,6 +12,9 @@ class UserService {
 
     /**
      * get all user data
+     * @param {Object} obj - An object.
+     * @param {String} [obj.page] current page
+     * @param {String} [obj.limit] limit count of rows
      * @return all rows of users
      */
 
@@ -18,18 +22,20 @@ class UserService {
         let isPaged = !!page && !!limit; // for pagination
         const startIndex = isPaged ? (page - 1) * limit : false;
 
-        const userData = await UserModel.getAllUser(startIndex, limit);
+        const userData = await UserModel.getAllUser({ startIndex: startIndex, limit: limit });
 
         if (isPaged) {
             const userCount = await UserModel.getAllUserCount();
-            return { "count": userCount[0].count, "users": userData };
+            return { status: true, data: { "count": userCount[0].count, "users": userData } }
+
         } else {
-            return userData;
+            return { status: false }
         }
     }
 
     /**
-     * get all user data
+     * get user info by user if
+     * @param {String} id user id
      * @return one row of user
      */
 
@@ -38,9 +44,10 @@ class UserService {
 
         if (ret.length) {
             ret[0].img = `/uploads/${ret[0].img}`;
-            return ret[0];
+            return { status: true, data: ret[0] }
+
         } else {
-            return false;
+            return { status: false }
         }
 
     }
@@ -53,32 +60,49 @@ class UserService {
     static async getAllCount() {
 
         const userCount = await UserModel.getAllUserCount();
-        return userCount[0];
+        if (userCount == false) {
+            return { status: false }
+        } else {
+            return { status: true, data: userCount[0] }
+        }
+
 
     }
 
     /**
       * inserts username and password to the database
-      * @param {String} username username of the user
-      * @param {String} password plain password of the user
-      * @param {String} roleid id from roles table if it is admin, etc
+      * @param {Object} obj - An object.
+      * @param {String} obj.username username of the user
+      * @param {String} obj.password plain password of the user
+      * @param {String} obj.roleid id from roles table if it is admin, etc
       */
 
     static async insertUser({ username, password, roleid }) {
         const saltRounds = 10;
 
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        let ret = await UserModel.insertUser(username, hashedPassword, roleid);
+        const obj = {
+            username: username,
+            password: hashedPassword,
+            roleId: roleid
+        }
+        let ret = await UserModel.insertUser(obj);
 
-        return ret;
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true, data: ret.insertId }
+        }
+
     }
 
     /**
       * modify user data
-      * @param {String} userid id of the user
-      * @param {String} username username of the user
-      * @param {String} password plain password of the user
-      * @param {String} roleid id from roles table if it is admin, etc
+      * @param {Object} obj - An object.
+      * @param {String} obj.userid id of the user
+      * @param {String} obj.username username of the user
+      * @param {String} obj.password plain password of the user
+      * @param {String} obj.roleid id from roles table if it is admin, etc
       */
 
     static async modifyUser({ userid, username, password, roleid, imagePath }) {
@@ -86,21 +110,44 @@ class UserService {
         if (password !== undefined && password.length) {
             const saltRounds = 10;
 
+
             const hashedPassword = await bcrypt.hash(password, saltRounds);
-            ret = await UserModel.modifyUser(userid, username, roleid, imagePath, hashedPassword);
+            let obj = {
+                userid: userid,
+                username: username,
+                roleid: roleid,
+                imagePath: imagePath,
+                password: hashedPassword
+
+            };
+
+            ret = await UserModel.modifyUser(obj);
 
         } else {
-            ret = await UserModel.modifyUser(userid, username, roleid, imagePath);
+            let obj = {
+                userid: userid,
+                username: username,
+                roleid: roleid,
+                imagePath: imagePath
 
+            };
+
+            ret = await UserModel.modifyUser(obj);
         }
 
-        return ret;
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true, data: ret.insertId }
+        }
+
     }
 
     /**
      * inserts username and password to the database
-     * @param {String} username username of the user
-     * @param {String} password plain password of the user
+     * @param {Object} obj - An object.
+     * @param {String} obj.username username of the user
+     * @param {String} obj.password plain password of the user
      */
 
     static async loginUser({ username, password }) {
@@ -118,9 +165,31 @@ class UserService {
             }
         }
 
-        return { status: false, data: undefined }
+        return { status: false }
     }
 
+
+    /**
+     * insert an image filename to the user row
+     * @param {Object} obj - An object.
+     * @param {String} obj.userId id of the user
+     * @param {String} obj.fileName filename of the image uploaded
+     */
+    static async insertImg({ userId, fileName }) {
+
+        // delete current img stored, to free space
+        let currentImgObj = await this.getUserById(userId);
+
+        if (currentImgObj.img) {
+            fs.unlink("public" + currentImgObj.img, function (err) {
+                if (err) return console.log(err);
+
+            });
+        }
+
+        let result = await UserService.modifyUser({ "imagePath": fileName, "userid": req.body.id });
+        return result;
+    }
 
 }
 

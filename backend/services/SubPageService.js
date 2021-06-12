@@ -10,10 +10,10 @@ class SubPageService {
 
     /**
    *  get pages based on logged-in user role
-   * @param {Number} userId id of the user
+   * @param {Number} userId id of the current user logged in
    */
-    static async getSubPagesByRole(userId) {
-        let pagesArr = await SubPageModel.getSubPagesByRole(userId);
+    static async getSubPagesBySession(userId) {
+        let pagesArr = await SubPageModel.getSubPagesByUserId(userId);
 
         if (pagesArr.length) {
             return pagesArr

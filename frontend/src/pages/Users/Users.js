@@ -132,14 +132,14 @@ class Users extends React.Component {
                     <div className="col mt-3">
                       <span className="float-sm-left d-block mt-1 mt-sm-0 text-center">
                         Show
-                       <input
+                        <input
                           className="form-control ml-2 mr-2"
                           value={this.state.currentEntries}
                           onChange={(e) => { this.entryOnChange(e) }}
                           type="text" style={style.inputEntry}
                         />
-                          of {this.state.maxUsers} entries
-                        </span>
+                        of {this.state.maxUsers} entries
+                      </span>
                     </div>
                     <div className="col-lg-6 mt-3">
                       <Pagination currentPage={currentPage} maxPage={maxPage} onClick={this.paginationClick} />
@@ -148,7 +148,7 @@ class Users extends React.Component {
                       {this.props.priv === "RW" && <Link to="/users/form/add" className="btn btn-outline-secondary float-sm-right d-block">
                         <i className="mdi mdi-account-plus"> </i>
                         Add User
-                        </Link>}
+                      </Link>}
 
                     </div>
                   </div>

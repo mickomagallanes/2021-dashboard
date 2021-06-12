@@ -13,8 +13,8 @@ class PageRoleService {
      * @param {Number} userId id of the user
      * @param {String} pagePath path of the page, eg: "/user"
      */
-    static async getPageRole(userId, pagePath) {
-        let pageRoleObj = await PageRoleModel.getPageRole(userId, pagePath);
+    static async getPagePrivBySession(userId, pagePath) {
+        let pageRoleObj = await PageRoleModel.getPagePrivByUser(userId, pagePath);
 
         if (pageRoleObj.length) {
             return { status: true, priv: pageRoleObj[0].Privilege }
@@ -26,8 +26,8 @@ class PageRoleService {
     *  get pages based on logged-in user role
     * @param {Number} userId id of the user
     */
-    static async getPagesByRole(userId) {
-        let pagesArr = await PageRoleModel.getPagesByRole(userId);
+    static async getPagesBySession(userId) {
+        let pagesArr = await PageRoleModel.getPagesByUser(userId);
 
         if (pagesArr.length) {
             return pagesArr

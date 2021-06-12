@@ -16,6 +16,14 @@ class RoleService {
         return roleArr;
     }
 
+    /**
+    * get all roles count
+    */
+    static async getAllCount() {
+        let roleArr = await RoleModel.getAllCount();
+        return roleArr;
+    }
+
 }
 
 

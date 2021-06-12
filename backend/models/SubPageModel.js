@@ -12,7 +12,7 @@ class SubPageModel {
      * get pages based on logged-in user role
      * @param {Number} userId id of the user
      */
-    static async getSubPagesByRole(userId) {
+    static async getSubPagesByUserId(userId) {
         const stmt = `SELECT a.PageRolesID, b.PageName, b.PagePath, c.SubPageName, c.SubPagePath FROM PageRoles as a 
         INNER JOIN Pages as b ON a.PageID = b.PageID INNER JOIN SubPages as c ON b.PageID = c.PageID
 		INNER JOIN Users as d ON a.RoleID = d.RoleID WHERE UserID = ?`;

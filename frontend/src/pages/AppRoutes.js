@@ -21,7 +21,7 @@ const axiosConfig = {
   timeout: 10000
 }
 
-const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/getPageByRole`;
+const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/getPagesBySession`;
 const subPagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/getSubPageByRole`;
 
 // TODO: pass in data pages and subpages
@@ -166,7 +166,9 @@ function DefaultContainer() {
           <div className="content-wrapper">
 
             <Switch>
+
               <Route path="/home" component={RequireAuth(Home)} />
+              <Route exact path="/" render={() => (<Redirect to="/home" />)} />
               {(pagesData.length) && pagesData.map(item =>
                 <Route exact path={`${item.PagePath}`} key={`${item.PageRolesID}`} component={RequireAuth(matchComponentName(item.PageName))} />
               )}

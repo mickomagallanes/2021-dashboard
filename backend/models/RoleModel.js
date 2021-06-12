@@ -12,7 +12,7 @@ class RoleModel {
      * get all roles
      */
     static async getAllRoles() {
-        const stmt = `SELECT RoleID, RoleName FROM Roles`;
+        const stmt = `SELECT RoleID as id, RoleName as rname FROM Roles`;
         try {
             const result = await mysql_conn.query(stmt);
             return result;

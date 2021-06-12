@@ -18,10 +18,10 @@ const fs = require('fs');
 router.get('/get/all', [checkSession, userGetAllSchema, authorizeReadRoute], async function (req, res, next) {
 
     let result = await UserService.getAllUser(req.query);
-    if (result === false) {
-        res.sendStatus(403);
+    if (result.status === false) {
+        res.json({ "status": false });
     } else {
-        res.json({ "status": true, "data": result });
+        res.json({ "status": true, "data": result.data });
     }
 });
 
@@ -31,10 +31,10 @@ router.get('/get/all', [checkSession, userGetAllSchema, authorizeReadRoute], asy
  */
 router.get('/get/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
     let result = await UserService.getUserById(req.params.id);
-    if (result === false) {
+    if (result.status === false) {
         res.json({ "status": false });
     } else {
-        res.json({ "status": true, "data": result });
+        res.json({ "status": true, "data": result.data });
     }
 });
 
@@ -44,10 +44,10 @@ router.get('/get/:id', [checkSession, authorizeReadRoute], async function (req, 
 router.get('/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
 
     let result = await UserService.getAllCount();
-    if (result === false) {
-        res.sendStatus(403);
+    if (result.status === false) {
+        res.json({ "status": false });
     } else {
-        res.json({ "status": true, "data": result });
+        res.json({ "status": true, "data": result.data });
     }
 });
 
@@ -58,10 +58,10 @@ router.post('/insert', [checkSession, userInsertSchema, authorizeWriteRoute], as
     // insert username, password and role id
     let result = await UserService.insertUser(req.body);
 
-    if (result === false) {
-        res.sendStatus(403);
+    if (result.status === false) {
+        res.json({ "status": false });
     } else {
-        res.json({ "status": true, "msg": "Success", "id": result.insertId });
+        res.json({ "status": true, "msg": "Success", "id": result.data });
     }
 });
 
@@ -70,10 +70,10 @@ router.put('/modify', [checkSession, userModifySchema, authorizeWriteRoute], asy
 
     // insert username, password and role id
     let result = await UserService.modifyUser(req.body);
-    if (result === false) {
-        res.sendStatus(403);
+    if (result.status === false) {
+        res.json({ "status": false });
     } else {
-        res.json({ "status": true, "msg": "Success", "id": result.insertId });
+        res.json({ "status": true, "msg": "Success", "id": result.data });
     }
 });
 
@@ -129,20 +129,11 @@ router.get('/cookie', async function (req, res, next) {
 router.post("/upload/img", [checkSession, authorizeWriteRoute, createSingleImageUpload("userImgUpload")], async function (req, res, next) {
 
     let fileName = req.file.filename;
+    let userId = req.body.id;
 
-    // delete current img stored, to free space
-    let currentImgObj = await UserService.getUserById(req.body.id);
+    let result = await UserService.insertImg({ fileName: fileName, userId: userId });
 
-    if (currentImgObj.img) {
-        fs.unlink("public" + currentImgObj.img, function (err) {
-            if (err) return console.log(err);
-            console.log('File deleted successfully');
-        });
-    }
-    console.log(req.body.id)
-    let result = await UserService.modifyUser({ "imagePath": fileName, "userid": req.body.id });
-
-    if (result === false) {
+    if (result.status === false) {
         res.json({ "status": false, "msg": "Error on inserting user image filename occurred" });
     } else {
         let filePath = `/public/uploads/${fileName}`;

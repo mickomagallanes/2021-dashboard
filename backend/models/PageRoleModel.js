@@ -9,12 +9,12 @@ class PageRoleModel {
     }
 
     /**
-     * check if user role has privilege on the page
+     * get 
      * @param {Number} userId id of the user
      * @param {String} pagePath path of the page, eg: "/user"
      */
 
-    static async getPageRole(userId, pagePath) {
+    static async getPagePrivByUser(userId, pagePath) {
         const stmt = `SELECT a.PageRolesID, a.Privilege FROM PageRoles as a INNER JOIN Pages as b ON a.PageID = b.PageID 
         INNER JOIN Users as c ON a.RoleID = c.RoleID WHERE UserID = ? AND PagePath = ?;`;
 
@@ -31,7 +31,7 @@ class PageRoleModel {
      * get pages based on logged-in user role
      * @param {Number} userId id of the user
      */
-    static async getPagesByRole(userId) {
+    static async getPagesByUser(userId) {
         const stmt = `SELECT a.PageRolesID, b.PageName, b.PagePath FROM PageRoles as a INNER JOIN Pages as b ON a.PageID = b.PageID 
                 INNER JOIN Users as d ON a.RoleID = d.RoleID WHERE UserID = ?`;
 
