@@ -19,7 +19,7 @@ router.post('/authorize', [checkSession], async function (req, res, next) {
 
     if (resp.status) {
 
-        res.json({ "status": true, "msg": "User is authorized", "priv": resp.priv });
+        res.json({ "status": true, "msg": "User is authorized", "data": resp.data });
     } else {
 
         res.json({ "status": false, "msg": "Unauthorized!" });
@@ -38,9 +38,9 @@ router.get('/getPagesBySession', [checkSession], async function (req, res, next)
 
     let resp = await PageRoleService.getPagesBySession(userId);
 
-    if (resp !== false) {
+    if (resp.status) {
 
-        res.json({ "status": true, "msg": "Successfully fetched pages", "data": resp });
+        res.json({ "status": true, "msg": "Successfully fetched pages", "data": resp.data });
     } else {
 
         res.json({ "status": false, "msg": "Unauthorized!" });

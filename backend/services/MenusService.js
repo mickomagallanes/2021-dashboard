@@ -16,9 +16,10 @@ class MenusService {
         let menuArr = await MenusModel.getMenusByRole(userId);
 
         if (menuArr.length) {
-            return menuArr
+            return { status: true, data: menuArr }
         }
-        return false
+        return { status: false }
+
     }
 
 }

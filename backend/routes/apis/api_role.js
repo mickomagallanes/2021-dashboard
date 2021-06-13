@@ -12,10 +12,10 @@ router.get('/get/all', checkSession, async function (req, res, next) {
 
     let result = await RoleService.getAllRoles();
 
-    if (result === false) {
-        res.sendStatus(403);
+    if (result.status === false) {
+        res.json({ "status": false });
     } else {
-        res.json({ "status": true, "data": result });
+        res.json({ "status": true, "data": result.data });
     }
 
 });
@@ -26,10 +26,10 @@ router.get('/get/all', checkSession, async function (req, res, next) {
 router.get('/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
 
     let result = await RoleService.getAllCount();
-    if (result === false) {
-        res.sendStatus(403);
+    if (result.status === false) {
+        res.json({ "status": false });
     } else {
-        res.json({ "status": true, "data": result });
+        res.json({ "status": true, "data": result.data });
     }
 });
 module.exports = router;

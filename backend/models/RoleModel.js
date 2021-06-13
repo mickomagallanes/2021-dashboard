@@ -10,6 +10,7 @@ class RoleModel {
 
     /**
      * get all roles
+     * @return {Array} result
      */
     static async getAllRoles() {
         const stmt = `SELECT RoleID as id, RoleName as rname FROM Roles`;
@@ -24,6 +25,7 @@ class RoleModel {
 
     /**
     * get count of all role for pagination
+    * @return {Array} result
     */
     static async getAllCount() {
         const stmt = `SELECT 

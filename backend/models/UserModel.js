@@ -14,6 +14,8 @@ class UserModel {
      * @param {String} obj.username username of the user
      * @param {String} obj.password plain password of the user
      * @param {String} obj.roleId id from roles table if it is admin, etc
+     * @return {Object} result
+     * @return {Number} result.insertId user id of last inserted
      */
 
     static async insertUser({ username, password, roleId }) {
@@ -36,7 +38,8 @@ class UserModel {
      * @param {String} [obj.roleid] id from roles table if it is admin, etc
      * @param {String} [obj.imagePath] image path of user profile
      * @param {String} [obj.password] plain password of the user
-  
+     * @return {Object} result
+     * @return {Number} result.insertId user id of last inserted
      */
 
     static async modifyUser({ userid, username, roleid, imagePath, password }) {
@@ -72,6 +75,7 @@ class UserModel {
 
     /**
     * get count of all user for pagination
+    * @return {Array} result
     */
     static async getAllUserCount() {
         const stmt = `SELECT 
@@ -92,6 +96,7 @@ class UserModel {
      * @param {Object} obj - An object.
      * @param {Number} [obj.startIndex] start of limit
      * @param {Number} [obj.limit] limit count
+     * @return {Array} result
      */
 
     static async getAllUser({ startIndex, limit }) {
@@ -118,6 +123,7 @@ class UserModel {
     /**
     * get a row using by user id
     * @param {Number} id id of the user
+    * @return {Array} result
     */
 
     static async getUserById(id) {
@@ -144,6 +150,7 @@ class UserModel {
     /**
      * get row by username
      * @param {String} username username of the user
+     * @return {Array} result
      */
 
     static async getByUsername(username) {

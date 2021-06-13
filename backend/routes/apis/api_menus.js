@@ -9,15 +9,15 @@ const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../..
  * get pages based on the logged-in user role
  *
  */
-router.get('/getMenusByRole', [checkSession, authorizeReadRoute], async function (req, res, next) {
+router.get('/getMenusByRole', [checkSession], async function (req, res, next) {
 
     let userId = req.session.userData.userid;
 
     let resp = await MenusService.getMenusByRole(userId);
 
-    if (resp !== false) {
+    if (resp.status !== false) {
 
-        res.json({ "status": true, "msg": "Successfully fetched pages", "data": resp });
+        res.json({ "status": true, "msg": "Successfully fetched pages", "data": resp.data });
     } else {
 
         res.json({ "status": false, "msg": "Unauthorized!" });

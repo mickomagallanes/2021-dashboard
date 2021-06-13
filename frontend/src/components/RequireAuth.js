@@ -44,7 +44,7 @@ const RequireAuth = (Component, apiURL = false) => {
                 );
 
                 if (resp.data.status === true) {
-                    this.setState({ isAuthenticated: true, isLoading: false, priv: resp.data.priv });
+                    this.setState({ isAuthenticated: true, isLoading: false, priv: resp.data.data });
                 } else {
                     this.setState({ isAuthenticated: false, isLoading: false });
                 }

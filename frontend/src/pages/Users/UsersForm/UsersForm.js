@@ -154,28 +154,30 @@ class UsersForm extends React.Component {
       "roleid": this.state.selectedRole,
     }
 
-    return new Promise(async (resolve, reject) => {
-      try {
-        const resp = await axios.post(
-          addUserURL,
-          param,
-          axiosConfig
-        );
 
-        if (resp.data.status === true) {
-          // TODO: create a success alert after adding user or editing
-          resolve(resp.data.id);
+    try {
+      const resp = await axios.post(
+        addUserURL,
+        param,
+        axiosConfig
+      );
 
-        } else {
-          this.setState({ errorMsg: resp.data.msg });
-          resolve(false);
-        }
+      if (resp.data.status === true) {
+        // TODO: create a success alert after adding user or editing
+        return resp.data.id;
 
-      } catch (error) {
-        this.setState({ errorMsg: `${error}` });
-        resolve(false);
+
+      } else {
+        this.setState({ errorMsg: resp.data.msg });
+        return false;
+
       }
-    });
+
+    } catch (error) {
+      this.setState({ errorMsg: `${error}` });
+      return false;
+    }
+
   }
 
   // submits form using edit then returns insertId of user for submit image to use
@@ -186,27 +188,27 @@ class UsersForm extends React.Component {
       "roleid": this.state.selectedRole,
       "userid": this.urlParam
     }
-    return new Promise(async (resolve, reject) => {
-      try {
-        const resp = await axios.put(
-          editUserURL,
-          param,
-          axiosConfig
-        );
 
-        if (resp.data.status === true) {
-          resolve(true);
+    try {
+      const resp = await axios.put(
+        editUserURL,
+        param,
+        axiosConfig
+      );
 
-        } else {
-          this.setState({ errorMsg: resp.data.msg });
-          resolve(false);
-        }
+      if (resp.data.status === true) {
+        return true;
 
-      } catch (error) {
-        this.setState({ errorMsg: `${error}` });
-        resolve(false);
+      } else {
+        this.setState({ errorMsg: resp.data.msg });
+        return false;
       }
-    });
+
+    } catch (error) {
+      this.setState({ errorMsg: `${error}` });
+      return false;
+    }
+
   }
 
   // executes after submitFormAdd or submitFormEdit
@@ -216,32 +218,33 @@ class UsersForm extends React.Component {
     formData.append("userImgUpload", this.imgFile[0]);
     formData.append("id", userId);
 
-    return new Promise(async (resolve, reject) => {
-      try {
-        const resp = await axios.post(
-          uploadImgUserURL,
-          formData,
-          { ...axiosConfig, headers: { 'Content-Type': "multipart/form-data" } } // add new property to axios config
-        );
 
-        if (resp.data.status === true) {
+    try {
+      const resp = await axios.post(
+        uploadImgUserURL,
+        formData,
+        { ...axiosConfig, headers: { 'Content-Type': "multipart/form-data" } } // add new property to axios config
+      );
 
-          this.setState({
-            imgSrc: resp.data.path
-          });
+      if (resp.data.status === true) {
 
-          resolve(true);
-        } else {
+        this.setState({
+          imgSrc: resp.data.data
+        });
 
-          this.setState({ errorMsg: resp.data.msg });
-          resolve(false);
-        }
+        return true;
+      } else {
 
-      } catch (error) {
-        this.setState({ errorMsg: `${error}` });
-        resolve(false);
+        this.setState({ errorMsg: resp.data.msg });
+        return false;
       }
-    });
+
+    } catch (error) {
+      this.setState({ errorMsg: `${error}` });
+      return false;
+
+    }
+
   }
 
   handleChangeUsername = async (e, formikProps) => {
@@ -324,7 +327,7 @@ class UsersForm extends React.Component {
               <div className="row">
                 <div className="col">
 
-                  <Form.Control type="file" name="file" onChange={this.handleFileChange} />
+                  <Form.Control type="file" name="file" onChange={this.handleFileChange} disabled={this.props.priv === "R"} />
                   <img className="img-fluid" id="userImg" src={this.state.imgSrc} alt="User Profile" name="userImgUpload" />
                 </div>
               </div>
@@ -438,8 +441,8 @@ class UsersForm extends React.Component {
                                   value={this.state.selectedRole}
                                   data={this.state.roleData}
                                   className="form-control btn"
-                                  idKey="RoleID"
-                                  valueKey="RoleName"
+                                  idKey="id"
+                                  valueKey="rname"
                                   onChange={(e) => this.handleChangeRole(e)}
                                   disabled={this.props.priv === "R"}
                                 ></Select>

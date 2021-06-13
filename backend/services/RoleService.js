@@ -13,7 +13,12 @@ class RoleService {
     */
     static async getAllRoles() {
         let roleArr = await RoleModel.getAllRoles();
-        return roleArr;
+        if (roleArr.length) {
+            return { status: true, data: roleArr }
+        } else {
+            return { status: false }
+        }
+
     }
 
     /**
@@ -21,7 +26,12 @@ class RoleService {
     */
     static async getAllCount() {
         let roleArr = await RoleModel.getAllCount();
-        return roleArr;
+        if (roleArr.length) {
+            return { status: true, data: roleArr[0] }
+        } else {
+            return { status: false }
+        }
+
     }
 
 }

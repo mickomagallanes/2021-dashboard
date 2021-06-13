@@ -16,9 +16,9 @@ class SubPageService {
         let pagesArr = await SubPageModel.getSubPagesByUserId(userId);
 
         if (pagesArr.length) {
-            return pagesArr
+            return { status: true, data: pagesArr }
         }
-        return false
+        return { status: false }
     }
 
 }

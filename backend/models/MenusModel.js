@@ -11,6 +11,7 @@ class MenusModel {
     /**
      * get menu and parent menu based on logged-in user role
      * @param {Number} userId id of the user
+     * @return {Array} result
      */
     static async getMenusByRole(userId) {
         const stmt = `SELECT b.PagePath, c.MenuName, d.ParentMenuName FROM PageRoles as a INNER JOIN Pages as b ON a.PageID = b.PageID INNER JOIN Menu as c ON b.MenuID = c.MenuID 

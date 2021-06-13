@@ -12,6 +12,7 @@ class PageRoleModel {
      * get 
      * @param {Number} userId id of the user
      * @param {String} pagePath path of the page, eg: "/user"
+     * @return {Array} result
      */
 
     static async getPagePrivByUser(userId, pagePath) {
@@ -30,6 +31,7 @@ class PageRoleModel {
     /**
      * get pages based on logged-in user role
      * @param {Number} userId id of the user
+     * @return {Array} result
      */
     static async getPagesByUser(userId) {
         const stmt = `SELECT a.PageRolesID, b.PageName, b.PagePath FROM PageRoles as a INNER JOIN Pages as b ON a.PageID = b.PageID 

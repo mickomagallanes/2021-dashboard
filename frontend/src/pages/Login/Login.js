@@ -40,26 +40,26 @@ const loginURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/login`;
 
 async function fetchSidebarData() {
 
-  return new Promise(async (resolve, reject) => {
-    try {
-      const resp = await axios.get(
-        menusByRoleUrl,
-        axiosConfig
-      );
 
-      if (resp.data.status === true) {
+  try {
+    const resp = await axios.get(
+      menusByRoleUrl,
+      axiosConfig
+    );
 
-        resolve(resp.data.data);
-      } else {
-        // if no sidebar data is found
-        resolve(false);
-      }
+    if (resp.data.status === true) {
+      return resp.data.data
 
-    } catch (error) {
-      console.log(error)
-      resolve(false);
+    } else {
+      // if no sidebar data is found
+      return false;
     }
-  });
+
+  } catch (error) {
+    console.log(error)
+    return false;
+  }
+
 }
 class Login extends React.Component {
 

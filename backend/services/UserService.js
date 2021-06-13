@@ -60,10 +60,10 @@ class UserService {
     static async getAllCount() {
 
         const userCount = await UserModel.getAllUserCount();
-        if (userCount == false) {
-            return { status: false }
-        } else {
+        if (userCount.length) {
             return { status: true, data: userCount[0] }
+        } else {
+            return { status: false }
         }
 
 
@@ -88,7 +88,7 @@ class UserService {
         }
         let ret = await UserModel.insertUser(obj);
 
-        if (ret == false) {
+        if (ret === false) {
             return { status: false }
         } else {
             return { status: true, data: ret.insertId }
@@ -163,9 +163,11 @@ class UserService {
 
                 return { status: true, data: userData }
             }
+        } else {
+            return { status: false }
         }
 
-        return { status: false }
+
     }
 
 
@@ -187,7 +189,7 @@ class UserService {
             });
         }
 
-        let result = await UserService.modifyUser({ "imagePath": fileName, "userid": req.body.id });
+        let result = await UserService.modifyUser({ "imagePath": fileName, "userid": userId });
         return result;
     }
 

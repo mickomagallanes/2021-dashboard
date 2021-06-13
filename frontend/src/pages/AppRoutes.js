@@ -22,7 +22,7 @@ const axiosConfig = {
 }
 
 const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/getPagesBySession`;
-const subPagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/getSubPageByRole`;
+const subPagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/getSubPagesBySession`;
 
 // TODO: pass in data pages and subpages
 const LoggedInContainer = RequireLogin(DefaultContainer);
@@ -56,50 +56,52 @@ class AppRoutes extends PureComponent {
 
 async function fetchPagesData() {
 
-  return new Promise(async (resolve, reject) => {
-    try {
-      const resp = await axios.get(
-        pagesByRoleUrl,
-        axiosConfig
-      );
 
-      if (resp.data.status === true) {
+  try {
+    const resp = await axios.get(
+      pagesByRoleUrl,
+      axiosConfig
+    );
 
-        resolve(resp.data.data);
-      } else {
-        // if no sidebar data is found
-        resolve(false);
-      }
+    if (resp.data.status === true) {
+      return resp.data.data;
 
-    } catch (error) {
-      console.log(error)
-      resolve(false);
+    } else {
+      // if no sidebar data is found
+      return false;
+
     }
-  });
+
+  } catch (error) {
+    console.log(error)
+    return false;
+
+  }
+
 }
 
 async function fetchSubPagesData() {
 
-  return new Promise(async (resolve, reject) => {
-    try {
-      const resp = await axios.get(
-        subPagesByRoleUrl,
-        axiosConfig
-      );
 
-      if (resp.data.status === true) {
+  try {
+    const resp = await axios.get(
+      subPagesByRoleUrl,
+      axiosConfig
+    );
 
-        resolve(resp.data.data);
-      } else {
-        // if no sidebar data is found
-        resolve(false);
-      }
+    if (resp.data.status === true) {
 
-    } catch (error) {
-      console.log(error)
-      resolve(false);
+      return resp.data.data;
+    } else {
+      // if no sidebar data is found
+      return false;
     }
-  });
+
+  } catch (error) {
+    console.log(error)
+    return false;
+  }
+
 }
 
 function matchComponentName(name) {
@@ -132,8 +134,6 @@ function LoginContainer() {
 
 // TODO: make path connected to the database
 function DefaultContainer() {
-  // let loginMiddleware = compose(RequireLogout, PlainPageLayout);
-  // let otherMiddleware = compose(RequireAuth, FullPageLayout);
 
   const [pagesData, setPagesData] = useState([]);
   const [subPagesData, setSubPagesData] = useState([]);
