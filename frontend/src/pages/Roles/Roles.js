@@ -22,9 +22,10 @@ class Roles extends React.Component {
     ];
   }
 
-  componentDidMount() {
+  async componentDidMount() {
 
-    this.fetchData();
+    let data = await this.fetchData();
+    saveData(data);
   }
 
   fetchData = async () => {
@@ -41,20 +42,25 @@ class Roles extends React.Component {
 
       const { data } = resp;
 
-      if (data.status === true) {
-        this.setState({
-          data: data.data,
-          errorMsg: false
-        });
-      } else {
-        this.setState({
-          errorMsg: data.msg
-        });
-      }
+      return data;
 
     } catch (error) {
       this.setState({
         errorMsg: `${error}`
+      });
+    }
+  }
+
+  async saveData(data) {
+
+    if (data.status === true) {
+      this.setState({
+        data: data.data,
+        errorMsg: false
+      });
+    } else {
+      this.setState({
+        errorMsg: data.msg
       });
     }
   }
@@ -75,7 +81,7 @@ class Roles extends React.Component {
           >
             {this.state.errorMsg}
           </Alert>
-          <div className="row">
+          <div className="row" data-testid="Roles">
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card">
                 <div className="card-body">

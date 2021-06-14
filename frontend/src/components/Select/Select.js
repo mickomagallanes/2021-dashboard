@@ -18,6 +18,7 @@ class Select extends React.Component {
 
     return (
       <select
+        data-testid="Select"
         id={this.props.id}
         className={this.props.className}
         value={this.props.value}

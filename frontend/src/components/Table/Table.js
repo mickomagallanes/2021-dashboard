@@ -1,6 +1,7 @@
 import React from 'react';
 import './Table.css';
 import { Link } from 'react-router-dom';
+import { act } from "react-dom/test-utils";
 
 /**
   * creates a table
@@ -18,7 +19,7 @@ class Table extends React.Component {
     return (
 
       <div className="table-responsive">
-        <table className={`table ${this.props.tblClass}`}>
+        <table data-testid="Table" className={`table ${this.props.tblClass}`}>
           <thead>
             <tr>
               {this.props.colData.map(x => <th key={x.id}>{x.name}</th>)}
