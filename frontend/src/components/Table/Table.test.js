@@ -19,15 +19,8 @@ describe('<Table />', () => {
       { "id": "uname", "name": "Username" },
       { "id": "rname", "name": "Role Name" }
     ];
-    // * @param {String} urlRedirect the ink of form edit/read
-    // * @param {Boolean} isWriteable is read or write privilege. True for RW. False for R
-    // * @param {Array} data array data to be processed
-    // * @param {String} tblClass class css of table
-    // * @param {Array} colData column label matched to the data
-    // * @param {Boolean} [actionDisabled] is action disabled? Default: false
 
     await act(async () => {
-
       render(
         <BrowserRouter>
           <Table

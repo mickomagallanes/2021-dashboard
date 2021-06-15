@@ -30,7 +30,5 @@ describe('<Select />', () => {
     expect(select).toBeInTheDocument();
     expect(select).toHaveLength(4);
 
-    // remove the mock to ensure tests are completely isolated
-    // global.fetch.mockRestore();
   });
 });

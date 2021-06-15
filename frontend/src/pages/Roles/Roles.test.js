@@ -2,11 +2,12 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { act } from "react-dom/test-utils";
-import Roles from './Roles';
+import * as rolesModule from './Roles';
+
+const Roles = rolesModule.default;
 
 describe('<Roles />', () => {
   test('it should mount', async () => {
-    const rolesClass = new Roles();
 
     const data = [
       { id: 1, rname: "test1" },
@@ -15,10 +16,10 @@ describe('<Roles />', () => {
       { id: 4, rname: "test4" }
     ];
 
-    // TODO: expect Roles class state data
-    jest.spyOn(rolesClass, "fetchData").mockImplementation(() =>
+    jest.spyOn(rolesModule, 'fetchData').mockImplementation(() =>
       Promise.resolve({
-        json: () => Promise.resolve(data)
+        status: true,
+        data: data
       })
     );
 
@@ -28,11 +29,15 @@ describe('<Roles />', () => {
     });
 
     const roles = screen.getByTestId('Roles');
+    const table = screen.getByTestId('Table');
+    const tr = table.querySelectorAll('tr');
 
-    expect(roles.state('data')).toEqual(data);
     expect(roles).toBeInTheDocument();
+    expect(table).toBeInTheDocument();
+    expect(tr).toHaveLength(5);
 
     // remove the mock to ensure tests are completely isolated
-    global.fetch.mockRestore();
+    rolesModule.fetchData.mockRestore();
+
   });
 });

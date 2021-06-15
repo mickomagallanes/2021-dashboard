@@ -39,8 +39,6 @@ const schema = yup.object().shape({
 const loginURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/login`;
 
 async function fetchSidebarData() {
-
-
   try {
     const resp = await axios.get(
       menusByRoleUrl,
