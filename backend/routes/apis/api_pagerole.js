@@ -43,7 +43,7 @@ router.get('/getPagesBySession', [checkSession], async function (req, res, next)
         res.json({ "status": true, "msg": "Successfully fetched pages", "data": resp.data });
     } else {
 
-        res.json({ "status": false, "msg": "Unauthorized!" });
+        res.json({ "status": false, "msg": "Failed getting pages!" });
     }
 
 });

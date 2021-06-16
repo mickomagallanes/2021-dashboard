@@ -4,15 +4,16 @@ import axios from 'axios';
 import Table from '../../components/Table/Table.lazy';
 import { retryRequest } from "../../helpers/utils";
 import { Alert } from 'react-bootstrap';
-import * as currentModule from './Roles';
+import * as currentModule from './Roles'; // use currentmodule to call func outside class, for testing
 
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
 
-export async function fetchData() {
-  const axiosConfig = {
-    withCredentials: true,
-    timeout: 10000
-  }
+const axiosConfig = {
+  withCredentials: true,
+  timeout: 10000
+}
+
+export async function fetchRolesData() {
 
   try {
     const resp = await axios.get(
@@ -25,11 +26,11 @@ export async function fetchData() {
     return data;
 
   } catch (error) {
-    return error;
+    return { status: false, msg: error };
   }
 }
 
-export default class Roles extends React.Component {
+class Roles extends React.Component {
 
   constructor() {
     super();
@@ -46,8 +47,8 @@ export default class Roles extends React.Component {
 
   async componentDidMount() {
 
-    // import current module and call fetchData for testing benefits
-    let data = await currentModule.fetchData();
+    // import current module and call fetchRolesData for testing benefits
+    let data = await currentModule.fetchRolesData();
 
     this.saveData(data);
   }
@@ -108,3 +109,4 @@ export default class Roles extends React.Component {
 
 }
 
+export default Roles;

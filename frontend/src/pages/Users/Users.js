@@ -6,9 +6,49 @@ import { retryRequest } from "../../helpers/utils";
 import { Link } from 'react-router-dom';
 import Pagination from '../../components/Pagination/Pagination';
 import { Alert } from 'react-bootstrap';
+import * as currentModule from './Users'; // use currentmodule to call func outside class, for testing
 
 const userURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/all`;
 const userCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/all/count`;
+
+const axiosConfig = {
+  withCredentials: true,
+  timeout: 10000
+}
+
+export async function fetchCount() {
+
+  try {
+    const respCount = await axios.get(
+      userCountURL,
+      axiosConfig
+    );
+    const { data } = respCount;
+
+    return data;
+
+  } catch (error) {
+    return { status: false, msg: error }
+  }
+}
+
+export async function fetchUsersData(pageNumber, currentEntries) {
+
+  try {
+
+    const resp = await axios.get(
+      `${userURL}?page=${pageNumber}&limit=${currentEntries}`,
+      axiosConfig
+    );
+
+    const { data } = resp;
+
+    return data;
+
+  } catch (error) {
+    return { status: false, msg: error }
+  }
+}
 
 class Users extends React.Component {
 
@@ -32,35 +72,17 @@ class Users extends React.Component {
 
   componentDidMount() {
 
-    this.fetchData();
+    this.fetchAndSave();
   }
 
-  // passed pageNumber as param to prevent executing render twice when setting state twice
-  fetchData = async (pageNumber = this.state.currentPage) => {
-    const axiosConfig = {
-      withCredentials: true,
-      timeout: 10000
-    }
-
+  async fetchAndSave(pageNumber = this.state.currentPage) {
     // first, fetch count first to send the right page on the next request
-    let rowCount;
-    try {
-      const respCount = await axios.get(
-        userCountURL,
-        axiosConfig
-      );
+    let respCount = await currentModule.fetchCount();
 
-      rowCount = respCount.data.data.count;
-    } catch (error) {
-      this.setState({
-        errorMsg: `${error}`
-      });
-      return;
-    }
+    if (respCount.status === true) {
+      let count = respCount.data.count;
 
-    // second, fetch the users data
-    try {
-      const maxPage = Math.ceil(rowCount / this.state.currentEntries);
+      const maxPage = Math.ceil(count / this.state.currentEntries);
 
       // if state.currentPage is higher than the maxPage, for instance when
       // state.currentEntries is changed with higher state.currentPage
@@ -68,41 +90,39 @@ class Users extends React.Component {
         pageNumber = 1;
       }
 
-      const resp = await axios.get(
-        `${userURL}?page=${pageNumber}&limit=${this.state.currentEntries}`,
-        axiosConfig
-      );
+      // second, fetch the users data
+      const resp = await currentModule.fetchUsersData(pageNumber, this.state.currentEntries);
 
-      const { data } = resp;
-
-      if (data.status === true) {
+      if (resp.status === true) {
         this.setState({
           currentPage: pageNumber,
-          data: data.data.users,
+          data: resp.data,
           maxPage: maxPage,
-          maxUsers: data.data.count,
+          maxUsers: count,
           errorMsg: false
         });
       } else {
         this.setState({
-          errorMsg: data.msg
+          errorMsg: resp.msg
         });
       }
 
-    } catch (error) {
+    } else {
       this.setState({
-        errorMsg: `${error}`
+        errorMsg: respCount.msg
       });
     }
+
+
   }
 
   paginationClick = async (pageNumber) => {
-    this.fetchData(pageNumber);
+    this.fetchAndSave(pageNumber);
   }
 
   entryOnChange = async (e) => {
     await this.setState({ currentEntries: e.target.value });
-    this.fetchData();
+    this.fetchAndSave();
   }
 
 
@@ -123,7 +143,7 @@ class Users extends React.Component {
           >
             {this.state.errorMsg}
           </Alert>
-          <div className="row">
+          <div className="row" data-testid="Users" >
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card">
                 <div className="card-body">

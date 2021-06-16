@@ -3,6 +3,16 @@ import './Pagination.css';
 import styled from "styled-components";
 import Spinner from '../Spinner/Spinner';
 
+function getPagingRange(current, { min = 1, total = 20, length = 5 } = {}) {
+  if (length > total) length = total;
+
+  let start = current - Math.floor(length / 2);
+  start = Math.max(start, min);
+  start = Math.min(start, min + total - length);
+
+  return Array.from({ length: length }, (el, i) => start + i);
+}
+
 class Pagination extends React.Component {
 
   // pass the page number to the event listener
@@ -52,31 +62,21 @@ class Pagination extends React.Component {
       {
         // numbering of pagination
         cond: () => {
-          let pageInterval = null;
+          let pageArr = getPagingRange(currentPage, { min: 1, total: maxPage, length: 5 })
 
-          if (currentPage === 2) {
-            pageInterval = currentPage - 1;
-          } else if (currentPage === 1) {
-            pageInterval = currentPage;
-          } else if (currentPage === (maxPage - 1) && maxPage > 5) {
-            pageInterval = currentPage - 3;
-          } else if (currentPage === maxPage && maxPage > 5) {
-            pageInterval = currentPage - 4;
-          } else {
-            pageInterval = currentPage - 2;
-          }
-
-          let pageNumbers = maxPage > 0 && maxPage < 5 ? maxPage : 5;
           let arrElem = [];
-          for (let i = pageInterval, n = 1 + pageNumbers; i < n; i++) {
-            let isActive = (currentPage === i) ? "active" : "";
+
+          for (let i = 0, n = pageArr.length; i < n; i++) {
+            let currNumber = pageArr[i];
+
+            let isActive = (currentPage === currNumber) ? "active" : "";
             arrElem.push(<li
-              key={i}
-              id={i}
-              onClick={this.handleClick(i)}
+              key={currNumber}
+              id={currNumber}
+              onClick={this.handleClick(currNumber)}
               className={`page-item ${isActive}`}
             >
-              <StyledA className="page-link" key={i}>{i}</StyledA>
+              <StyledA className="page-link" key={currNumber}>{currNumber}</StyledA>
             </li>)
           }
 

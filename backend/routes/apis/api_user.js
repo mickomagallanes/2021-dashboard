@@ -19,9 +19,9 @@ router.get('/get/all', [checkSession, userGetAllSchema, authorizeReadRoute], asy
 
     let result = await UserService.getAllUser(req.query);
     if (result.status === false) {
-        res.json({ "status": false });
+        res.json({ "status": false, "msg": "Failed getting all rows" });
     } else {
-        res.json({ "status": true, "data": result.data });
+        res.json({ "status": true, "msg": "Successful getting all rows", "data": result.data });
     }
 });
 
@@ -32,9 +32,9 @@ router.get('/get/all', [checkSession, userGetAllSchema, authorizeReadRoute], asy
 router.get('/get/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
     let result = await UserService.getUserById(req.params.id);
     if (result.status === false) {
-        res.json({ "status": false });
+        res.json({ "status": false, "msg": "Failed getting row by id" });
     } else {
-        res.json({ "status": true, "data": result.data });
+        res.json({ "status": true, "msg": "Successful getting row by id", "data": result.data });
     }
 });
 
@@ -45,9 +45,9 @@ router.get('/get/all/count', [checkSession, authorizeReadRoute], async function 
 
     let result = await UserService.getAllCount();
     if (result.status === false) {
-        res.json({ "status": false });
+        res.json({ "status": false, "msg": "Failed getting count" });
     } else {
-        res.json({ "status": true, "data": result.data });
+        res.json({ "status": true, "msg": "Successful getting count", "data": result.data });
     }
 });
 
@@ -59,9 +59,9 @@ router.post('/insert', [checkSession, userInsertSchema, authorizeWriteRoute], as
     let result = await UserService.insertUser(req.body);
 
     if (result.status === false) {
-        res.json({ "status": false });
+        res.json({ "status": false, "msg": "Failed inserting" });
     } else {
-        res.json({ "status": true, "msg": "Success", "id": result.data });
+        res.json({ "status": true, "msg": "Successful inserting", "id": result.data });
     }
 });
 
@@ -71,9 +71,9 @@ router.put('/modify', [checkSession, userModifySchema, authorizeWriteRoute], asy
     // insert username, password and role id
     let result = await UserService.modifyUser(req.body);
     if (result.status === false) {
-        res.json({ "status": false });
+        res.json({ "status": false, "msg": "Failed modification" });
     } else {
-        res.json({ "status": true, "msg": "Success", "id": result.data });
+        res.json({ "status": true, "msg": "Successful modification", "id": result.data });
     }
 });
 

@@ -17,10 +17,10 @@ router.get('/getSubPagesBySession', [checkSession], async function (req, res, ne
 
     if (resp.status !== false) {
 
-        res.json({ "status": true, "msg": "Successfully fetched pages", "data": resp.data });
+        res.json({ "status": true, "msg": "Successfully fetched subpages", "data": resp.data });
     } else {
 
-        res.json({ "status": false, "msg": "Unauthorized!" });
+        res.json({ "status": false, "msg": "Failed getting subpages!" });
     }
 
 });

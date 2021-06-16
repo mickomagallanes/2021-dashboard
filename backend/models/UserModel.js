@@ -94,16 +94,37 @@ class UserModel {
     /**
      * get all user data from database
      * @param {Object} obj - An object.
-     * @param {Number} [obj.startIndex] start of limit
-     * @param {Number} [obj.limit] limit count
      * @return {Array} result
      */
 
-    static async getAllUser({ startIndex, limit }) {
+    static async getAllUser() {
 
-        const limitClause = (startIndex !== false || startIndex !== undefined)
-            ? ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`
-            : "";
+        const stmt = `SELECT 
+               a.UserID as id,
+               b.RoleName as rname,
+               a.Username as uname
+            FROM
+                Users as a INNER JOIN Roles as b ON a.RoleID = b.RoleID ORDER BY id `;
+        try {
+            const result = await mysql_conn.query(stmt);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+    * get all user data from database
+    * @param {Object} obj - An object.
+    * @param {Number} obj.startIndex start of limit
+    * @param {Number} obj.limit limit count
+    * @return {Array} result
+    */
+
+    static async getAllUserPaged({ startIndex, limit }) {
+
+        const limitClause = ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`;
 
         const stmt = `SELECT 
                a.UserID as id,

@@ -13,20 +13,32 @@ class UserService {
     /**
      * get all user data
      * @param {Object} obj - An object.
-     * @param {String} [obj.page] current page
-     * @param {String} [obj.limit] limit count of rows
+     * @param {String} [obj.page] current page, must be greater than 0
+     * @param {String} [obj.limit] limit count of rows, greater than 0
      * @return all rows of users
      */
 
     static async getAllUser({ page, limit }) {
-        let isPaged = !!page && !!limit; // for pagination
+        if ((!!page && page > 0) && (!limit || !(limit > 0))) {
+            return { status: false }
+        } else if ((!!limit && limit > 0) && (!page || !(page > 0))) {
+            return { status: false }
+        }
+
+        let isPaged = (!!page && page > 0) && (!!limit && limit > 0); // for pagination
+
         const startIndex = isPaged ? (page - 1) * limit : false;
 
-        const userData = await UserModel.getAllUser({ startIndex: startIndex, limit: limit });
+        let userData;
+        if (startIndex === false) {
+            userData = await UserModel.getAllUser();
+        } else {
+            userData = await UserModel.getAllUserPaged({ startIndex: startIndex, limit: limit });
+        }
 
-        if (isPaged) {
-            const userCount = await UserModel.getAllUserCount();
-            return { status: true, data: { "count": userCount[0].count, "users": userData } }
+        if (userData.length) {
+
+            return { status: true, data: userData }
 
         } else {
             return { status: false }

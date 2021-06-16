@@ -16,10 +16,11 @@ describe('<Roles />', () => {
       { id: 4, rname: "test4" }
     ];
 
-    jest.spyOn(rolesModule, 'fetchData').mockImplementation(() =>
+    jest.spyOn(rolesModule, 'fetchRolesData').mockImplementation(() =>
       Promise.resolve({
         status: true,
-        data: data
+        data: data,
+        msg: "success"
       })
     );
 
@@ -37,7 +38,7 @@ describe('<Roles />', () => {
     expect(tr).toHaveLength(5);
 
     // remove the mock to ensure tests are completely isolated
-    rolesModule.fetchData.mockRestore();
+    rolesModule.fetchRolesData.mockRestore();
 
   });
 });
