@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { act } from "react-dom/test-utils";
 import * as usersModule from './Users';
@@ -30,9 +30,9 @@ describe('<Users />', () => {
       })
     );
 
-    jest.spyOn(usersModule, 'fetchUsersData').mockImplementation(() =>
+    jest.spyOn(usersModule, 'fetchUsersData').mockImplementation((pageNumber, currentEntries) =>
       Promise.resolve({
-        data: data,
+        data: data.slice((pageNumber - 1) * currentEntries, pageNumber * currentEntries),
         msg: "Successful getting all rows",
         status: true
       })
@@ -44,13 +44,27 @@ describe('<Users />', () => {
       render(<BrowserRouter><Users /></BrowserRouter>);
     });
 
+
     const users = screen.getByTestId('Users');
     const table = screen.getByTestId('Table');
     const tr = table.querySelectorAll('tr');
 
     expect(users).toBeInTheDocument();
     expect(table).toBeInTheDocument();
-    expect(tr).toHaveLength(data.length + 1);
+    expect(tr).toHaveLength(6);
+
+    const inputEntry = users.querySelector("#inputEntry");
+
+    const newEntry = 7;
+
+    await act(async () => {
+      fireEvent.change(inputEntry, { target: { value: newEntry } });
+    });
+
+    const tr2 = table.querySelectorAll('tr');
+
+    expect(inputEntry.value).toBe(`${newEntry}`);
+    expect(tr2).toHaveLength(newEntry + 1);
 
     // remove the mock to ensure tests are completely isolated
     usersModule.fetchUsersData.mockRestore();

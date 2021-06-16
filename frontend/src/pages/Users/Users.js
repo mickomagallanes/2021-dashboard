@@ -153,6 +153,7 @@ class Users extends React.Component {
                       <span className="float-sm-left d-block mt-1 mt-sm-0 text-center">
                         Show
                         <input
+                          id="inputEntry"
                           className="form-control ml-2 mr-2"
                           value={this.state.currentEntries}
                           onChange={(e) => { this.entryOnChange(e) }}
