@@ -14,10 +14,10 @@ async function testPagination({ currentPage, maxPage, expectLength }) {
 
   const pagination = screen.getByTestId('Pagination');
   const li = pagination.querySelectorAll('li');
-  const thirdPage = li.querySelector([key = currentPage]);
+  const currentLi = pagination.querySelector(`#page${currentPage}`);
 
   await act(async () => {
-    fireEvent.click(thirdPage);
+    fireEvent.click(currentLi);
   });
 
   expect(logged).toReturnWith(currentPage);
@@ -28,30 +28,30 @@ async function testPagination({ currentPage, maxPage, expectLength }) {
 
 describe('<Pagination />', () => {
   test('pagination test 1', async () => {
-    testPagination({ currentPage: 1, maxPage: 6, expectLength: 7 });
+    return testPagination({ currentPage: 1, maxPage: 6, expectLength: 7 });
   });
 
   test('pagination test 2', async () => {
-    testPagination({ currentPage: 3, maxPage: 6, expectLength: 9 });
+    return testPagination({ currentPage: 3, maxPage: 6, expectLength: 9 });
   });
 
   test('pagination test 3', async () => {
-    testPagination({ currentPage: 2, maxPage: 6, expectLength: 8 });
+    return testPagination({ currentPage: 2, maxPage: 6, expectLength: 9 });
   });
 
   test('pagination test 4', async () => {
-    testPagination({ currentPage: 6, maxPage: 6, expectLength: 7 });
+    return testPagination({ currentPage: 6, maxPage: 6, expectLength: 7 });
   });
 
   test('pagination test 5', async () => {
-    testPagination({ currentPage: 5, maxPage: 6, expectLength: 8 });
+    return testPagination({ currentPage: 5, maxPage: 6, expectLength: 9 });
   });
 
   test('pagination test 6', async () => {
-    testPagination({ currentPage: 4, maxPage: 6, expectLength: 9 });
+    return testPagination({ currentPage: 4, maxPage: 6, expectLength: 9 });
   });
 
   test('pagination test 7', async () => {
-    testPagination({ currentPage: 6, maxPage: 7, expectLength: 8 });
+    return testPagination({ currentPage: 6, maxPage: 7, expectLength: 9 });
   });
 });

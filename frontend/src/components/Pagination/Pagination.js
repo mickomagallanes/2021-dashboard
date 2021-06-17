@@ -71,8 +71,8 @@ class Pagination extends React.Component {
 
             let isActive = (currentPage === currNumber) ? "active" : "";
             arrElem.push(<li
-              key={currNumber}
-              id={currNumber}
+              key={`page${currNumber}`}
+              id={`page${currNumber}`}
               onClick={this.handleClick(currNumber)}
               className={`page-item ${isActive}`}
             >

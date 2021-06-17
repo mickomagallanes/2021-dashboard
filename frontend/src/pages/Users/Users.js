@@ -75,7 +75,7 @@ class Users extends React.Component {
     this.fetchAndSave();
   }
 
-  async fetchAndSave(pageNumber = this.state.currentPage) {
+  fetchAndSave = async (pageNumber = this.state.currentPage) => {
     // first, fetch count first to send the right page on the next request
     let respCount = await currentModule.fetchCount();
 
@@ -112,8 +112,6 @@ class Users extends React.Component {
         errorMsg: respCount.msg
       });
     }
-
-
   }
 
   paginationClick = async (pageNumber) => {
@@ -184,8 +182,6 @@ class Users extends React.Component {
             </div>
           </div>
         </div>
-
-
 
       </>
     );

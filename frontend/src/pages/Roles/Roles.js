@@ -53,7 +53,7 @@ class Roles extends React.Component {
     this.saveData(data);
   }
 
-  async saveData(data) {
+  saveData = async (data) => {
 
     if (data.status === true) {
       this.setState({

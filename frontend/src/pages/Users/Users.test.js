@@ -4,6 +4,7 @@ import '@testing-library/jest-dom/extend-expect';
 import { act } from "react-dom/test-utils";
 import * as usersModule from './Users';
 import { BrowserRouter } from 'react-router-dom';
+const Users = usersModule.default;
 
 async function testUsers({ data, newEntry }) {
 
@@ -21,7 +22,6 @@ async function testUsers({ data, newEntry }) {
       status: true
     })
   );
-
 
   // Use the asynchronous version of act to apply resolved promises
   await act(async () => {
@@ -44,7 +44,7 @@ async function testUsers({ data, newEntry }) {
 
   // if, then there's next and last page
   if (data.length > currentEntriesHardCoded) {
-    const totalPages = data.length / currentEntriesHardCoded;
+    const totalPages = Math.ceil(data.length / currentEntriesHardCoded);
     const pageNumberLength = totalPages > 5 ? 5 : totalPages;
 
     expect(li).toHaveLength(pageNumberLength + 2);
@@ -63,7 +63,7 @@ async function testUsers({ data, newEntry }) {
 
   // expect table rows on new entry
   const tr2 = table.querySelectorAll('tr');
-  if (data.length < newEntry) {
+  if (data.length > newEntry) {
     expect(tr2).toHaveLength(newEntry + 1);
   } else {
     expect(tr2).toHaveLength(data.length + 1);
@@ -73,12 +73,12 @@ async function testUsers({ data, newEntry }) {
   // expect pagination list on 2nd page, new entry
   const li2 = pagination.querySelectorAll('li');
   if ((data.length - newEntry) > newEntry) {
-    const nextPage = li2.querySelector("#next");
+    const nextPage = pagination.querySelector("#next");
 
     await act(async () => {
       fireEvent.click(nextPage);
     });
-    const secondTotalPages = (data.length - newEntry) / newEntry;
+    const secondTotalPages = Math.ceil((data.length - newEntry) / newEntry);
     const secondNumberLength = secondTotalPages > 4 ? 4 : secondTotalPages;
 
     expect(li2).toHaveLength(secondNumberLength + 5);
@@ -89,6 +89,7 @@ async function testUsers({ data, newEntry }) {
 
   // expect table rows on 2nd page, new entry
   const tr3 = table.querySelectorAll('tr');
+
   if ((data.length - newEntry) < newEntry) {
     expect(tr3).toHaveLength(newEntry + 1);
   } else {
@@ -99,8 +100,6 @@ async function testUsers({ data, newEntry }) {
   usersModule.fetchUsersData.mockRestore();
   usersModule.fetchCount.mockRestore();
 }
-
-const Users = usersModule.default;
 
 describe('<Users />', () => {
   test('Users test 1', async () => {
@@ -117,7 +116,7 @@ describe('<Users />', () => {
       { id: 10, rname: "superadmin", uname: "dorco10" }
     ];
 
-    testUsers({ data: data, newEntry: 6 })
+    return testUsers({ data: data, newEntry: 6 })
 
   });
 
@@ -139,7 +138,7 @@ describe('<Users />', () => {
       { id: 14, rname: "superadmin", uname: "dorco14" }
     ];
 
-    testUsers({ data: data, newEntry: 6 })
+    return testUsers({ data: data, newEntry: 6 })
 
   });
 
@@ -150,7 +149,7 @@ describe('<Users />', () => {
 
     ];
 
-    testUsers({ data: data, newEntry: 6 })
+    return testUsers({ data: data, newEntry: 6 })
 
   });
 
@@ -173,7 +172,7 @@ describe('<Users />', () => {
 
     ];
 
-    testUsers({ data: data, newEntry: 8 })
+    return testUsers({ data: data, newEntry: 8 })
 
   });
 });
