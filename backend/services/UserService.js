@@ -128,7 +128,7 @@ class UserService {
                 userid: userid,
                 username: username,
                 roleid: roleid,
-                imagePath: imagePath,
+
                 password: hashedPassword
 
             };
@@ -139,8 +139,7 @@ class UserService {
             let obj = {
                 userid: userid,
                 username: username,
-                roleid: roleid,
-                imagePath: imagePath
+                roleid: roleid
 
             };
 

@@ -200,6 +200,7 @@ class Sidebar extends React.Component {
           </li>
 
           {(this.sidebarData.length) && this.sidebarData.map(item =>
+            // match parent menu to the current page location
             (item.ParentMenuName != null)
               ? <li key={item.ParentMenuName} className={this.isPathActive(item.ParentMenuName) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
                 <div className={!!this.state[`${item.ParentMenuName}Open`] ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState(`${item.ParentMenuName}Open`)} data-toggle="collapse">
@@ -214,9 +215,10 @@ class Sidebar extends React.Component {
                     <ul className="nav flex-column sub-menu">
 
                       {item.MenuName.map((item2, key2) => {
+
+                        // match child menu to the current page location
                         return <li key={item.PagePath[key2]} className="nav-item"> <Link className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-link active' : 'nav-link'} to={`${item.PagePath[key2]}`}><Trans>{item2}</Trans></Link></li>
                       })}
-
 
                     </ul>
                   </div>
@@ -230,7 +232,6 @@ class Sidebar extends React.Component {
                   </Link>
                 </li>
               })
-
 
           )}
 
@@ -369,13 +370,19 @@ class Sidebar extends React.Component {
   }
 
   isPathActive(path) {
-    let matchedSidebarData = this.sidebarData.find(o => o.ParentMenuName === path);
+    let matchedSidebarData = this.sidebarData.find(o => o.ParentMenuName == path);
 
     if (matchedSidebarData != undefined) {
-      return (this.props.location.pathname == path) ||
-        matchedSidebarData.PagePath.find((e) => this.props.location.pathname == e);
+      return (
+        this.props.location.pathname == path) ||
+        this.props.location.pathname.startsWith(path + "/") ||
+        matchedSidebarData.PagePath.find((e) => this.props.location.pathname == e) ||
+
+        // matches subpages. ex: "/users" matches "/users/form/1"
+        matchedSidebarData.PagePath.find((e) => this.props.location.pathname.startsWith(e + "/"));
     }
-    return this.props.location.pathname == path
+    return this.props.location.pathname == path ||
+      this.props.location.pathname.startsWith(path + "/")
   }
 
 }

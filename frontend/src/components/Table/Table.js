@@ -28,11 +28,18 @@ class Table extends React.Component {
             </tr>
           </thead>
           <tbody>
+            {!this.props.data.length &&
+              <tr>
+                <td>
+                  <p>Table is empty!</p>
+                </td>
+              </tr>
+            }
             {
               // data from database used for tr key
               // td key used combination of data from db and hardcoded data
               // e.g: "rname2" where "rname" is hardcoded id and "2" is the row id from db
-              this.props.data.map(x =>
+              !!this.props.data.length && this.props.data.map(x =>
                 <tr key={x.id}>
                   {this.props.colData.map(y => <td key={y.id + x.id}>{x[y.id]}</td>)}
 

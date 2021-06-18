@@ -8,7 +8,7 @@ const utils = require('../utils/session.js');
 async function authorizeReadRoute(req, res, next) {
     const userId = req.session.userData.userid;
 
-    const resp = await RouteRoleModel.getRouteRole(userId, req.baseUrl);
+    const resp = await RouteRoleModel.getRoutePrivByUser(userId, req.baseUrl);
     if (resp.length) {
         const { Privilege } = resp[0];
 
@@ -35,7 +35,7 @@ async function authorizeReadRoute(req, res, next) {
 async function authorizeWriteRoute(req, res, next) {
     const userId = req.session.userData.userid;
 
-    let resp = await RouteRoleModel.getRouteRole(userId, req.baseUrl);
+    let resp = await RouteRoleModel.getRoutePrivByUser(userId, req.baseUrl);
 
     if (resp.length) {
         const { Privilege } = resp[0];

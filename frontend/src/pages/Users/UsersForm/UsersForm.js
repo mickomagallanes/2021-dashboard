@@ -35,9 +35,37 @@ function equalTo(ref, msg) {
   })
 };
 
+export async function fetchUserData(urlParam) {
+  try {
+    const resp = await axios.get(
+      userURL + urlParam,
+      axiosConfig
+    );
+    const { data } = resp;
+
+    return data;
+  } catch (error) {
+    return { status: false, msg: error }
+  }
+}
+
+export async function fetchRoleData() {
+  try {
+    const resp = await axios.get(
+      roleURL,
+      axiosConfig
+    );
+
+    const { data } = resp;
+    return data;
+  } catch (error) {
+    return { status: false, msg: error }
+  }
+}
+
 yup.addMethod(yup.string, 'equalTo', equalTo);
 
-class UsersForm extends React.Component {
+export default class UsersForm extends React.Component {
 
   constructor(props) {
     super();
@@ -86,66 +114,49 @@ class UsersForm extends React.Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // check if is on add mode
     if (!this.isAddMode()) {
-      this.fetchUserData();
+      const userData = await fetchUserData(this.urlParam);
+      this.saveUserData(userData);
     }
 
-    this.fetchRoleData();
+    const roleData = await fetchRoleData();
+    this.saveRoleData(roleData);
   }
 
   isAddMode() {
     return this.urlParam === "add";
   }
 
-  fetchUserData = async () => {
-    try {
-      const resp = await axios.get(
-        userURL + this.urlParam,
-        axiosConfig
-      );
+  saveUserData = async (userData) => {
+    if (userData.status === true) {
 
-      if (resp.data.status === true) {
-
-        this.setState({
-          userData: resp.data.data,
-          username: resp.data.data.uname,
-          selectedRole: resp.data.data.rid,
-          formikUsername: resp.data.data.uname,
-          imgSrc: imgSrcMainPath + resp.data.data.img
-        });
-      } else {
-        // if no user is found, like param as 'add', redirect back to history or user page
-        this.props.history.push('/users');
-      }
-
-    } catch (error) {
-      console.log(error)
-      // retryRequest(this.fetchUserData);
+      this.setState({
+        userData: userData.data,
+        username: userData.data.uname,
+        selectedRole: userData.data.rid,
+        formikUsername: userData.data.uname,
+        imgSrc: imgSrcMainPath + userData.data.img
+      });
+    } else {
+      // if no user is found, like param as 'add', redirect back to history or user page
+      this.props.history.push('/users');
     }
   }
 
-  fetchRoleData = async () => {
-    try {
-      const resp = await axios.get(
-        roleURL,
-        axiosConfig
-      );
-
-      if (resp.data.status === true) {
-        this.setState({
-          roleData: resp.data.data,
-          selectedRole: resp.data.data[0].RoleID
-        });
-      }
-
-    } catch (error) {
-      console.log(error)
-      // retryRequest(this.fetchRoleData);
+  saveRoleData = async (roleData) => {
+    if (roleData.status === true) {
+      this.setState({
+        roleData: roleData.data,
+        selectedRole: roleData.data[0].RoleID
+      });
+    } else {
+      this.setState({
+        errorMsg: roleData.msg
+      });
     }
   }
-
   // submits form using add then returns insertId of user for submit image to use
   submitFormAdd = async () => {
     const param = {
@@ -153,7 +164,6 @@ class UsersForm extends React.Component {
       "password": this.state.password,
       "roleid": this.state.selectedRole,
     }
-
 
     try {
       const resp = await axios.post(
@@ -186,7 +196,8 @@ class UsersForm extends React.Component {
       "username": this.state.username,
       "password": this.state.password,
       "roleid": this.state.selectedRole,
-      "userid": this.urlParam
+      "userid": this.urlParam,
+
     }
 
     try {
@@ -214,10 +225,15 @@ class UsersForm extends React.Component {
   // executes after submitFormAdd or submitFormEdit
   // @param {String} userId id of user
   submitImage = async (userId) => {
+
+    // if there's no new uploaded image, then prevent from uploading
+    if (!this.imgFile.length) {
+      this.props.history.push('/users');
+      return false;
+    }
     const formData = new FormData();
     formData.append("userImgUpload", this.imgFile[0]);
     formData.append("id", userId);
-
 
     try {
       const resp = await axios.post(
@@ -472,4 +488,3 @@ class UsersForm extends React.Component {
 
 }
 
-export default UsersForm;

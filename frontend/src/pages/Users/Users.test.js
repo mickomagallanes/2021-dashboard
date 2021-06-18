@@ -30,17 +30,19 @@ async function testUsers({ data, newEntry }) {
 
   //  based on the hardcoded state on Users.js
   const currentEntriesHardCoded = 5;
-  const pageNumberHardCoded = 1;
 
   const users = screen.getByTestId('Users');
   const table = screen.getByTestId('Table');
-  const tr = table.querySelectorAll('tr');
   const pagination = screen.getByTestId('Pagination');
+
+  // tr are table rows
+  const tr = table.querySelectorAll('tr');
+
+  // li are pagination lists
   const li = pagination.querySelectorAll('li');
 
   expect(users).toBeInTheDocument();
   expect(table).toBeInTheDocument();
-  expect(tr).toHaveLength(currentEntriesHardCoded + 1);
 
   // if, then there's next and last page
   if (data.length > currentEntriesHardCoded) {
@@ -48,8 +50,10 @@ async function testUsers({ data, newEntry }) {
     const pageNumberLength = totalPages > 5 ? 5 : totalPages;
 
     expect(li).toHaveLength(pageNumberLength + 2);
+    expect(tr).toHaveLength(currentEntriesHardCoded + 1);
   } else {
     expect(li).toHaveLength(1);
+    expect(tr).toHaveLength(data.length + 1);
   }
 
   // change entry input value and update data and table rows
@@ -61,40 +65,93 @@ async function testUsers({ data, newEntry }) {
 
   expect(inputEntry.value).toBe(`${newEntry}`);
 
-  // expect table rows on new entry
   const tr2 = table.querySelectorAll('tr');
-  if (data.length > newEntry) {
-    expect(tr2).toHaveLength(newEntry + 1);
-  } else {
-    expect(tr2).toHaveLength(data.length + 1);
-  }
+  let li2;
 
   // if, then there's next and last page
-  // expect pagination list on 2nd page, new entry
-  const li2 = pagination.querySelectorAll('li');
-  if ((data.length - newEntry) > newEntry) {
+  if (data.length > newEntry) {
+
+    // expect table rows on new entry
+    expect(tr2).toHaveLength(newEntry + 1);
+
     const nextPage = pagination.querySelector("#next");
 
+    // trigger onclick to next page in pagination
     await act(async () => {
       fireEvent.click(nextPage);
     });
-    const secondTotalPages = Math.ceil((data.length - newEntry) / newEntry);
+    li2 = pagination.querySelectorAll('li');
+
+    const slicedFirstLength = data.length - newEntry;
+    const secondTotalPages = Math.ceil(slicedFirstLength / newEntry);
     const secondNumberLength = secondTotalPages > 4 ? 4 : secondTotalPages;
 
-    expect(li2).toHaveLength(secondNumberLength + 5);
+    const tr3 = table.querySelectorAll('tr');
+
+
+    if (slicedFirstLength > newEntry) {
+      // expect pagination list on 2nd page, new entry
+      expect(li2).toHaveLength(secondNumberLength + 5);
+
+      // expect table rows on 2nd page, new entry
+      expect(tr3).toHaveLength(newEntry + 1);
+    } else {
+      // expect pagination list on 2nd page, new entry
+      expect(li2).toHaveLength(secondNumberLength + 3);
+
+      // expect table rows on 2nd page, new entry
+      expect(tr3).toHaveLength(slicedFirstLength + 1);
+    }
 
   } else {
-    expect(li2).toHaveLength(1 + 3);
+    // expect table rows on new entry
+    expect(tr2).toHaveLength(data.length + 1);
+    li2 = pagination.querySelectorAll('li');
+    expect(li2).toHaveLength(1);
   }
 
-  // expect table rows on 2nd page, new entry
-  const tr3 = table.querySelectorAll('tr');
+  // remove the mock to ensure tests are completely isolated
+  usersModule.fetchUsersData.mockRestore();
+  usersModule.fetchCount.mockRestore();
+}
 
-  if ((data.length - newEntry) < newEntry) {
-    expect(tr3).toHaveLength(newEntry + 1);
-  } else {
-    expect(tr3).toHaveLength((data.length - newEntry) + 1);
-  }
+async function testBlankUsers({ data }) {
+
+  jest.spyOn(usersModule, 'fetchCount').mockImplementation(() =>
+    Promise.resolve({
+      status: true,
+      data: { count: data.length }
+    })
+  );
+
+  jest.spyOn(usersModule, 'fetchUsersData').mockImplementation((pageNumber, currentEntries) =>
+    Promise.resolve({
+      data: data.slice((pageNumber - 1) * currentEntries, pageNumber * currentEntries),
+      msg: "Successful getting all rows",
+      status: true
+    })
+  );
+
+  // Use the asynchronous version of act to apply resolved promises
+  await act(async () => {
+    render(<BrowserRouter><Users /></BrowserRouter>);
+  });
+
+  const users = screen.getByTestId('Users');
+  const table = screen.getByTestId('Table');
+  const pagination = screen.getByTestId('Pagination');
+
+  // tr are table rows
+  const tr = table.querySelectorAll('tr');
+
+  // li are pagination lists
+  const li = pagination.querySelectorAll('li');
+
+  expect(users).toBeInTheDocument();
+  expect(table).toBeInTheDocument();
+
+  expect(li).toHaveLength(1);
+  expect(tr).toHaveLength(2);
 
   // remove the mock to ensure tests are completely isolated
   usersModule.fetchUsersData.mockRestore();
@@ -175,4 +232,46 @@ describe('<Users />', () => {
     return testUsers({ data: data, newEntry: 8 })
 
   });
+
+  test('Users test 5', async () => {
+    const data = [
+      { id: 1, rname: "superadmin", uname: "dorco1" }
+
+    ];
+    return testUsers({ data: data, newEntry: 8 })
+
+  });
+
+  test('Users test 6', async () => {
+    const data = [
+      { id: 1, rname: "superadmin", uname: "dorco1" },
+      { id: 4, rname: "superadmin", uname: "4" },
+      { id: 2, rname: "superadmin", uname: "dorco2" },
+      { id: 3, rname: "superadmin", uname: "dorco3" }
+
+    ];
+
+    return testUsers({ data: data, newEntry: 2 })
+
+  });
+
+  test('Users test blank data 1', async () => {
+    const data = [
+
+    ];
+
+    return testBlankUsers({ data: data, newEntry: 2 })
+
+  });
+
+  test('Users test blank data 2', async () => {
+    const data = [
+
+    ];
+
+    return testBlankUsers({ data: data })
+
+  });
+
+
 });

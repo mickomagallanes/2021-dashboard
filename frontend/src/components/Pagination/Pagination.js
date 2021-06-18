@@ -122,7 +122,13 @@ class Pagination extends React.Component {
 
     return (
       <>
-        {!maxPage && <Spinner />}
+        {!maxPage &&
+          <nav data-testid="Pagination" aria-label="Pagination" className="mb-2 d-flex justify-content-center">
+            <ul id="page-numbers" className="pagination flex-wrap">
+              <StyledA className="page-link">1</StyledA>
+            </ul>
+          </nav>
+        }
         {!!maxPage &&
           <nav data-testid="Pagination" aria-label="Pagination" className="mb-2 d-flex justify-content-center">
             <ul id="page-numbers" className="pagination flex-wrap">
