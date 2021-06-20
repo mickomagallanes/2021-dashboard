@@ -10,9 +10,9 @@ async function authorizeReadRoute(req, res, next) {
 
     const resp = await RouteRoleModel.getRoutePrivByUser(userId, req.baseUrl);
     if (resp.length) {
-        const { Privilege } = resp[0];
+        const { PrivilegeName } = resp[0];
 
-        if (Privilege == "RW" || Privilege == "R") {
+        if (PrivilegeName == "RW" || PrivilegeName == "R") {
 
             next();
         } else {
@@ -38,9 +38,9 @@ async function authorizeWriteRoute(req, res, next) {
     let resp = await RouteRoleModel.getRoutePrivByUser(userId, req.baseUrl);
 
     if (resp.length) {
-        const { Privilege } = resp[0];
+        const { PrivilegeName } = resp[0];
 
-        if (Privilege == "RW") {
+        if (PrivilegeName == "RW") {
             next();
         } else {
             res.sendStatus(403);

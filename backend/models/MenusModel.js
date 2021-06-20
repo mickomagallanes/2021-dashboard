@@ -14,8 +14,9 @@ class MenusModel {
      * @return {Array} result
      */
     static async getMenusByRole(userId) {
-        const stmt = `SELECT b.PagePath, c.MenuName, d.ParentMenuName FROM PageRoles as a INNER JOIN Pages as b ON a.PageID = b.PageID INNER JOIN Menu as c ON b.MenuID = c.MenuID 
-		LEFT JOIN ParentMenu as d ON c.ParentMenuID = d.ParentMenuID
+        const stmt = `SELECT b.PagePath, c.MenuName, d.ParentMenuName FROM PageRoles as a 
+        INNER JOIN Pages as b ON a.PageID = b.PageID INNER JOIN Menus as c ON b.MenuID = c.MenuID 
+		LEFT JOIN ParentMenus as d ON c.ParentMenuID = d.ParentMenuID
 		INNER JOIN Users as e ON a.RoleID = e.RoleID WHERE UserID = ?`;
 
         try {

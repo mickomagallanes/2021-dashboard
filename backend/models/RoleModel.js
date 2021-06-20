@@ -25,7 +25,7 @@ class RoleModel {
 
     /**
     * get count of all role for pagination
-    * @return {Array} result
+    * @return {Array} result, length = 1
     */
     static async getAllCount() {
         const stmt = `SELECT 

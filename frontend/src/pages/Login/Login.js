@@ -84,8 +84,10 @@ class Login extends React.Component {
         axiosConfig
       );
 
-      if (resp.data.status === true) {
-        let { data } = resp;
+      let { data } = resp;
+
+      if (data.status === true) {
+
         this.props.changeProfile(data.data.uname, data.data.uimage);
 
         let sidebarData = await fetchSidebarData();
@@ -100,7 +102,7 @@ class Login extends React.Component {
         }
 
       } else {
-
+        this.setState({ errorMsg: `${data.msg}` });
       }
 
     } catch (error) {

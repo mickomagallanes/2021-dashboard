@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import Pagination from '../../components/Pagination/Pagination';
 import { Alert } from 'react-bootstrap';
 import * as currentModule from './Users'; // use currentmodule to call func outside class, for testing
+import { PRIVILEGES } from "../../helpers/constants";
 
 const userURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/all`;
 const userCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/all/count`;
@@ -164,7 +165,7 @@ class Users extends React.Component {
                       <Pagination currentPage={currentPage} maxPage={maxPage} onClick={this.paginationClick} />
                     </div>
                     <div className="col mt-3">
-                      {this.props.priv === "RW" && <Link to="/users/form/add" className="btn btn-outline-secondary float-sm-right d-block">
+                      {this.props.priv === PRIVILEGES.readWrite && <Link to="/users/form/add" className="btn btn-outline-secondary float-sm-right d-block">
                         <i className="mdi mdi-account-plus"> </i>
                         Add User
                       </Link>}
@@ -173,7 +174,7 @@ class Users extends React.Component {
                   </div>
                   <Table
                     urlRedirect="/users/form"
-                    isWriteable={this.props.priv === "RW"}
+                    isWriteable={this.props.priv === PRIVILEGES.readWrite}
                     data={this.state.data}
                     tblClass=""
                     colData={this.colData} />

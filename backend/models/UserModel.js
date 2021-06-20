@@ -75,7 +75,7 @@ class UserModel {
 
     /**
     * get count of all user for pagination
-    * @return {Array} result
+    * @return {Array} result, length = 1
     */
     static async getAllUserCount() {
         const stmt = `SELECT 
@@ -144,7 +144,7 @@ class UserModel {
     /**
     * get a row using by user id
     * @param {Number} id id of the user
-    * @return {Array} result
+    * @return {Array} result, length = 1
     */
 
     static async getUserById(id) {
@@ -171,7 +171,7 @@ class UserModel {
     /**
      * get row by username
      * @param {String} username username of the user
-     * @return {Array} result
+     * @return {Array} result, length = 1
      */
 
     static async getByUsername(username) {

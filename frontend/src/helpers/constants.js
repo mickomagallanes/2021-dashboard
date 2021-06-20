@@ -3,4 +3,9 @@ const THEMES = [
     { id: "light-theme", value: "Light" }
 ]
 
-export { THEMES }
+const PRIVILEGES = {
+    read: "R",
+    readWrite: "RW",
+    none: "None"
+}
+export { THEMES, PRIVILEGES }

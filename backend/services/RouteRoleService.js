@@ -17,7 +17,7 @@ class RouteRoleService {
         let routeRoleObj = await RouteRoleModel.getRoutePrivByUser(userId, pagePath);
 
         if (routeRoleObj.length) {
-            return { status: true, data: routeRoleObj[0].Privilege }
+            return { status: true, data: routeRoleObj[0].PrivilegeName }
         }
         return { status: false }
     }

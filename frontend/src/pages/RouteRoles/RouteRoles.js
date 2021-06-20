@@ -1,8 +1,9 @@
 import React from 'react'
 import './RouteRoles.css';
 import axios from 'axios';
-import Table from '../../../components/Table/Table.lazy';
-import { retryRequest } from "../../../helpers/utils";
+import Table from '../../components/Table/Table.lazy';
+import { retryRequest } from "../../helpers/utils";
+import { PRIVILEGES } from "../../helpers/constants";
 import { Alert } from 'react-bootstrap';
 import * as currentModule from './RouteRoles'; // use currentmodule to call func outside class, for testing
 
@@ -91,11 +92,10 @@ class RouteRoles extends React.Component {
 
                   <Table
                     urlRedirect="/roles/form"
-                    isWriteable={false}
+                    isWriteable={this.props.priv === PRIVILEGES.readWrite}
                     data={this.state.data}
                     tblClass=""
                     colData={this.colData}
-                    actionDisabled={true}
                   />
                 </div>
               </div>
