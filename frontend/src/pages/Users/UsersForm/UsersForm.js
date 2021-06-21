@@ -378,13 +378,12 @@ export default class UsersForm extends React.Component {
 
                             <div className="row">
                               <div className="col">
-                                <Form.Group>
-                                  <label htmlFor="username">Username</label>
+                                <Form.Group controlId="username">
+                                  <Form.Label>Username</Form.Label>
                                   <Form.Control
                                     value={this.state.username}
                                     type="text"
                                     name="username"
-                                    id="username"
                                     placeholder="Username"
                                     autoComplete="username"
                                     onBlur={props.handleBlur}
@@ -405,15 +404,14 @@ export default class UsersForm extends React.Component {
                               <>
                                 <div className="row">
                                   <div className="col">
-                                    <Form.Group>
-                                      <label htmlFor="password">{!this.isAddMode() && '(Optional) Create New '}Password</label>
+                                    <Form.Group controlId="password">
+                                      <Form.Label>{!this.isAddMode() && '(Optional) Create New '}Password </Form.Label>
                                       <Form.Control
                                         value={this.state.password}
                                         type="password"
                                         name="password"
-                                        id="password"
                                         placeholder="Password"
-                                        autoComplete="current-password"
+                                        autoComplete="new-password"
                                         onBlur={props.handleBlur}
                                         isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg}
                                         onChange={(e) => this.handleChangePassword(e, props)}
@@ -428,15 +426,14 @@ export default class UsersForm extends React.Component {
                                 </div>
                                 <div className="row">
                                   <div className="col">
-                                    <Form.Group>
-                                      <label htmlFor="confirmPassword">{!this.isAddMode() && '(Optional) '}Confirm Password</label>
+                                    <Form.Group controlId="confirmPassword">
+                                      <Form.Label>{!this.isAddMode() && '(Optional) '}Confirm Password</Form.Label>
                                       <Form.Control
                                         value={this.state.confirmPassword}
                                         type="password"
                                         name="confirmPassword"
-                                        id="confirmPassword"
                                         placeholder="Confirm Password"
-
+                                        autoComplete="new-password"
                                         onBlur={props.handleBlur}
                                         isInvalid={(props.errors.confirmPassword && props.touched.confirmPassword) || this.state.errorMsg}
                                         onChange={(e) => this.handleChangeConfirm(e, props)}

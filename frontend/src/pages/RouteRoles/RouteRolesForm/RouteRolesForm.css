@@ -1,1 +1,3 @@
-.RouteRolesForm {}
+input[type=radio] {
+    cursor: pointer;
+}

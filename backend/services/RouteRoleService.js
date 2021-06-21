@@ -1,4 +1,5 @@
 const RouteRoleModel = require('../models/RouteRoleModel.js');
+const { mapArr } = require('../utils/looping.js');
 
 "use strict";
 
@@ -23,14 +24,30 @@ class RouteRoleService {
     }
 
     /**
-    *  get pages based on logged-in user role
-    * @param {Number} userId id of the user
-    */
-    static async getRoutesBySession(userId) {
-        let pagesArr = await RouteRoleModel.getPagesByUser(userId);
+     * get all routes with optional role name if the row matched the role
+     * @param {Number} roleId id of the role
+     */
+    static async getAllRoutesLeftRole(roleId) {
+        let routesArr = await RouteRoleModel.getAllRoutesLeftRole(roleId);
 
-        if (pagesArr.length) {
-            return { status: true, data: pagesArr }
+        if (routesArr.length) {
+            return { status: true, data: routesArr }
+        }
+        return { status: false }
+    }
+
+    /**
+     * insert if RouteID + RoleID does not exist, update if it exists
+     * @param {Array} routeRolesArr
+     */
+    static async postRouteRoleData(routeRolesArr) {
+        // TODO: fix mapArr function
+        let valueArr = await mapArr(routeRolesArr, e => { return [e.RouteID, e.RoleID, e.PrivilegeID] });
+        console.log(valueArr);
+        let routesArr = await RouteRoleModel.postRouteRoleData(valueArr);
+
+        if (routesArr.length) {
+            return { status: true, data: routesArr }
         }
         return { status: false }
     }

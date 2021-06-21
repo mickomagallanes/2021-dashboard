@@ -245,7 +245,7 @@ class Navbar extends React.Component {
             <Dropdown alignRight as="li" className="nav-item">
               <Dropdown.Toggle as="a" className="nav-link cursor-pointer no-caret">
                 <div className="navbar-profile">
-                  <img className="img-xs rounded-circle" src={this.userImg} alt="profile" />
+                  <img className="img-xs rounded-circle" src={this.userImg} alt="profile photo" />
                   <p className="mb-0 d-none d-sm-block navbar-profile-name"><Trans>{this.props.username}</Trans></p>
                   <i className="mdi mdi-menu-down d-none d-sm-block"></i>
                 </div>

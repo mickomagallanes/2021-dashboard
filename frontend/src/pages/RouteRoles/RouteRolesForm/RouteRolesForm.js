@@ -2,39 +2,25 @@ import React from 'react';
 import './RouteRolesForm.css';
 import axios from 'axios';
 import { retryRequest } from "../../../helpers/utils";
-import { Form, Alert } from 'react-bootstrap';
+import { Form, Alert, Table } from 'react-bootstrap';
 import Select from '../../../components/Select/Select';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
 import { PRIVILEGES } from "../../../helpers/constants";
 
-const userURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/`;
-const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
-const editURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/modify`;
+const routesRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/routerole/get/left/`;
+const privUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/privilege/get/all`;
+const editURL = `${process.env.REACT_APP_BACKEND_HOST}/API/routerole/post/data`;
 
 const axiosConfig = {
   withCredentials: true,
   timeout: 10000
 }
 
-function equalTo(ref, msg) {
-  return this.test({
-    name: 'equalTo',
-    exclusive: false,
-    message: msg,
-    params: {
-      reference: ref.path
-    },
-    test: function (value) {
-      return value === this.resolve(ref)
-    }
-  })
-};
-
-export async function fetchUserData(urlParam) {
+export async function fetchRouteRoleData(roleIdParam) {
   try {
     const resp = await axios.get(
-      userURL + urlParam,
+      routesRoleUrl + roleIdParam,
       axiosConfig
     );
     const { data } = resp;
@@ -45,10 +31,10 @@ export async function fetchUserData(urlParam) {
   }
 }
 
-export async function fetchRoleData() {
+export async function fetchPrivData() {
   try {
     const resp = await axios.get(
-      roleURL,
+      privUrl,
       axiosConfig
     );
 
@@ -59,27 +45,18 @@ export async function fetchRoleData() {
   }
 }
 
-
-export default class UsersForm extends React.Component {
+export default class RouteRolesForm extends React.Component {
 
   constructor(props) {
     super();
     this.state = {
-      userData: [],
-      roleData: [],
-      selectedRole: "",
-      username: "",
-      password: "",
-      confirmPassword: "",
-      errorMsg: false,
-      imgSrc: "", // src of image
-      // just to not connect the initialValues to main state username to prevent forced reinitialize, used after backend fetch userdata
-      formikUsername: ""
+      routeRoleData: [],
+      privData: [],
+      routeRoleSelected: [], // sent to the backend for post
+      errorMsg: false
     }
 
-    this.imgFile = ""; // pure user image file, for submit image after handling file change
-    this.urlParam = props.match.params.id;
-
+    this.roleIdParam = props.match.params.id;
   }
 
   componentWillUnmount() {
@@ -90,93 +67,53 @@ export default class UsersForm extends React.Component {
   }
 
   async componentDidMount() {
-    // check if is on add mode
-    if (!this.isAddMode()) {
-      const userData = await fetchUserData(this.urlParam);
-      this.saveUserData(userData);
-    }
 
-    const roleData = await fetchRoleData();
-    this.saveRoleData(roleData);
+    const routeRoleData = await fetchRouteRoleData(this.roleIdParam);
+
+    this.saveRouteRoleData(routeRoleData);
+
+    const privData = await fetchPrivData();
+    this.savePrivData(privData);
   }
 
-  isAddMode() {
-    return this.urlParam === "add";
-  }
-
-  saveUserData = async (userData) => {
-    if (userData.status === true) {
+  saveRouteRoleData = async (routeRoleData) => {
+    if (routeRoleData.status === true) {
+      let routeRoleSelected = routeRoleData.data.map((e) => {
+        return { RouteID: e.RouteID, RoleID: e.RoleID, PrivilegeID: e.PrivilegeID }
+      });
 
       this.setState({
-        userData: userData.data,
-        username: userData.data.uname,
-        selectedRole: userData.data.rid,
-        formikUsername: userData.data.uname,
-        imgSrc: imgSrcMainPath + userData.data.img
+        routeRoleData: routeRoleData.data,
+        routeRoleSelected: routeRoleSelected
       });
     } else {
-      // if no user is found, like param as 'add', redirect back to history or user page
-      this.props.history.push('/users');
+      // if no role is found, like invalid param "deeznuts", redirect back to history or role page
+      this.props.history.push('/routeroles');
     }
   }
 
-  saveRoleData = async (roleData) => {
-    if (roleData.status === true) {
+  savePrivData = async (privData) => {
+
+    if (privData.status === true) {
       this.setState({
-        roleData: roleData.data,
-        selectedRole: roleData.data[0].RoleID
+        privData: privData.data
       });
     } else {
       this.setState({
-        errorMsg: roleData.msg
+        errorMsg: privData.msg
       });
     }
   }
-  // submits form using add then returns insertId of user for submit image to use
-  submitFormAdd = async () => {
+
+  // submits form
+  submitForm = async () => {
     const param = {
-      "username": this.state.username,
-      "password": this.state.password,
-      "roleid": this.state.selectedRole,
+      "routeRoles": this.state.routeRoleSelected
     }
 
     try {
       const resp = await axios.post(
-        addUserURL,
-        param,
-        axiosConfig
-      );
-
-      if (resp.data.status === true) {
-        // TODO: create a success alert after adding user or editing
-        return resp.data.id;
-
-
-      } else {
-        this.setState({ errorMsg: resp.data.msg });
-        return false;
-
-      }
-
-    } catch (error) {
-      this.setState({ errorMsg: `${error}` });
-      return false;
-    }
-
-  }
-
-  // submits form using edit then returns insertId of user for submit image to use
-  submitFormEdit = async () => {
-    const param = {
-      "username": this.state.username,
-      "password": this.state.password,
-      "roleid": this.state.selectedRole,
-      "userid": this.urlParam
-    }
-
-    try {
-      const resp = await axios.put(
-        editUserURL,
+        editURL,
         param,
         axiosConfig
       );
@@ -196,115 +133,31 @@ export default class UsersForm extends React.Component {
 
   }
 
-  // executes after submitFormAdd or submitFormEdit
-  // @param {String} userId id of user
-  submitImage = async (userId) => {
+  handlePrivSelect = async (PrivilegeID, RouteID, RoleID) => {
 
-    // if there's no new uploaded image, then prevent from uploading
-    if (!this.imgFile.length) {
-      this.props.history.push('/users');
-      return false;
-    }
-    const formData = new FormData();
-    formData.append("userImgUpload", this.imgFile[0]);
-    formData.append("id", userId);
+    const newRouteRoleSelected = this.state.routeRoleSelected.map(obj =>
+      (obj.RouteID === RouteID && obj.RoleID === RoleID) ?
+        { ...obj, PrivilegeID: PrivilegeID } :
+        obj
+    );
 
-    try {
-      const resp = await axios.post(
-        uploadImgUserURL,
-        formData,
-        { ...axiosConfig, headers: { 'Content-Type': "multipart/form-data" } } // add new property to axios config
-      );
-
-      if (resp.data.status === true) {
-
-        this.setState({
-          imgSrc: resp.data.data
-        });
-
-        return true;
-      } else {
-
-        this.setState({ errorMsg: resp.data.msg });
-        return false;
-      }
-
-    } catch (error) {
-      this.setState({ errorMsg: `${error}` });
-      return false;
-
-    }
+    await this.setState({
+      routeRoleSelected: newRouteRoleSelected
+    });
 
   }
 
-  handleChangeUsername = async (e, formikProps) => {
-    await this.setState({ username: e.target.value, errorMsg: false }); // set first the state to update on formik validation
-    formikProps.handleChange(e);
-  }
-
-  handleChangePassword = async (e, formikProps) => {
-    await this.setState({ password: e.target.value, errorMsg: false });
-    formikProps.handleChange(e);
-  }
-
-  handleChangeConfirm = async (e, formikProps) => {
-    await this.setState({ confirmPassword: e.target.value, errorMsg: false });
-    formikProps.handleChange(e);
-  }
-
-  handleChangeRole = async (e) => {
-    await this.setState({ selectedRole: e.target.value, errorMsg: false });
-  }
-
-  handleSubmitForm = async () => {
-    if (this.isAddMode()) {
-      let newUserId = await this.submitFormAdd();
-
-      if (newUserId !== false) {
-        let isImageSuccess = await this.submitImage(newUserId);
-
-        if (isImageSuccess) {
-          this.props.history.push('/users');
-        }
-      }
-
-    } else {
-      let isEditSuccess = await this.submitFormEdit();
-
-      if (isEditSuccess) {
-        let isImageSuccess = await this.submitImage(this.urlParam);
-
-        if (isImageSuccess) {
-          this.props.history.push('/users');
-        }
-      }
-
-    }
-  }
-
-  handleFileChange = e => {
-    const files = Array.from(e.target.files);
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.setState({ imgSrc: reader.result });
-      this.imgFile = files;
-    };
-
-    reader.readAsDataURL(e.target.files[0]);
-
-  }
 
   // TODO: make animation transition on routing using Framer Motion
   // and use Unit Testing with Jest
   render() {
-    if (!this.state.roleData.length) {
+    if (!this.state.routeRoleData.length || !this.state.privData.length) {
       return (<Spinner />)
     } else {
       return (
         <div>
           <div className="page-header">
-            <Link className="btn btn-outline-light btn-icon-text btn-md" to="/users">
+            <Link className="btn btn-outline-light btn-icon-text btn-md" to="/routeroles">
               <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
               <span className="d-inline-block text-left">
                 Back
@@ -312,14 +165,13 @@ export default class UsersForm extends React.Component {
             </Link>
 
           </div>
-          <div className="row w-100 mx-0">
-
-            <div className="col-lg-8 col-xlg-9 col-md-12">
+          <div className="row">
+            <div className="col-lg-12 grid-margin stretch-card">
               <div className="card px-4 px-sm-5">
 
                 <div className="card-body">
 
-                  <h4 className="card-title">Edit User</h4>
+                  <h4 className="card-title">Edit Privileges of Role to Routes</h4>
                   <div className="row mb-4">
                     <div className="col mt-3">
 
@@ -333,97 +185,58 @@ export default class UsersForm extends React.Component {
                           {this.state.errorMsg}
                         </Alert>
 
-                        <div className="row">
-                          <div className="col">
-                            <Form.Group>
-                              <label htmlFor="username">Username</label>
-                              <Form.Control
-                                value={this.state.username}
-                                type="text"
-                                name="username"
-                                id="username"
-                                placeholder="Username"
-                                autoComplete="username"
-                                onBlur={props.handleBlur}
-                                isInvalid={(props.errors.username && props.touched.username) || this.state.errorMsg}
-                                onChange={(e) => this.handleChangeUsername(e, props)}
-                                disabled={this.props.priv === PRIVILEGES.read}
-                              />
-                              <Form.Control.Feedback type="invalid">
-                                {this.state.errorMsg ? null : props.errors.username}
-                              </Form.Control.Feedback>
-                            </Form.Group>
-                          </div>
-                        </div>
-
-                        { // dont show password fields if Privilege is READ
-                          this.props.priv === PRIVILEGES.readWrite
-                          &&
-                          <>
-                            <div className="row">
-                              <div className="col">
-                                <Form.Group>
-                                  <label htmlFor="password">{!this.isAddMode() && '(Optional) Create New '}Password</label>
-                                  <Form.Control
-                                    value={this.state.password}
-                                    type="password"
-                                    name="password"
-                                    id="password"
-                                    placeholder="Password"
-                                    autoComplete="current-password"
-                                    onBlur={props.handleBlur}
-                                    isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg}
-                                    onChange={(e) => this.handleChangePassword(e, props)}
-                                  />
-
-                                  <Form.Control.Feedback type="invalid">
-                                    {/* put null to prevent showing error message from backend to each input boxes */}
-                                    {this.state.errorMsg ? null : props.errors.password}
-                                  </Form.Control.Feedback>
-                                </Form.Group>
-                              </div>
-                            </div>
-                            <div className="row">
-                              <div className="col">
-                                <Form.Group>
-                                  <label htmlFor="confirmPassword">{!this.isAddMode() && '(Optional) '}Confirm Password</label>
-                                  <Form.Control
-                                    value={this.state.confirmPassword}
-                                    type="password"
-                                    name="confirmPassword"
-                                    id="confirmPassword"
-                                    placeholder="Confirm Password"
-
-                                    onBlur={props.handleBlur}
-                                    isInvalid={(props.errors.confirmPassword && props.touched.confirmPassword) || this.state.errorMsg}
-                                    onChange={(e) => this.handleChangeConfirm(e, props)}
-                                  />
-                                  <Form.Control.Feedback type="invalid">
-                                    {this.state.errorMsg ? null : props.errors.confirmPassword}
-                                  </Form.Control.Feedback>
-                                </Form.Group>
-                              </div>
-                            </div>
-                          </>
-                        }
                         <div className="row mb-4">
                           <div className="col">
-                            <label htmlFor="roleSelect">Role</label>
-                            <Select
-                              id="roleSelect"
-                              value={this.state.selectedRole}
-                              data={this.state.roleData}
-                              className="form-control btn"
-                              idKey="id"
-                              valueKey="rname"
-                              onChange={(e) => this.handleChangeRole(e)}
-                              disabled={this.props.priv === PRIVILEGES.read}
-                            ></Select>
+                            <Table responsive>
+                              <thead>
+                                <tr>
+                                  <th>Route Name</th>
+                                  {this.state.privData.map(priv => {
+                                    return <th key={`th${priv.PrivilegeID}`}>{priv.PrivilegeName}</th>
+                                  })}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {this.state.routeRoleSelected.map(routeRole => {
+                                  // connect to the routeRoleSelected state
+                                  let routeMatch = this.state.routeRoleData.find(e => e.RouteID == routeRole.RouteID);
+                                  let routeName = !!routeMatch ? routeMatch.RouteName : routeMatch;
+                                  let privMatch = this.state.privData.find(e => e.PrivilegeID == routeRole.PrivilegeID);
+                                  let privName = !!privMatch ? privMatch.PrivilegeName : privMatch;
+
+                                  return (
+                                    <tr key={`tr${routeRole.RouteID}`}>
+                                      <td>{routeName}</td>
+                                      {this.state.privData.map(priv => {
+
+                                        let translatedPriv = !privName ? PRIVILEGES.none : privName;
+                                        let isChecked = translatedPriv == priv.PrivilegeName;
+
+                                        return (
+                                          <td key={`td${routeRole.RouteID}${priv.PrivilegeID}`}>
+                                            <Form.Check
+                                              inline
+                                              checked={isChecked}
+                                              onChange={() => this.handlePrivSelect(priv.PrivilegeID, routeRole.RouteID, routeRole.RoleID)}
+                                              value={priv.PrivilegeID}
+                                              key={`priv${routeRole.RouteID}${priv.PrivilegeID}`}
+                                              name={`priv${routeRole.RouteID}`}
+                                              type="radio"
+                                            />
+                                          </td>
+                                        )
+                                      })}
+                                    </tr>
+                                  )
+                                })}
+                              </tbody>
+                            </Table>
+
                           </div>
                         </div>
 
                         <div className="mt-4">
-                          {this.props.priv === PRIVILEGES.readWrite && <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}
+                          {this.props.priv === PRIVILEGES.readWrite && <button type="button" className="btn btn-primary mr-2" onClick={this.submitForm}>Submit</button>}
 
                           {/* <button className="btn btn-dark">Cancel</button> */}
                         </div>

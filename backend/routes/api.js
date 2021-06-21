@@ -8,5 +8,6 @@ router.use('/subpage', require('./apis/api_subpage'));
 router.use('/menus', require('./apis/api_menus'));
 router.use('/privilege', require('./apis/api_privilege'));
 router.use('/page', require('./apis/api_page'));
+router.use('/routerole', require('./apis/api_routerole'));
 
 module.exports = router;

@@ -202,7 +202,7 @@ class Sidebar extends React.Component {
           {(this.sidebarData.length) && this.sidebarData.map(item =>
             // match parent menu to the current page location
             (item.ParentMenuName != null)
-              ? <li key={item.ParentMenuName} className={this.isPathActive(item.ParentMenuName) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
+              ? <li key={`parent${item.ParentMenuName}`} className={this.isPathActive(item.ParentMenuName) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
                 <div className={!!this.state[`${item.ParentMenuName}Open`] ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState(`${item.ParentMenuName}Open`)} data-toggle="collapse">
                   <span className="menu-icon">
                     <i className="mdi mdi-dashboard"></i>
@@ -217,7 +217,9 @@ class Sidebar extends React.Component {
                       {item.MenuName.map((item2, key2) => {
 
                         // match child menu to the current page location
-                        return <li key={item.PagePath[key2]} className="nav-item"> <Link className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-link active' : 'nav-link'} to={`${item.PagePath[key2]}`}><Trans>{item2}</Trans></Link></li>
+                        return <li key={`menu${item.PagePath[key2]}`} className="nav-item">
+                          <Link className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-link active' : 'nav-link'} to={`${item.PagePath[key2]}`}>
+                            <Trans>{item2}</Trans></Link></li>
                       })}
 
                     </ul>
@@ -225,8 +227,8 @@ class Sidebar extends React.Component {
                 </Collapse>
               </li>
               : item.MenuName.map((item2, key2) => {
-                return <li key={`${item.PagePath[key2]}`} className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
-                  <Link className="nav-link" key={`${item.PagePath[key2]}`} to={`${item.PagePath[key2]}`}>
+                return <li key={`menu${item.PagePath[key2]}`} className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
+                  <Link className="nav-link" key={`link${item.PagePath[key2]}`} to={`${item.PagePath[key2]}`}>
                     <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
                     <span className="menu-title"><Trans>{item2}</Trans></span>
                   </Link>

@@ -1,4 +1,4 @@
-const RoleModel = require('../models/RoleModel.js');
+const PrivilegeModel = require('../models/PrivilegeModel.js');
 
 "use strict";
 
@@ -12,7 +12,7 @@ class PrivilegeService {
     * get all privileges
     */
     static async getAllPrivileges() {
-        let privArr = await RoleModel.getAllPrivileges();
+        let privArr = await PrivilegeModel.getAllPrivileges();
         if (privArr.length) {
             return { status: true, data: privArr }
         } else {

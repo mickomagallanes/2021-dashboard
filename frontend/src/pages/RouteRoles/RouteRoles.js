@@ -91,7 +91,7 @@ class RouteRoles extends React.Component {
                   <h4 className="card-title">Roles Table</h4>
 
                   <Table
-                    urlRedirect="/roles/form"
+                    urlRedirect="/routeroles/form"
                     isWriteable={this.props.priv === PRIVILEGES.readWrite}
                     data={this.state.data}
                     tblClass=""
