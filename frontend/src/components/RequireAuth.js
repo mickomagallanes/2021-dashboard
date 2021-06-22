@@ -6,6 +6,11 @@ import Spinner from '../components/Spinner/Spinner';
 
 const pageRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/authorize`;
 
+/**
+ * get count of all role for pagination
+ * @param {Component} Component rendered component
+ * @param {String} [apiURL] parent page path, specified if Component is only a subpage
+ */
 const RequireAuth = (Component, apiURL = false) => {
 
     return class extends React.Component {

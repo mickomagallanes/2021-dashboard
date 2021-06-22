@@ -5,8 +5,7 @@ import { act } from "react-dom/test-utils";
 
 /**
   * creates a table
-  * @param {String} urlRedirect the ink of form edit/read
-  * @param {Boolean} isWriteable is read or write privilege. True for RW. False for R
+  * @param {Function} actionButtons function to create action buttons for row, accepts id of row as param
   * @param {Array} data array data to be processed
   * @param {String} tblClass class css of table
   * @param {Array} colData column label matched to the data
@@ -45,10 +44,7 @@ class Table extends React.Component {
 
                   {!this.props.actionDisabled &&
                     <td>
-                      <Link to={`${this.props.urlRedirect}/${x.id}`} className="btn btn-icon-text btn-outline-secondary">
-                        {this.props.isWriteable ? "Edit" : "Read"}
-                        <i className={`mdi ${this.props.isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
-                      </Link>
+                      {this.props.actionButtons(x.id)}
                     </td>
                   }
                 </tr>

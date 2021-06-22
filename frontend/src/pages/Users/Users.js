@@ -69,6 +69,8 @@ class Users extends React.Component {
       { "id": "uname", "name": "Username" },
       { "id": "rname", "name": "Role Name" }
     ];
+
+
   }
 
   componentDidMount() {
@@ -127,6 +129,18 @@ class Users extends React.Component {
 
   render() {
     const { maxPage, currentPage } = this.state;
+    let isWriteable = this.props.priv === PRIVILEGES.readWrite;
+
+    const actionButtons = (userId) => {
+      return (
+        <>
+          <Link to={`/users/form/${userId}`} className="btn btn-icon-text btn-outline-secondary">
+            {isWriteable ? "Edit" : "Read"}
+            <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+          </Link>
+        </>
+      )
+    };
 
     return (
       <>
@@ -173,11 +187,11 @@ class Users extends React.Component {
                     </div>
                   </div>
                   <Table
-                    urlRedirect="/users/form"
-                    isWriteable={this.props.priv === PRIVILEGES.readWrite}
                     data={this.state.data}
                     tblClass=""
-                    colData={this.colData} />
+                    colData={this.colData}
+                    actionButtons={actionButtons}
+                  />
                 </div>
               </div>
             </div>

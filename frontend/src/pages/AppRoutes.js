@@ -10,6 +10,7 @@ import Login from './Login/Login.lazy';
 import Users from './Users/Users.lazy';
 import UsersForm from './Users/UsersForm/UsersForm.lazy';
 import Roles from './Roles/Roles.lazy';
+import RolesForm from './Roles/RolesForm/RolesForm.lazy';
 import RouteRoles from './RouteRoles/RouteRoles.lazy';
 import RouteRolesForm from './RouteRoles/RouteRolesForm/RouteRolesForm.lazy';
 import Home from './Home/Home.lazy';
@@ -111,6 +112,7 @@ function matchComponentName(name) {
     case "Users": return Users;
     case "UsersForm": return UsersForm;
     case "Roles": return Roles;
+    case "RolesForm": return RolesForm;
     case "RouteRoles": return RouteRoles;
     case "RouteRolesForm": return RouteRolesForm;
 
@@ -147,7 +149,6 @@ function DefaultContainer() {
     (async function () {
       let pagesData = await fetchPagesData();
       let subPagesData = await fetchSubPagesData();
-
       if (isMounted) {
 
         setPagesData(pagesData);
@@ -160,6 +161,7 @@ function DefaultContainer() {
   }, []);
 
   return (
+
     <>
       <Sidebar />
       <div className="container-fluid page-body-wrapper">

@@ -6,6 +6,7 @@ import { retryRequest } from "../../helpers/utils";
 import { PRIVILEGES } from "../../helpers/constants";
 import { Alert } from 'react-bootstrap';
 import * as currentModule from './RouteRoles'; // use currentmodule to call func outside class, for testing
+import { Link } from 'react-router-dom';
 
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
 
@@ -44,6 +45,7 @@ class RouteRoles extends React.Component {
       { "id": "id", "name": "Role ID" },
       { "id": "rname", "name": "Role name" }
     ];
+
   }
 
   async componentDidMount() {
@@ -69,12 +71,25 @@ class RouteRoles extends React.Component {
   }
 
   render() {
+    let isWriteable = this.props.priv === PRIVILEGES.readWrite;
+
+    const actionButtons = (roleId) => {
+      return (
+        <>
+          <Link to={`/routeroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary">
+            {isWriteable ? "Edit" : "Read"}
+            <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+          </Link>
+
+        </>
+      )
+    };
 
     return (
       <>
         <div>
           <div className="page-header">
-            <h3 className="page-title">Roles Page</h3>
+            <h3 className="page-title">Roles-Routes Page</h3>
           </div>
           <Alert
             className="p-1"
@@ -88,14 +103,13 @@ class RouteRoles extends React.Component {
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card">
                 <div className="card-body">
-                  <h4 className="card-title">Roles Table</h4>
+                  <h4 className="card-title">Roles-Routes Table</h4>
 
                   <Table
-                    urlRedirect="/routeroles/form"
-                    isWriteable={this.props.priv === PRIVILEGES.readWrite}
                     data={this.state.data}
                     tblClass=""
                     colData={this.colData}
+                    actionButtons={actionButtons}
                   />
                 </div>
               </div>

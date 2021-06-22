@@ -43,11 +43,11 @@ class RouteRoleService {
     static async postRouteRoleData(routeRolesArr) {
         // TODO: fix mapArr function
         let valueArr = await mapArr(routeRolesArr, e => { return [e.RouteID, e.RoleID, e.PrivilegeID] });
-        console.log(valueArr);
-        let routesArr = await RouteRoleModel.postRouteRoleData(valueArr);
 
-        if (routesArr.length) {
-            return { status: true, data: routesArr }
+        let result = await RouteRoleModel.postRouteRoleData(valueArr);
+
+        if (result !== false) {
+            return { status: true }
         }
         return { status: false }
     }

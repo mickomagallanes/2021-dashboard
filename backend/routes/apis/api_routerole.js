@@ -34,7 +34,7 @@ router.post('/post/data', checkSession, async function (req, res, next) {
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed posting route roles data" });
     } else {
-        res.json({ "status": true, "msg": "Successful posting route roles data", "data": result.data });
+        res.json({ "status": true, "msg": "Successful posting route roles data" });
     }
 
 });

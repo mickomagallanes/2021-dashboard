@@ -5,6 +5,8 @@ import Table from '../../components/Table/Table.lazy';
 import { retryRequest } from "../../helpers/utils";
 import { Alert } from 'react-bootstrap';
 import * as currentModule from './Roles'; // use currentmodule to call func outside class, for testing
+import { PRIVILEGES } from "../../helpers/constants"
+import { Link } from 'react-router-dom';
 
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
 
@@ -68,6 +70,18 @@ class Roles extends React.Component {
   }
 
   render() {
+    let isWriteable = this.props.priv === PRIVILEGES.readWrite;
+    const actionButtons = (roleId) => {
+      return (
+        <>
+          <Link to={`/roles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary">
+            {isWriteable ? "Edit" : "Read"}
+            <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+          </Link>
+
+        </>
+      )
+    };
 
     return (
       <>
@@ -89,13 +103,18 @@ class Roles extends React.Component {
                 <div className="card-body">
                   <h4 className="card-title">Roles Table</h4>
 
+                  {this.props.priv === PRIVILEGES.readWrite &&
+                    <Link to="/roles/form/add" className="btn btn-outline-secondary float-sm-right d-block">
+                      <i className="mdi mdi-account-plus"> </i>
+                      Add Role
+                    </Link>
+                  }
+
                   <Table
-                    urlRedirect="/roles/form"
-                    isWriteable={false}
                     data={this.state.data}
                     tblClass=""
                     colData={this.colData}
-                    actionDisabled={true}
+                    actionButtons={actionButtons}
                   />
                 </div>
               </div>

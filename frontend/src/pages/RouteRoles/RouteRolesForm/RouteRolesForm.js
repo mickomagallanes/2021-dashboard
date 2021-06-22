@@ -7,6 +7,7 @@ import Select from '../../../components/Select/Select';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
 import { PRIVILEGES } from "../../../helpers/constants";
+import * as currentModule from './RouteRolesForm'; // use currentmodule to call func outside class, for testing
 
 const routesRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/routerole/get/left/`;
 const privUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/privilege/get/all`;
@@ -55,7 +56,7 @@ export default class RouteRolesForm extends React.Component {
       routeRoleSelected: [], // sent to the backend for post
       errorMsg: false
     }
-
+    console.log(props)
     this.roleIdParam = props.match.params.id;
   }
 
@@ -68,11 +69,11 @@ export default class RouteRolesForm extends React.Component {
 
   async componentDidMount() {
 
-    const routeRoleData = await fetchRouteRoleData(this.roleIdParam);
+    const routeRoleData = await currentModule.fetchRouteRoleData(this.roleIdParam);
 
     this.saveRouteRoleData(routeRoleData);
 
-    const privData = await fetchPrivData();
+    const privData = await currentModule.fetchPrivData();
     this.savePrivData(privData);
   }
 
@@ -107,8 +108,21 @@ export default class RouteRolesForm extends React.Component {
 
   // submits form
   submitForm = async () => {
+
+    let strippedNullArr = this.state.routeRoleSelected.map((e) => {
+      return {
+        RouteID: e.RouteID,
+        // convert all "null" values of roleID to selected RoleID
+        RoleID: (e.RoleID == null ? this.roleIdParam : e.RoleID),
+        // convert all "null" values of priv to ID of "None"
+        PrivilegeID: (e.PrivilegeID == null ?
+          (this.state.privData.find(e => e.PrivilegeName == PRIVILEGES.none)).PrivilegeID :
+          e.PrivilegeID)
+      }
+    });
+
     const param = {
-      "routeRoles": this.state.routeRoleSelected
+      "routeRoles": strippedNullArr
     }
 
     try {
@@ -119,7 +133,7 @@ export default class RouteRolesForm extends React.Component {
       );
 
       if (resp.data.status === true) {
-        return true;
+        this.props.history.push('/routeroles');
 
       } else {
         this.setState({ errorMsg: resp.data.msg });
@@ -141,7 +155,7 @@ export default class RouteRolesForm extends React.Component {
         obj
     );
 
-    await this.setState({
+    this.setState({
       routeRoleSelected: newRouteRoleSelected
     });
 
