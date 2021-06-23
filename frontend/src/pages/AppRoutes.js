@@ -11,8 +11,7 @@ import Users from './Users/Users.lazy';
 import UsersForm from './Users/UsersForm/UsersForm.lazy';
 import Roles from './Roles/Roles.lazy';
 import RolesForm from './Roles/RolesForm/RolesForm.lazy';
-import RouteRoles from './RouteRoles/RouteRoles.lazy';
-import RouteRolesForm from './RouteRoles/RouteRolesForm/RouteRolesForm.lazy';
+import RouteRolesForm from './Roles/RouteRolesForm/RouteRolesForm.lazy';
 import Home from './Home/Home.lazy';
 import Navbar from '../components/Navbar/Navbar';
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -113,7 +112,6 @@ function matchComponentName(name) {
     case "UsersForm": return UsersForm;
     case "Roles": return Roles;
     case "RolesForm": return RolesForm;
-    case "RouteRoles": return RouteRoles;
     case "RouteRolesForm": return RouteRolesForm;
 
     default: return undefined;

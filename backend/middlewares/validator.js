@@ -1,5 +1,6 @@
 const Joi = require('joi');
 
+/**************** USER ****************/
 function userInsertSchema(req, res, next) {
 
     const schema = Joi.object({
@@ -35,6 +36,25 @@ function userGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
     });
     validateRequestQuery(req, res, next, schema);
+}
+
+/**************** ROLE ****************/
+
+function roleInsertSchema(req, res, next) {
+
+    const schema = Joi.object({
+        rolename: Joi.string().max(45).required()
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function roleModifySchema(req, res, next) {
+
+    const schema = Joi.object({
+        rolename: Joi.string().max(45).required(),
+        roleid: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
+    });
+    validateRequestBody(req, res, next, schema);
 }
 
 // TODO: continue JOI
@@ -80,5 +100,7 @@ module.exports = {
     userInsertSchema,
     userLoginSchema,
     userGetAllSchema,
-    userModifySchema
+    userModifySchema,
+    roleInsertSchema,
+    roleModifySchema
 }

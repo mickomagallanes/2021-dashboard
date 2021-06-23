@@ -9,6 +9,76 @@ class RoleModel {
     }
 
     /**
+    * inserts new role in the database
+    * @param {Object} obj - An object.
+    * @param {String} obj.rolename name of the role
+    * @return {Object} result
+    * @return {Number} result.insertId role id of last inserted
+    */
+    static async insertRole({ rolename }) {
+        const stmt = `INSERT INTO Roles (RoleName) VALUES (?)`;
+        try {
+            const result = await mysql_conn.query(stmt, [rolename]);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+     * modify role information to the database
+     * @param {Object} obj - An object.
+     * @param {String} obj.roleid id of the role
+     * @param {String} [obj.rolename] name of the role
+     * @return {Object} result
+     * @return {Number} result.insertId role id of last inserted
+     */
+
+    static async modifyRole({ roleid, rolename }) {
+        let whereParams = [roleid];
+        let setObj = {};
+        let stmtWhere = ` WHERE RoleID = ?`
+
+        if (rolename !== undefined) {
+            setObj.RoleName = rolename
+        }
+
+        try {
+            const result = await mysql_conn.update("Roles", setObj, stmtWhere, whereParams);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+     * get a row using by role id
+     * @param {Number} id id of the role
+     * @return {Array} result, length = 1
+     */
+    static async getRoleById(id) {
+        const stmt = `SELECT 
+                RoleID as rid,
+                RoleName as rname
+            FROM
+                Roles
+            WHERE
+                CAST(RoleID AS CHAR) = ?;`;
+
+        try {
+            const result = await mysql_conn.query(stmt, [id]);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
      * get all roles
      * @return {Array} result
      */

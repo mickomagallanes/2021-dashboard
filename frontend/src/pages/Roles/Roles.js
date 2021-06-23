@@ -74,11 +74,15 @@ class Roles extends React.Component {
     const actionButtons = (roleId) => {
       return (
         <>
-          <Link to={`/roles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary">
-            {isWriteable ? "Edit" : "Read"}
+          <Link to={`/roles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+            {isWriteable ? "Edit" : "Read"} Role
             <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
           </Link>
 
+          <Link to={`/routeroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary">
+            {isWriteable ? "Edit" : "Read"} Role Privileges
+            <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+          </Link>
         </>
       )
     };

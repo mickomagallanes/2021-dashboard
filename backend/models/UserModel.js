@@ -31,7 +31,7 @@ class UserModel {
     }
 
     /**
-     * inserts username and password to the database
+     * modify user information to the database
      * @param {Object} obj - An object.
      * @param {String} obj.userid id of the user
      * @param {String} [obj.username] username of the user
@@ -146,7 +146,6 @@ class UserModel {
     * @param {Number} id id of the user
     * @return {Array} result, length = 1
     */
-
     static async getUserById(id) {
         const stmt = `SELECT 
                 b.RoleID as rid,

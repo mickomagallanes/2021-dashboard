@@ -9,21 +9,20 @@ import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
 import { PRIVILEGES } from "../../../helpers/constants";
-// import RouteRolesForm from '../../RouteRoles/RouteRolesForm/RouteRolesForm';
+import RouteRolesForm from '../RouteRolesForm/RouteRolesForm';
 
-// const NewRouteRolesForm = new RouteRolesForm({ props: { match: { params: { id: "add" } } } });
-// console.log(NewRouteRolesForm)
-// NewRouteRolesForm.prototype.submitForm = async () => {
+RouteRolesForm.prototype.submitForm = async () => {
 
-// }
+}
 
 // TODO: check if you can change the implementation of RouteRolesForm so you can 
 // reuse it here
 
 // TODO: make roles as the main page for routeroles, pageroles.... show different buttons in a row (like: Edit Route Roles)
-const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
-const addUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/insert`;
-const editUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/modify`;
+const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/`;
+const addRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/insert`;
+const editRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/modify`;
+const routeRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/routerole/post/data`;
 
 const axiosConfig = {
   withCredentials: true,
@@ -44,10 +43,10 @@ function equalTo(ref, msg) {
   })
 };
 
-export async function fetchRoleData() {
+export async function fetchRoleData(urlParam) {
   try {
     const resp = await axios.get(
-      roleURL,
+      roleURL + urlParam,
       axiosConfig
     );
 
@@ -67,23 +66,23 @@ export default class RolesForm extends React.Component {
     this.state = {
       roleData: [],
       rolename: "",
+      routeRoleSelected: [],
+      privData: [],
       errorMsg: false,
-      // just to not connect the initialValues to main state username to prevent forced reinitialize, used after backend fetch userdata
+      // just to not connect the initialValues to main state rolename to prevent forced reinitialize, used after backend fetch roledata
       formikRoleName: ""
     }
 
-    this.imgFile = ""; // pure user image file, for submit image after handling file change
     this.urlParam = props.match.params.id;
 
-    // send back to users page when Privilege is Read and accessing add mode
+    // send back to roles page when Privilege is Read and accessing add mode
     if (this.isAddMode() && props.priv === PRIVILEGES.read) {
-      props.history.push('/users');
+      props.history.push('/roles');
     }
 
     this.schema = yup.object().shape({
       rolename: yup.string().max(45, 'Must be 45 characters or less').required('Required')
     });
-
 
   }
 
@@ -119,23 +118,65 @@ export default class RolesForm extends React.Component {
     }
   }
 
-  // submits form using add then returns insertId of user for submit image to use
-  submitFormAdd = async () => {
+  /**
+   * submit privilege after new role is inserted
+   * @param {Number} roleId id of the role
+   * @return {Object} resp contains the status, etc
+   */
+  submitPrivilege = async (roleId) => {
+    let strippedNullArr = this.state.routeRoleSelected.map((e) => {
+      return {
+        RouteID: e.RouteID,
+        // convert all "null" values of roleID to selected RoleID
+        RoleID: (e.RoleID == null ? roleId : e.RoleID),
+        // convert all "null" values of priv to ID of "None"
+        PrivilegeID: (e.PrivilegeID == null ?
+          (this.state.privData.find(e => e.PrivilegeName == PRIVILEGES.none)).PrivilegeID :
+          e.PrivilegeID)
+      }
+    });
+
     const param = {
-      "username": this.state.username,
-      "password": this.state.password,
-      "roleid": this.state.selectedRole,
+      "routeRoles": strippedNullArr
     }
 
     try {
       const resp = await axios.post(
-        addUserURL,
+        routeRoleURL,
         param,
         axiosConfig
       );
 
       if (resp.data.status === true) {
-        // TODO: create a success alert after adding user or editing
+        this.props.history.push('/roles');
+
+      } else {
+        this.setState({ errorMsg: resp.data.msg });
+        return false;
+      }
+
+    } catch (error) {
+      this.setState({ errorMsg: `${error}` });
+      return false;
+    }
+
+  }
+
+  // submits form using add then returns insertId of role for submit image to use
+  submitFormAdd = async () => {
+    const param = {
+      "rolename": this.state.rolename
+    }
+
+    try {
+      const resp = await axios.post(
+        addRoleURL,
+        param,
+        axiosConfig
+      );
+
+      if (resp.data.status === true) {
+        // TODO: create a success alert after adding role or editing
         return resp.data.id;
 
 
@@ -152,18 +193,16 @@ export default class RolesForm extends React.Component {
 
   }
 
-  // submits form using edit then returns insertId of user for submit image to use
+  // submits form using edit then returns insertId of role
   submitFormEdit = async () => {
     const param = {
-      "username": this.state.username,
-      "password": this.state.password,
-      "roleid": this.state.selectedRole,
-      "userid": this.urlParam
+      "rolename": this.state.rolename,
+      "roleid": this.urlParam
     }
 
     try {
       const resp = await axios.put(
-        editUserURL,
+        editRoleURL,
         param,
         axiosConfig
       );
@@ -183,6 +222,22 @@ export default class RolesForm extends React.Component {
 
   }
 
+  saveRouteRoleFormState = async (newState) => {
+    // just make the state in-sync from the RouteRolesForm
+    await this.setState({
+      routeRoleSelected: newState
+    });
+
+  }
+
+  saveAllPrivState = async (newState) => {
+    // just make the state in-sync from the RouteRolesForm
+    await this.setState({
+      privData: newState
+    });
+
+  }
+
   handleChangeRoleName = async (e, formikProps) => {
     await this.setState({ rolename: e.target.value, errorMsg: false }); // set first the state to update on formik validation
     formikProps.handleChange(e);
@@ -190,25 +245,22 @@ export default class RolesForm extends React.Component {
 
   handleSubmitForm = async () => {
     if (this.isAddMode()) {
-      let newUserId = await this.submitFormAdd();
+      let newRoleId = await this.submitFormAdd();
 
-      if (newUserId !== false) {
-        let isImageSuccess = await this.submitImage(newUserId);
+      if (newRoleId !== false) {
 
-        if (isImageSuccess) {
-          this.props.history.push('/users');
+        let isPrivSuccess = await this.submitPrivilege(newRoleId);
+
+        if (isPrivSuccess) {
+          this.props.history.push('/roles');
         }
       }
 
     } else {
       let isEditSuccess = await this.submitFormEdit();
-
       if (isEditSuccess) {
-        let isImageSuccess = await this.submitImage(this.urlParam);
+        this.props.history.push('/roles');
 
-        if (isImageSuccess) {
-          this.props.history.push('/users');
-        }
       }
 
     }
@@ -221,7 +273,7 @@ export default class RolesForm extends React.Component {
     return (
       <div>
         <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to="/users">
+          <Link className="btn btn-outline-light btn-icon-text btn-md" to="/roles">
             <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
             <span className="d-inline-block text-left">
               Back
@@ -236,14 +288,12 @@ export default class RolesForm extends React.Component {
 
               <div className="card-body">
 
-                <h4 className="card-title">{this.isAddMode() ? 'Add' : 'Edit'} User</h4>
+                <h4 className="card-title">{this.isAddMode() ? 'Add' : 'Edit'} Role</h4>
                 <div className="row mb-4">
                   <div className="col mt-3">
                     <Formik
                       initialValues={{
-                        username: this.state.formikUsername,
-                        password: "",
-                        confirmPassword: ""
+                        rolename: this.state.formikRoleName
                       }}
                       validationSchema={this.schema}
                       enableReinitialize
@@ -271,7 +321,7 @@ export default class RolesForm extends React.Component {
                                   autoComplete="rolename"
                                   onBlur={props.handleBlur}
                                   isInvalid={(props.errors.rolename && props.touched.rolename) || this.state.errorMsg}
-                                  onChange={(e) => this.handleChangeUsername(e, props)}
+                                  onChange={(e) => this.handleChangeRoleName(e, props)}
                                   disabled={this.props.priv === PRIVILEGES.read}
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -281,17 +331,25 @@ export default class RolesForm extends React.Component {
                             </div>
                           </div>
 
-                          {/* <div className="mt-4">
-                            {this.props.priv === PRIVILEGES.readWrite && <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}
-
-                            
-                          </div> */}
-
                         </Form>
                       )}
                     </Formik>
 
-                    <NewRouteRolesForm />
+                    {/* add privileges table only if add mode */}
+                    {this.isAddMode() &&
+                      <RouteRolesForm
+                        isRenderedAsChild={true}
+                        onChangePriv={this.saveRouteRoleFormState}
+                        onRouteRoleSave={this.saveRouteRoleFormState}
+                        header={<h5 className="card-title">Role Privileges to Routes</h5>}
+                        onAllPrivSave={this.saveAllPrivState}
+                        {...this.props} />
+                    }
+
+
+                    <div className="mt-4">
+                      {this.props.priv === PRIVILEGES.readWrite && <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}
+                    </div>
                   </div>
                 </div>
               </div>
