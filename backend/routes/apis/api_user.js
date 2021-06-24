@@ -138,7 +138,7 @@ router.post("/upload/img", [checkSession, authorizeWriteRoute, createSingleImage
     } else {
         let filePath = `/public/uploads/${fileName}`;
 
-        res.json({ "status": true, "msg": "Success", "data": filePath });
+        res.json({ "status": true, "msg": "Successfully inserted user image", "data": filePath });
     }
 
 });

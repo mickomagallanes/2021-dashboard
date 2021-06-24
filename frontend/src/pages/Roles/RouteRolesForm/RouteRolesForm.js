@@ -76,7 +76,7 @@ export default class RouteRolesForm extends React.Component {
       routeRoleData: [],
       privData: [],
       routeRoleSelected: [], // sent to the backend for post
-      errorMsg: false
+      errorMsg: []
     }
 
     this.onChangePriv = props.onChangePriv;
@@ -86,7 +86,6 @@ export default class RouteRolesForm extends React.Component {
     this.header = props.header;
 
     this.roleIdParam = props.match.params.id;
-    this.submitForm = this.submitForm.bind(this);
   }
 
   componentWillUnmount() {
@@ -104,6 +103,18 @@ export default class RouteRolesForm extends React.Component {
 
     const privData = await currentModule.fetchPrivData();
     this.savePrivData(privData);
+  }
+
+  clearErrorMsg() {
+    this.setState({ errorMsg: [] });
+  }
+
+  setErrorMsg(errorArr) {
+    this.setState({ errorMsg: [errorArr] });
+  }
+
+  pushErrorMsg(errorArr) {
+    this.setState({ errorMsg: [...this.state.errorMsg, errorArr] });
   }
 
   saveRouteRoleData = async (routeRoleData) => {
@@ -139,14 +150,13 @@ export default class RouteRolesForm extends React.Component {
       }
 
     } else {
-      this.setState({
-        errorMsg: privData.msg
-      });
+      this.setErrorMsg(privData.msg);
+
     }
   }
 
   // submits form
-  async submitForm() {
+  submitForm = async () => {
 
     let strippedNullArr = this.state.routeRoleSelected.map((e) => {
       return {
@@ -172,15 +182,18 @@ export default class RouteRolesForm extends React.Component {
       );
 
       if (resp.data.status === true) {
-        this.props.history.push('/roles');
-
+        this.props.history.push({
+          pathname: '/roles',
+          successMsg: [resp.data.msg]
+        });
+        return true;
       } else {
-        this.setState({ errorMsg: resp.data.msg });
+        this.setErrorMsg(resp.data.msg);
         return false;
       }
 
     } catch (error) {
-      this.setState({ errorMsg: `${error}` });
+      this.setErrorMsg(`${error}`);
       return false;
     }
 
@@ -211,7 +224,7 @@ export default class RouteRolesForm extends React.Component {
   }
 
   // TODO: make animation transition on routing using Framer Motion
-  // and use Unit Testing with Jest
+  // TODO: and use Unit Testing with Jest
   render() {
     if (!this.state.routeRoleData.length || !this.state.privData.length) {
       return (<Spinner />)
@@ -244,14 +257,16 @@ export default class RouteRolesForm extends React.Component {
                 <div className="col mt-3">
 
                   <Form className="forms-sample" onKeyPress={e => e.key === 'Enter' && this.handleSubmitForm()}>
-                    <Alert
-                      className="p-1"
-                      variant="danger"
-                      show={this.state.errorMsg}
-                      transition={false}
-                    >
-                      {this.state.errorMsg}
-                    </Alert>
+                    {this.state.errorMsg.map((err) =>
+                      <Alert
+                        className="p-1"
+                        variant="danger"
+                        show={err}
+                        transition={false}
+                      >
+                        {err}
+                      </Alert>
+                    )}
 
                     <div className="row mb-4">
                       <div className="col">

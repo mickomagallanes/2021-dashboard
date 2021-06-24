@@ -61,7 +61,8 @@ class Users extends React.Component {
       maxUsers: null,
       currentPage: 1,
       currentEntries: 5,
-      errorMsg: false
+      errorMsg: [],
+      successMsg: []
     }
 
     this.colData = [
@@ -69,13 +70,13 @@ class Users extends React.Component {
       { "id": "uname", "name": "Username" },
       { "id": "rname", "name": "Role Name" }
     ];
-
-
   }
 
   componentDidMount() {
 
     this.fetchAndSave();
+
+    this.showSuccessAlert();
   }
 
   fetchAndSave = async (pageNumber = this.state.currentPage) => {
@@ -101,20 +102,53 @@ class Users extends React.Component {
           currentPage: pageNumber,
           data: resp.data,
           maxPage: maxPage,
-          maxUsers: count,
-          errorMsg: false
+          maxUsers: count
         });
+
+        this.clearErrorMsg();
       } else {
-        this.setState({
-          errorMsg: resp.msg
-        });
+        this.setErrorMsg(resp.msg);
+
       }
 
     } else {
-      this.setState({
-        errorMsg: respCount.msg
-      });
+      this.setErrorMsg(respCount.msg);
+
     }
+  }
+
+  clearErrorMsg() {
+    this.setState({ errorMsg: [] });
+  }
+
+  setErrorMsg(errorArr) {
+    this.setState({ errorMsg: [errorArr] });
+  }
+
+  pushErrorMsg(errorArr) {
+    this.setState({ errorMsg: [...this.state.errorMsg, errorArr] });
+  }
+
+  showSuccessAlert() {
+    if (this.props.location.successMsg) {
+      this.setState({ successMsg: this.props.location.successMsg });
+
+      setTimeout(() => {
+        this.clearSuccessMsg()
+      }, 6000)
+    }
+  }
+
+  clearSuccessMsg() {
+    this.setState({ successMsg: [] });
+  }
+
+  setSuccessMsg(successArr) {
+    this.setState({ successMsg: [successArr] });
+  }
+
+  pushSuccessMsg(successArr) {
+    this.setState({ successMsg: [...this.state.successMsg, successArr] });
   }
 
   paginationClick = async (pageNumber) => {
@@ -148,14 +182,29 @@ class Users extends React.Component {
           <div className="page-header">
             <h3 className="page-title">Users Page</h3>
           </div>
-          <Alert
-            className="p-1"
-            variant="danger"
-            show={this.state.errorMsg}
-            transition={false}
-          >
-            {this.state.errorMsg}
-          </Alert>
+          {this.state.errorMsg.map((err) =>
+            <Alert
+              className="p-1"
+              variant="danger"
+              show={err}
+              transition={false}
+            >
+              {err}
+            </Alert>
+          )}
+          {this.state.successMsg.map((succ) => {
+            console.log(this.state.successMsg);
+            return <Alert
+              className="p-1"
+              variant="success"
+              show={succ}
+              transition={false}
+            >
+              {succ}
+            </Alert>
+          }
+          )}
+
           <div className="row" data-testid="Users" >
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card">

@@ -41,7 +41,7 @@ class RouteRoleService {
      * @param {Array} routeRolesArr
      */
     static async postRouteRoleData(routeRolesArr) {
-        // TODO: fix mapArr function
+
         let valueArr = await mapArr(routeRolesArr, e => { return [e.RouteID, e.RoleID, e.PrivilegeID] });
 
         let result = await RouteRoleModel.postRouteRoleData(valueArr);

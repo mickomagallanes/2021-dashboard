@@ -26,7 +26,6 @@ const axiosConfig = {
 const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/page/getPagesBySession`;
 const subPagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/getSubPagesBySession`;
 
-// TODO: pass in data pages and subpages
 const LoggedInContainer = RequireLogin(DefaultContainer);
 
 
@@ -134,7 +133,7 @@ function LoginContainer() {
   );
 }
 
-// TODO: make path connected to the database
+
 function DefaultContainer() {
 
   const [pagesData, setPagesData] = useState([]);

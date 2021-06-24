@@ -66,7 +66,7 @@ class Login extends React.Component {
     this.state = {
       username: "",
       password: "",
-      errorMsg: false
+      errorMsg: []
     }
   }
 
@@ -98,17 +98,29 @@ class Login extends React.Component {
           this.props.history.push('/home');
 
         } else {
-          this.setState({ errorMsg: "Failed fetching sidebar data" });
+          this.setErrorMsg("Failed fetching sidebar data");
         }
 
       } else {
-        this.setState({ errorMsg: `${data.msg}` });
+        this.setErrorMsg(`${data.msg}`);
       }
 
     } catch (error) {
-      this.setState({ errorMsg: `${error}` });
+      this.setErrorMsg(`${error}`);
     }
 
+  }
+
+  clearErrorMsg() {
+    this.setState({ errorMsg: [] });
+  }
+
+  setErrorMsg(errorArr) {
+    this.setState({ errorMsg: [errorArr] });
+  }
+
+  pushErrorMsg(errorArr) {
+    this.setState({ errorMsg: [...this.state.errorMsg, errorArr] });
   }
 
   render() {
@@ -133,14 +145,17 @@ class Login extends React.Component {
                 >
                   {props => (
                     <Form className="pt-3" onKeyPress={e => e.key === 'Enter' && this.signIn()}>
-                      <Alert
-                        className="p-1"
-                        variant="danger"
-                        show={this.state.errorMsg}
-                        transition={false}
-                      >
-                        {this.state.errorMsg}
-                      </Alert>
+                      {this.state.errorMsg.map((err) =>
+                        <Alert
+                          className="p-1"
+                          variant="danger"
+                          show={err}
+                          transition={false}
+                        >
+                          {err}
+                        </Alert>
+                      )}
+
                       <Form.Group>
                         <Form.Control
                           value={this.state.username}
@@ -151,11 +166,17 @@ class Login extends React.Component {
                           className="h-auto"
                           autoComplete="username"
                           onBlur={props.handleBlur}
-                          isInvalid={(props.errors.username && props.touched.username) || this.state.errorMsg}
-                          onChange={(e) => { this.setState({ username: e.target.value, errorMsg: false }); props.handleChange(e) }} />
+                          isInvalid={(props.errors.username && props.touched.username) || this.state.errorMsg.length}
+                          onChange={(e) => {
+                            this.setState({ username: e.target.value });
+                            props.handleChange(e);
+                            this.clearErrorMsg();
+                          }} />
+
                         <Form.Control.Feedback type="invalid">
-                          {this.state.errorMsg ? null : props.errors.username}
+                          {this.state.errorMsg.length ? null : props.errors.username}
                         </Form.Control.Feedback>
+
                       </Form.Group>
 
                       <Form.Group>
@@ -168,11 +189,17 @@ class Login extends React.Component {
                           className="h-auto"
                           autoComplete="current-password"
                           onBlur={props.handleBlur}
-                          isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg}
-                          onChange={(e) => { this.setState({ password: e.target.value, errorMsg: false }); props.handleChange(e) }} />
+                          isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg.length}
+                          onChange={(e) => {
+                            this.setState({ password: e.target.value });
+                            props.handleChange(e);
+                            this.clearErrorMsg();
+                          }} />
+
                         <Form.Control.Feedback type="invalid">
-                          {this.state.errorMsg ? null : props.errors.password}
+                          {this.state.errorMsg.length ? null : props.errors.password}
                         </Form.Control.Feedback>
+
                       </Form.Group>
                       <div className="mt-3">
                         <button type="button" className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"

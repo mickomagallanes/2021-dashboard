@@ -77,7 +77,7 @@ export default class UsersForm extends React.Component {
       username: "",
       password: "",
       confirmPassword: "",
-      errorMsg: false,
+      errorMsg: [],
       imgSrc: "", // src of image
       // just to not connect the initialValues to main state username to prevent forced reinitialize, used after backend fetch userdata
       formikUsername: ""
@@ -130,6 +130,18 @@ export default class UsersForm extends React.Component {
     return this.urlParam === "add";
   }
 
+  clearErrorMsg() {
+    this.setState({ errorMsg: [] });
+  }
+
+  setErrorMsg(errorArr) {
+    this.setState({ errorMsg: [errorArr] });
+  }
+
+  pushErrorMsg(errorArr) {
+    this.setState({ errorMsg: [...this.state.errorMsg, errorArr] });
+  }
+
   saveUserData = async (userData) => {
     if (userData.status === true) {
 
@@ -153,9 +165,8 @@ export default class UsersForm extends React.Component {
         selectedRole: roleData.data[0].RoleID
       });
     } else {
-      this.setState({
-        errorMsg: roleData.msg
-      });
+      this.setErrorMsg(roleData.msg);
+
     }
   }
   // submits form using add then returns insertId of user for submit image to use
@@ -175,17 +186,17 @@ export default class UsersForm extends React.Component {
 
       if (resp.data.status === true) {
         // TODO: create a success alert after adding user or editing
-        return resp.data.id;
-
+        return resp;
 
       } else {
-        this.setState({ errorMsg: resp.data.msg });
+        this.setErrorMsg(resp.data.msg);
+
         return false;
 
       }
 
     } catch (error) {
-      this.setState({ errorMsg: `${error}` });
+      this.setErrorMsg(`${error}`);
       return false;
     }
 
@@ -208,15 +219,15 @@ export default class UsersForm extends React.Component {
       );
 
       if (resp.data.status === true) {
-        return true;
+        return resp;
 
       } else {
-        this.setState({ errorMsg: resp.data.msg });
+        this.setErrorMsg(resp.data.msg);
         return false;
       }
 
     } catch (error) {
-      this.setState({ errorMsg: `${error}` });
+      this.setErrorMsg(`${error}`);
       return false;
     }
 
@@ -225,12 +236,6 @@ export default class UsersForm extends React.Component {
   // executes after submitFormAdd or submitFormEdit
   // @param {String} userId id of user
   submitImage = async (userId) => {
-
-    // if there's no new uploaded image, then prevent from uploading
-    if (!this.imgFile.length) {
-      this.props.history.push('/users');
-      return false;
-    }
     const formData = new FormData();
     formData.append("userImgUpload", this.imgFile[0]);
     formData.append("id", userId);
@@ -248,15 +253,14 @@ export default class UsersForm extends React.Component {
           imgSrc: resp.data.data
         });
 
-        return true;
+        return resp;
       } else {
-
-        this.setState({ errorMsg: resp.data.msg });
+        this.setErrorMsg(resp.data.msg);
         return false;
       }
 
     } catch (error) {
-      this.setState({ errorMsg: `${error}` });
+      this.setErrorMsg(`${error}`);
       return false;
 
     }
@@ -264,44 +268,65 @@ export default class UsersForm extends React.Component {
   }
 
   handleChangeUsername = async (e, formikProps) => {
-    await this.setState({ username: e.target.value, errorMsg: false }); // set first the state to update on formik validation
+    await this.setState({ username: e.target.value }); // set first the state to update on formik validation
+    this.clearErrorMsg();
     formikProps.handleChange(e);
   }
 
   handleChangePassword = async (e, formikProps) => {
-    await this.setState({ password: e.target.value, errorMsg: false });
+    await this.setState({ password: e.target.value });
+    this.clearErrorMsg();
     formikProps.handleChange(e);
   }
 
   handleChangeConfirm = async (e, formikProps) => {
-    await this.setState({ confirmPassword: e.target.value, errorMsg: false });
+    await this.setState({ confirmPassword: e.target.value });
+    this.clearErrorMsg();
     formikProps.handleChange(e);
   }
 
   handleChangeRole = async (e) => {
-    await this.setState({ selectedRole: e.target.value, errorMsg: false });
+    await this.setState({ selectedRole: e.target.value });
+    this.clearErrorMsg();
   }
 
   handleSubmitForm = async () => {
+    let submitResp;
+    let isImageSuccess;
+
     if (this.isAddMode()) {
-      let newUserId = await this.submitFormAdd();
-
-      if (newUserId !== false) {
-        let isImageSuccess = await this.submitImage(newUserId);
-
-        if (isImageSuccess) {
-          this.props.history.push('/users');
-        }
-      }
-
+      // save new user id
+      submitResp = await this.submitFormAdd();
     } else {
-      let isEditSuccess = await this.submitFormEdit();
+      submitResp = await this.submitFormEdit();
+    }
 
-      if (isEditSuccess) {
-        let isImageSuccess = await this.submitImage(this.urlParam);
+    let userIdParam = this.isAddMode() ? submitResp : this.urlParam;
 
-        if (isImageSuccess) {
-          this.props.history.push('/users');
+    let successArr = [];
+
+    if (submitResp !== false) {
+
+      successArr.push(submitResp.data.msg);
+
+      // if there's no new uploaded image, then prevent from uploading
+      if (!this.imgFile.length) {
+        this.props.history.push({
+          pathname: '/users',
+          successMsg: successArr
+        });
+
+      } else {
+        isImageSuccess = await this.submitImage(userIdParam);
+
+        if (isImageSuccess !== false) {
+          successArr.push(isImageSuccess.data.msg);
+
+          this.props.history.push({
+            pathname: '/users',
+            successMsg: successArr
+          });
+
         }
       }
 
@@ -322,7 +347,7 @@ export default class UsersForm extends React.Component {
   }
 
   // TODO: make animation transition on routing using Framer Motion
-  // and use Unit Testing with Jest
+  // TODO: and use Unit Testing with Jest
   render() {
     if (!this.state.roleData.length) {
       return (<Spinner />)
@@ -367,14 +392,16 @@ export default class UsersForm extends React.Component {
                       >
                         {props => (
                           <Form className="forms-sample" onKeyPress={e => e.key === 'Enter' && this.handleSubmitForm()}>
-                            <Alert
-                              className="p-1"
-                              variant="danger"
-                              show={this.state.errorMsg}
-                              transition={false}
-                            >
-                              {this.state.errorMsg}
-                            </Alert>
+                            {this.state.errorMsg.map((err) =>
+                              <Alert
+                                className="p-1"
+                                variant="danger"
+                                show={err}
+                                transition={false}
+                              >
+                                {err}
+                              </Alert>
+                            )}
 
                             <div className="row">
                               <div className="col">
@@ -387,12 +414,12 @@ export default class UsersForm extends React.Component {
                                     placeholder="Username"
                                     autoComplete="username"
                                     onBlur={props.handleBlur}
-                                    isInvalid={(props.errors.username && props.touched.username) || this.state.errorMsg}
+                                    isInvalid={(props.errors.username && props.touched.username) || this.state.errorMsg.length}
                                     onChange={(e) => this.handleChangeUsername(e, props)}
                                     disabled={this.props.priv === PRIVILEGES.read}
                                   />
                                   <Form.Control.Feedback type="invalid">
-                                    {this.state.errorMsg ? null : props.errors.username}
+                                    {this.state.errorMsg.length ? null : props.errors.username}
                                   </Form.Control.Feedback>
                                 </Form.Group>
                               </div>
@@ -413,13 +440,13 @@ export default class UsersForm extends React.Component {
                                         placeholder="Password"
                                         autoComplete="new-password"
                                         onBlur={props.handleBlur}
-                                        isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg}
+                                        isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg.length}
                                         onChange={(e) => this.handleChangePassword(e, props)}
                                       />
 
                                       <Form.Control.Feedback type="invalid">
                                         {/* put null to prevent showing error message from backend to each input boxes */}
-                                        {this.state.errorMsg ? null : props.errors.password}
+                                        {this.state.errorMsg.length ? null : props.errors.password}
                                       </Form.Control.Feedback>
                                     </Form.Group>
                                   </div>
@@ -435,11 +462,11 @@ export default class UsersForm extends React.Component {
                                         placeholder="Confirm Password"
                                         autoComplete="new-password"
                                         onBlur={props.handleBlur}
-                                        isInvalid={(props.errors.confirmPassword && props.touched.confirmPassword) || this.state.errorMsg}
+                                        isInvalid={(props.errors.confirmPassword && props.touched.confirmPassword) || this.state.errorMsg.length}
                                         onChange={(e) => this.handleChangeConfirm(e, props)}
                                       />
                                       <Form.Control.Feedback type="invalid">
-                                        {this.state.errorMsg ? null : props.errors.confirmPassword}
+                                        {this.state.errorMsg.length ? null : props.errors.confirmPassword}
                                       </Form.Control.Feedback>
                                     </Form.Group>
                                   </div>

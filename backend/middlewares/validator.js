@@ -57,38 +57,24 @@ function roleModifySchema(req, res, next) {
     validateRequestBody(req, res, next, schema);
 }
 
-// TODO: continue JOI
+/**************** GENERAL ****************/
 function validateRequestBody(req, res, next, schema) {
-    const options = {
-        abortEarly: false // include all errors
-    };
-    const { error } = schema.validate(req.body, options);
-
-    if (error) {
-        res.json({ "status": false, "msg": error.details[0].message });
-    } else {
-        next();
-    }
+    validate(req.body, res, next, schema)
 }
 
 function validateRequestQuery(req, res, next, schema) {
-    const options = {
-        abortEarly: false // include all errors
-    };
-    const { error } = schema.validate(req.query, options);
-
-    if (error) {
-        res.json({ "status": false, "msg": error.details[0].message });
-    } else {
-        next();
-    }
+    validate(req.query, res, next, schema)
 }
 
 function validateRequestParams(req, res, next, schema) {
+    validate(req.params, res, next, schema)
+}
+
+function validate(reqBody, res, next, schema) {
     const options = {
         abortEarly: false // include all errors
     };
-    const { error } = schema.validate(req.params, options);
+    const { error } = schema.validate(reqBody, options);
 
     if (error) {
         res.json({ "status": false, "msg": error.details[0].message });

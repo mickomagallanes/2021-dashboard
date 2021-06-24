@@ -15,10 +15,6 @@ RouteRolesForm.prototype.submitForm = async () => {
 
 }
 
-// TODO: check if you can change the implementation of RouteRolesForm so you can 
-// reuse it here
-
-// TODO: make roles as the main page for routeroles, pageroles.... show different buttons in a row (like: Edit Route Roles)
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/`;
 const addRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/insert`;
 const editRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/modify`;
@@ -68,7 +64,7 @@ export default class RolesForm extends React.Component {
       rolename: "",
       routeRoleSelected: [],
       privData: [],
-      errorMsg: false,
+      errorMsg: [],
       // just to not connect the initialValues to main state rolename to prevent forced reinitialize, used after backend fetch roledata
       formikRoleName: ""
     }
@@ -105,6 +101,18 @@ export default class RolesForm extends React.Component {
     return this.urlParam === "add";
   }
 
+  clearErrorMsg() {
+    this.setState({ errorMsg: [] });
+  }
+
+  setErrorMsg(errorArr) {
+    this.setState({ errorMsg: [errorArr] });
+  }
+
+  pushErrorMsg(errorArr) {
+    this.setState({ errorMsg: [...this.state.errorMsg, errorArr] });
+  }
+
   saveRoleData = async (roleData) => {
     if (roleData.status === true) {
       this.setState({
@@ -112,9 +120,8 @@ export default class RolesForm extends React.Component {
         formikRoleName: roleData.data.rname
       });
     } else {
-      this.setState({
-        errorMsg: roleData.msg
-      });
+      this.setErrorMsg(roleData.msg);
+
     }
   }
 
@@ -151,12 +158,14 @@ export default class RolesForm extends React.Component {
         this.props.history.push('/roles');
 
       } else {
-        this.setState({ errorMsg: resp.data.msg });
+        this.setErrorMsg(resp.data.msg);
+
         return false;
       }
 
     } catch (error) {
-      this.setState({ errorMsg: `${error}` });
+      this.setErrorMsg(`${error}`);
+
       return false;
     }
 
@@ -179,15 +188,13 @@ export default class RolesForm extends React.Component {
         // TODO: create a success alert after adding role or editing
         return resp.data.id;
 
-
       } else {
-        this.setState({ errorMsg: resp.data.msg });
+        this.setErrorMsg(resp.data.msg);
         return false;
-
       }
 
     } catch (error) {
-      this.setState({ errorMsg: `${error}` });
+      this.setErrorMsg(`${error}`);
       return false;
     }
 
@@ -211,12 +218,12 @@ export default class RolesForm extends React.Component {
         return true;
 
       } else {
-        this.setState({ errorMsg: resp.data.msg });
+        this.setErrorMsg(resp.data.msg);
         return false;
       }
 
     } catch (error) {
-      this.setState({ errorMsg: `${error}` });
+      this.setErrorMsg(`${error}`);
       return false;
     }
 
@@ -239,7 +246,8 @@ export default class RolesForm extends React.Component {
   }
 
   handleChangeRoleName = async (e, formikProps) => {
-    await this.setState({ rolename: e.target.value, errorMsg: false }); // set first the state to update on formik validation
+    await this.setState({ rolename: e.target.value }); // set first the state to update on formik validation
+    this.clearErrorMsg();
     formikProps.handleChange(e);
   }
 
@@ -267,7 +275,7 @@ export default class RolesForm extends React.Component {
   }
 
   // TODO: make animation transition on routing using Framer Motion
-  // and use Unit Testing with Jest
+  // TODO: and use Unit Testing with Jest
   render() {
 
     return (
@@ -300,14 +308,16 @@ export default class RolesForm extends React.Component {
                     >
                       {props => (
                         <Form className="forms-sample" onKeyPress={e => e.key === 'Enter' && this.handleSubmitForm()}>
-                          <Alert
-                            className="p-1"
-                            variant="danger"
-                            show={this.state.errorMsg}
-                            transition={false}
-                          >
-                            {this.state.errorMsg}
-                          </Alert>
+                          {this.state.errorMsg.map((err) =>
+                            <Alert
+                              className="p-1"
+                              variant="danger"
+                              show={err}
+                              transition={false}
+                            >
+                              {err}
+                            </Alert>
+                          )}
 
                           <div className="row">
                             <div className="col">
@@ -320,12 +330,12 @@ export default class RolesForm extends React.Component {
                                   placeholder="Role Name"
                                   autoComplete="rolename"
                                   onBlur={props.handleBlur}
-                                  isInvalid={(props.errors.rolename && props.touched.rolename) || this.state.errorMsg}
+                                  isInvalid={(props.errors.rolename && props.touched.rolename) || this.state.errorMsg.length}
                                   onChange={(e) => this.handleChangeRoleName(e, props)}
                                   disabled={this.props.priv === PRIVILEGES.read}
                                 />
                                 <Form.Control.Feedback type="invalid">
-                                  {this.state.errorMsg ? null : props.errors.rolename}
+                                  {this.state.errorMsg.length ? null : props.errors.rolename}
                                 </Form.Control.Feedback>
                               </Form.Group>
                             </div>

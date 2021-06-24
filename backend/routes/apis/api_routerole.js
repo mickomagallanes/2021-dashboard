@@ -15,9 +15,9 @@ router.get('/get/left/:roleId', checkSession, async function (req, res, next) {
     let result = await RouteRoleService.getAllRoutesLeftRole(roleId);
 
     if (result.status === false) {
-        res.json({ "status": false, "msg": "Failed getting all rows" });
+        res.json({ "status": false, "msg": "Failed fetching all rows" });
     } else {
-        res.json({ "status": true, "msg": "Successful getting all rows", "data": result.data });
+        res.json({ "status": true, "msg": "Successfully fetched all rows", "data": result.data });
     }
 
 });
@@ -34,7 +34,7 @@ router.post('/post/data', checkSession, async function (req, res, next) {
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed posting route roles data" });
     } else {
-        res.json({ "status": true, "msg": "Successful posting route roles data" });
+        res.json({ "status": true, "msg": "Successfully posted Route-Roles data" });
     }
 
 });

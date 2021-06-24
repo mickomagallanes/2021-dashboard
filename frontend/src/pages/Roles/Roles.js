@@ -38,7 +38,8 @@ class Roles extends React.Component {
     super();
     this.state = {
       data: [],
-      errorMsg: false
+      errorMsg: [],
+      successMsg: []
     }
 
     this.colData = [
@@ -53,19 +54,53 @@ class Roles extends React.Component {
     let data = await currentModule.fetchRolesData();
 
     this.saveData(data);
+
+    this.showSuccessAlert();
+  }
+
+  clearErrorMsg() {
+    this.setState({ errorMsg: [] });
+  }
+
+  setErrorMsg(errorArr) {
+    this.setState({ errorMsg: [errorArr] });
+  }
+
+  pushErrorMsg(errorArr) {
+    this.setState({ errorMsg: [...this.state.errorMsg, errorArr] });
+  }
+
+  clearSuccessMsg() {
+    this.setState({ successMsg: [] });
+  }
+
+  setSuccessMsg(successArr) {
+    this.setState({ successMsg: [successArr] });
+  }
+
+  pushSuccessMsg(successArr) {
+    this.setState({ successMsg: [...this.state.successMsg, successArr] });
+  }
+
+  showSuccessAlert() {
+    if (this.props.location.successMsg) {
+      this.setState({ successMsg: this.props.location.successMsg });
+
+      setTimeout(() => {
+        this.clearSuccessMsg()
+      }, 6000)
+    }
   }
 
   saveData = async (data) => {
 
     if (data.status === true) {
       this.setState({
-        data: data.data,
-        errorMsg: false
+        data: data.data
       });
+      this.clearErrorMsg();
     } else {
-      this.setState({
-        errorMsg: data.msg
-      });
+      this.setErrorMsg(data.msg);
     }
   }
 
@@ -93,14 +128,28 @@ class Roles extends React.Component {
           <div className="page-header">
             <h3 className="page-title">Roles Page</h3>
           </div>
-          <Alert
-            className="p-1"
-            variant="danger"
-            show={this.state.errorMsg}
-            transition={false}
-          >
-            {this.state.errorMsg}
-          </Alert>
+          {this.state.errorMsg.map((err) =>
+            <Alert
+              className="p-1"
+              variant="danger"
+              show={err}
+              transition={false}
+            >
+              {err}
+            </Alert>
+          )}
+
+          {this.state.successMsg.map((succ) =>
+            <Alert
+              className="p-1"
+              variant="success"
+              show={succ}
+              transition={false}
+            >
+              {succ}
+            </Alert>
+          )}
+
           <div className="row" data-testid="Roles">
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card">

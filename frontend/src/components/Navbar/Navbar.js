@@ -56,7 +56,7 @@ class Navbar extends React.Component {
         window.location = '/login';
       }
     } catch (error) {
-      this.setState({ errorMsg: `${error}` });
+
     }
 
   }
