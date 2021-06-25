@@ -1,14 +1,14 @@
 "use strict";
 const RouteRoleService = require('../../services/RouteRoleService.js');
 
-const { checkSession, authorizeReadRoute } = require('../../middlewares/routesauth.js');
+const { checkSession, authorizeReadRoute, authorizeWriteRoute } = require('../../middlewares/routesauth.js');
 const express = require('express');
 const router = express.Router();
 
 /**
  * get all roles
  */
-router.get('/get/left/:roleId', checkSession, async function (req, res, next) {
+router.get('/get/left/:roleId', [checkSession, authorizeReadRoute], async function (req, res, next) {
 
     const roleId = req.params.roleId;
 
@@ -25,7 +25,7 @@ router.get('/get/left/:roleId', checkSession, async function (req, res, next) {
 /**
  * post route role data
  */
-router.post('/post/data', checkSession, async function (req, res, next) {
+router.post('/post/data', [checkSession, authorizeWriteRoute], async function (req, res, next) {
 
     const routeRolesArr = req.body.routeRoles;
 

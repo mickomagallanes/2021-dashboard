@@ -1,5 +1,5 @@
 import React from 'react';
-import './RouteRolesForm.css';
+import './PageRolesForm.css';
 import axios from 'axios';
 import { retryRequest } from "../../../helpers/utils";
 import { Form, Alert, Table } from 'react-bootstrap';
@@ -7,21 +7,21 @@ import Select from '../../../components/Select/Select';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
 import { PRIVILEGES } from "../../../helpers/constants";
-import * as currentModule from './RouteRolesForm'; // use currentmodule to call func outside class, for testing
+import * as currentModule from './PageRolesForm'; // use currentmodule to call func outside class, for testing
 
-const routesRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/routerole/get/left/`;
+const pagesRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/get/left/`;
 const privUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/privilege/get/all`;
-const editURL = `${process.env.REACT_APP_BACKEND_HOST}/API/routerole/post/data`;
+const editURL = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/post/data`;
 
 const axiosConfig = {
   withCredentials: true,
   timeout: 10000
 }
 
-export async function fetchRouteRoleData(roleIdParam) {
+export async function fetchPageRoleData(roleIdParam) {
   try {
     const resp = await axios.get(
-      routesRoleUrl + roleIdParam,
+      pagesRoleUrl + roleIdParam,
       axiosConfig
     );
     const { data } = resp;
@@ -61,27 +61,27 @@ function wrapperTable(wrappedContent) {
 }
 
 /**
-  * creates a route roles form table
+  * creates a page roles form table
   * @param {Boolean} [isRenderedAsChild] if true, then component will be treated as child. Otherwise, as page
   * @param {Function} [onChangePriv] onchange function for priv radios, needs isRenderedAsChild to be true
-  * @param {Function} [onRouteRoleSave] executed when routeRoleSelected is initialized, needs isRenderedAsChild to be true
+  * @param {Function} [onPageRoleSave] executed when pageRoleSelected is initialized, needs isRenderedAsChild to be true
   * @param {HTML Elements} [header] redefined header for the table, needs isRenderedAsChild to be true
   * @param {Function} [onAllPrivSave] executed when privData is initialized, needs isRenderedAsChild to be true 
   */
-export default class RouteRolesForm extends React.Component {
+export default class PageRolesForm extends React.Component {
 
   constructor(props) {
     super();
     this.state = {
-      routeRoleData: [],
+      pageRoleData: [],
       privData: [],
-      routeRoleSelected: [], // sent to the backend for post
+      pageRoleSelected: [], // sent to the backend for post
       errorMsg: []
     }
 
     this.onChangePriv = props.onChangePriv;
     this.isRenderedAsChild = props.isRenderedAsChild;
-    this.onRouteRoleSave = props.onRouteRoleSave;
+    this.onPageRoleSave = props.onPageRoleSave;
     this.onAllPrivSave = props.onAllPrivSave;
     this.header = props.header;
 
@@ -97,9 +97,9 @@ export default class RouteRolesForm extends React.Component {
 
   async componentDidMount() {
 
-    const routeRoleData = await currentModule.fetchRouteRoleData(this.roleIdParam);
+    const pageRoleData = await currentModule.fetchPageRoleData(this.roleIdParam);
 
-    this.saveRouteRoleData(routeRoleData);
+    this.savePageRoleData(pageRoleData);
 
     const privData = await currentModule.fetchPrivData();
     this.savePrivData(privData);
@@ -117,19 +117,19 @@ export default class RouteRolesForm extends React.Component {
     this.setState({ errorMsg: [...this.state.errorMsg, errorArr] });
   }
 
-  saveRouteRoleData = async (routeRoleData) => {
-    if (routeRoleData.status === true) {
-      let routeRoleSelected = routeRoleData.data.map((e) => {
-        return { RouteID: e.RouteID, RoleID: e.RoleID, PrivilegeID: e.PrivilegeID }
+  savePageRoleData = async (pageRoleData) => {
+    if (pageRoleData.status === true) {
+      let pageRoleSelected = pageRoleData.data.map((e) => {
+        return { PageID: e.PageID, RoleID: e.RoleID, PrivilegeID: e.PrivilegeID }
       });
 
       this.setState({
-        routeRoleData: routeRoleData.data,
-        routeRoleSelected: routeRoleSelected
+        pageRoleData: pageRoleData.data,
+        pageRoleSelected: pageRoleSelected
       });
 
       if (this.isRenderedAsChild) {
-        this.onRouteRoleSave(routeRoleSelected);
+        this.onPageRoleSave(pageRoleSelected);
       }
 
     } else {
@@ -141,7 +141,7 @@ export default class RouteRolesForm extends React.Component {
   savePrivData = async (privData) => {
 
     if (privData.status === true) {
-      await this.setState({
+      this.setState({
         privData: privData.data
       });
 
@@ -158,9 +158,9 @@ export default class RouteRolesForm extends React.Component {
   // submits form
   submitForm = async () => {
 
-    let strippedNullArr = this.state.routeRoleSelected.map((e) => {
+    let strippedNullArr = this.state.pageRoleSelected.map((e) => {
       return {
-        RouteID: e.RouteID,
+        PageID: e.PageID,
         // convert all "null" values of roleID to selected RoleID
         RoleID: (e.RoleID == null ? this.roleIdParam : e.RoleID),
         // convert all "null" values of priv to ID of "None"
@@ -171,7 +171,7 @@ export default class RouteRolesForm extends React.Component {
     });
 
     const param = {
-      "routeRoles": strippedNullArr
+      "pageRoles": strippedNullArr
     }
 
     try {
@@ -199,19 +199,19 @@ export default class RouteRolesForm extends React.Component {
 
   }
 
-  handlePrivSelect = async (PrivilegeID, RouteID, RoleID) => {
+  handlePrivSelect = async (PrivilegeID, PageID, RoleID) => {
 
-    const newRouteRoleSelected = this.state.routeRoleSelected.map(obj =>
-      (obj.RouteID === RouteID && obj.RoleID === RoleID) ?
+    const newPageRoleSelected = this.state.pageRoleSelected.map(obj =>
+      (obj.PageID === PageID && obj.RoleID === RoleID) ?
         { ...obj, PrivilegeID: PrivilegeID } :
         obj
     );
 
     this.setState({
-      routeRoleSelected: newRouteRoleSelected
+      pageRoleSelected: newPageRoleSelected
     });
     if (this.isRenderedAsChild) {
-      this.onChangePriv(newRouteRoleSelected);
+      this.onChangePriv(newPageRoleSelected);
     }
   }
 
@@ -226,7 +226,7 @@ export default class RouteRolesForm extends React.Component {
   // TODO: make animation transition on routing using Framer Motion
   // TODO: and use Unit Testing with Jest
   render() {
-    if (!this.state.routeRoleData.length || !this.state.privData.length) {
+    if (!this.state.pageRoleData.length || !this.state.privData.length) {
       return (<Spinner />)
     } else {
       return (
@@ -248,7 +248,7 @@ export default class RouteRolesForm extends React.Component {
             <>
               {
                 !this.isRenderedAsChild ?
-                  <h4 className="card-title">Role-Routes Privileges</h4> :
+                  <h4 className="card-title">Role-Pages Privileges</h4> :
                   this.header
               }
 
@@ -272,37 +272,37 @@ export default class RouteRolesForm extends React.Component {
                         <Table responsive>
                           <thead>
                             <tr>
-                              <th>Route Name</th>
+                              <th>Page Name</th>
                               {this.state.privData.map(priv => {
                                 return <th key={`th${priv.PrivilegeID}`}>{priv.PrivilegeName}</th>
                               })}
                             </tr>
                           </thead>
                           <tbody>
-                            {this.state.routeRoleSelected.map(routeRole => {
-                              // connect to the routeRoleSelected state
-                              let routeMatch = this.state.routeRoleData.find(e => e.RouteID == routeRole.RouteID);
-                              let routeName = !!routeMatch ? routeMatch.RouteName : routeMatch;
-                              let privMatch = this.state.privData.find(e => e.PrivilegeID == routeRole.PrivilegeID);
+                            {this.state.pageRoleSelected.map(pageRole => {
+                              // connect to the pageRoleSelected state
+                              let pageMatch = this.state.pageRoleData.find(e => e.PageID == pageRole.PageID);
+                              let pageName = !!pageMatch ? pageMatch.PageName : pageMatch;
+                              let privMatch = this.state.privData.find(e => e.PrivilegeID == pageRole.PrivilegeID);
                               let privName = !!privMatch ? privMatch.PrivilegeName : privMatch;
 
                               return (
-                                <tr key={`tr${routeRole.RouteID}`}>
-                                  <td>{routeName}</td>
+                                <tr key={`tr${pageRole.PageID}`}>
+                                  <td>{pageName}</td>
                                   {this.state.privData.map(priv => {
 
                                     let translatedPriv = !privName ? PRIVILEGES.none : privName;
                                     let isChecked = translatedPriv == priv.PrivilegeName;
 
                                     return (
-                                      <td key={`td${routeRole.RouteID}${priv.PrivilegeID}`}>
+                                      <td key={`td${pageRole.PageID}${priv.PrivilegeID}`}>
                                         <Form.Check
                                           inline
                                           checked={isChecked}
-                                          onChange={() => this.handlePrivSelect(priv.PrivilegeID, routeRole.RouteID, routeRole.RoleID)}
+                                          onChange={() => this.handlePrivSelect(priv.PrivilegeID, pageRole.PageID, pageRole.RoleID)}
                                           value={priv.PrivilegeID}
-                                          key={`priv${routeRole.RouteID}${priv.PrivilegeID}`}
-                                          name={`priv${routeRole.RouteID}`}
+                                          key={`priv${pageRole.PageID}${priv.PrivilegeID}`}
+                                          name={`priv${pageRole.PageID}`}
                                           type="radio"
                                         />
                                       </td>

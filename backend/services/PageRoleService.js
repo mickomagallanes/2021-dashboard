@@ -1,4 +1,5 @@
 const PageRoleModel = require('../models/PageRoleModel.js');
+const { mapArr } = require('../utils/looping.js');
 
 "use strict";
 
@@ -18,6 +19,35 @@ class PageRoleService {
 
         if (pageRoleObj.length) {
             return { status: true, data: pageRoleObj[0].PrivilegeName }
+        }
+        return { status: false }
+    }
+
+    /**
+   * get all page with optional role name if the row matched the role
+   * @param {Number} roleId id of the role
+   */
+    static async getAllPagesLeftRole(roleId) {
+        let pagesArr = await PageRoleModel.getAllPagesLeftRole(roleId);
+
+        if (pagesArr.length) {
+            return { status: true, data: pagesArr }
+        }
+        return { status: false }
+    }
+
+    /**
+     * insert if PageID + RoleID does not exist, update if it exists
+     * @param {Array} pageRolesArr
+     */
+    static async postPageRoleData(pageRolesArr) {
+
+        let valueArr = await mapArr(pageRolesArr, e => { return [e.PageID, e.RoleID, e.PrivilegeID] });
+
+        let result = await PageRoleModel.postPageRoleData(valueArr);
+
+        if (result !== false) {
+            return { status: true }
         }
         return { status: false }
     }

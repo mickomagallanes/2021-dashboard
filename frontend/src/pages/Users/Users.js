@@ -79,6 +79,13 @@ class Users extends React.Component {
     this.showSuccessAlert();
   }
 
+  componentWillUnmount() {
+    // fix Warning: Can't perform a React state update on an unmounted component
+    this.setState = () => {
+      return;
+    };
+  }
+
   fetchAndSave = async (pageNumber = this.state.currentPage) => {
     // first, fetch count first to send the right page on the next request
     let respCount = await currentModule.fetchCount();
@@ -188,17 +195,18 @@ class Users extends React.Component {
               variant="danger"
               show={err}
               transition={false}
+              key={err}
             >
               {err}
             </Alert>
           )}
           {this.state.successMsg.map((succ) => {
-            console.log(this.state.successMsg);
             return <Alert
               className="p-1"
               variant="success"
               show={succ}
               transition={false}
+              key={succ}
             >
               {succ}
             </Alert>

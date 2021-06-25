@@ -10,15 +10,13 @@ import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
 import { PRIVILEGES } from "../../../helpers/constants";
 import RouteRolesForm from '../RouteRolesForm/RouteRolesForm';
-
-RouteRolesForm.prototype.submitForm = async () => {
-
-}
+import PageRolesForm from '../PageRolesForm/PageRolesForm';
 
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/`;
 const addRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/insert`;
 const editRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/modify`;
 const routeRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/routerole/post/data`;
+const pageRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/post/data`;
 
 const axiosConfig = {
   withCredentials: true,
@@ -63,6 +61,7 @@ export default class RolesForm extends React.Component {
       roleData: [],
       rolename: "",
       routeRoleSelected: [],
+      pageRoleSelected: [],
       privData: [],
       errorMsg: [],
       // just to not connect the initialValues to main state rolename to prevent forced reinitialize, used after backend fetch roledata
@@ -130,7 +129,7 @@ export default class RolesForm extends React.Component {
    * @param {Number} roleId id of the role
    * @return {Object} resp contains the status, etc
    */
-  submitPrivilege = async (roleId) => {
+  submitRoutePrivilege = async (roleId) => {
     let strippedNullArr = this.state.routeRoleSelected.map((e) => {
       return {
         RouteID: e.RouteID,
@@ -155,7 +154,53 @@ export default class RolesForm extends React.Component {
       );
 
       if (resp.data.status === true) {
-        this.props.history.push('/roles');
+        return resp;
+
+      } else {
+        this.setErrorMsg(resp.data.msg);
+
+        return false;
+      }
+
+    } catch (error) {
+      this.setErrorMsg(`${error}`);
+
+      return false;
+    }
+
+  }
+
+  /**
+   * submit privilege after new role is inserted
+   * @param {Number} roleId id of the role
+   * @return {Object} resp contains the status, etc
+   */
+  submitPagePrivilege = async (roleId) => {
+    let strippedNullArr = this.state.pageRoleSelected.map((e) => {
+      return {
+        PageID: e.PageID,
+        // convert all "null" values of roleID to selected RoleID
+        RoleID: (e.RoleID == null ? roleId : e.RoleID),
+        // convert all "null" values of priv to ID of "None"
+        PrivilegeID: (e.PrivilegeID == null ?
+          (this.state.privData.find(e => e.PrivilegeName == PRIVILEGES.none)).PrivilegeID :
+          e.PrivilegeID)
+      }
+    });
+
+    const param = {
+      "pageRoles": strippedNullArr
+    }
+
+    try {
+      const resp = await axios.post(
+        pageRoleURL,
+        param,
+        axiosConfig
+      );
+
+      if (resp.data.status === true) {
+        return resp;
 
       } else {
         this.setErrorMsg(resp.data.msg);
@@ -186,7 +231,7 @@ export default class RolesForm extends React.Component {
 
       if (resp.data.status === true) {
         // TODO: create a success alert after adding role or editing
-        return resp.data.id;
+        return resp;
 
       } else {
         this.setErrorMsg(resp.data.msg);
@@ -215,7 +260,7 @@ export default class RolesForm extends React.Component {
       );
 
       if (resp.data.status === true) {
-        return true;
+        return resp;
 
       } else {
         this.setErrorMsg(resp.data.msg);
@@ -237,10 +282,18 @@ export default class RolesForm extends React.Component {
 
   }
 
+  savePageRoleFormState = async (newState) => {
+    // just make the state in-sync from the PageRolesForm
+    await this.setState({
+      pageRoleSelected: newState
+    });
+
+  }
+
   saveAllPrivState = async (newState) => {
     // just make the state in-sync from the RouteRolesForm
     await this.setState({
-      privData: newState
+      privData: newState.data
     });
 
   }
@@ -252,22 +305,36 @@ export default class RolesForm extends React.Component {
   }
 
   handleSubmitForm = async () => {
+
     if (this.isAddMode()) {
-      let newRoleId = await this.submitFormAdd();
+      let submitResp = await this.submitFormAdd();
 
-      if (newRoleId !== false) {
+      if (submitResp !== false) {
+        let newRoleId = submitResp.data.id;
 
-        let isPrivSuccess = await this.submitPrivilege(newRoleId);
+        let isRouteSuccess = await this.submitRoutePrivilege(newRoleId);
 
-        if (isPrivSuccess) {
-          this.props.history.push('/roles');
+        if (isRouteSuccess !== false) {
+
+          let isPageSuccess = await this.submitPagePrivilege(newRoleId);
+
+          if (isPageSuccess !== false) {
+            this.props.history.push({
+              pathname: '/roles',
+              successMsg: [submitResp.data.msg, isRouteSuccess.data.msg, isPageSuccess.data.msg]
+            });
+          }
+
         }
       }
 
     } else {
-      let isEditSuccess = await this.submitFormEdit();
-      if (isEditSuccess) {
-        this.props.history.push('/roles');
+      let submitResp = await this.submitFormEdit();
+      if (submitResp !== false) {
+        this.props.history.push({
+          pathname: '/roles',
+          successMsg: [submitResp.data.msg]
+        });
 
       }
 
@@ -356,6 +423,14 @@ export default class RolesForm extends React.Component {
                         {...this.props} />
                     }
 
+                    {this.isAddMode() &&
+                      <PageRolesForm
+                        isRenderedAsChild={true}
+                        onChangePriv={this.savePageRoleFormState}
+                        onPageRoleSave={this.savePageRoleFormState}
+                        header={<h5 className="card-title">Role Privileges to Pages</h5>}
+                        {...this.props} />
+                    }
 
                     <div className="mt-4">
                       {this.props.priv === PRIVILEGES.readWrite && <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}

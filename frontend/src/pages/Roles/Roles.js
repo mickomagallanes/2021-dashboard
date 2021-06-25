@@ -58,6 +58,13 @@ class Roles extends React.Component {
     this.showSuccessAlert();
   }
 
+  componentWillUnmount() {
+    // fix Warning: Can't perform a React state update on an unmounted component
+    this.setState = () => {
+      return;
+    };
+  }
+
   clearErrorMsg() {
     this.setState({ errorMsg: [] });
   }
@@ -114,8 +121,13 @@ class Roles extends React.Component {
             <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
           </Link>
 
-          <Link to={`/routeroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary">
-            {isWriteable ? "Edit" : "Read"} Role Privileges
+          <Link to={`/routeroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+            {isWriteable ? "Edit" : "Read"} Role-Routes Privileges
+            <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+          </Link>
+
+          <Link to={`/pageroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+            {isWriteable ? "Edit" : "Read"} Role-Pages Privileges
             <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
           </Link>
         </>
@@ -134,6 +146,7 @@ class Roles extends React.Component {
               variant="danger"
               show={err}
               transition={false}
+              key={err}
             >
               {err}
             </Alert>
@@ -145,6 +158,7 @@ class Roles extends React.Component {
               variant="success"
               show={succ}
               transition={false}
+              key={succ}
             >
               {succ}
             </Alert>

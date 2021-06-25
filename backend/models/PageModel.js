@@ -14,7 +14,7 @@ class PageModel {
      * @return {Array} result
      */
     static async getPagesByUser(userId) {
-        const stmt = `SELECT b.PageName, b.PagePath FROM PageRoles as a INNER JOIN Pages as b ON a.PageID = b.PageID 
+        const stmt = `SELECT b.PageID, b.PageName, b.PagePath FROM PageRoles as a INNER JOIN Pages as b ON a.PageID = b.PageID 
                 INNER JOIN Users as d ON a.RoleID = d.RoleID WHERE UserID = ?`;
 
         try {

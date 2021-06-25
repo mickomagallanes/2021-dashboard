@@ -301,7 +301,7 @@ export default class UsersForm extends React.Component {
       submitResp = await this.submitFormEdit();
     }
 
-    let userIdParam = this.isAddMode() ? submitResp : this.urlParam;
+    let userIdParam = this.isAddMode() ? submitResp.data.id : this.urlParam;
 
     let successArr = [];
 

@@ -12,6 +12,7 @@ import UsersForm from './Users/UsersForm/UsersForm.lazy';
 import Roles from './Roles/Roles.lazy';
 import RolesForm from './Roles/RolesForm/RolesForm.lazy';
 import RouteRolesForm from './Roles/RouteRolesForm/RouteRolesForm.lazy';
+import PageRolesForm from './Roles/PageRolesForm/PageRolesForm.lazy';
 import Home from './Home/Home.lazy';
 import Navbar from '../components/Navbar/Navbar';
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -112,6 +113,7 @@ function matchComponentName(name) {
     case "Roles": return Roles;
     case "RolesForm": return RolesForm;
     case "RouteRolesForm": return RouteRolesForm;
+    case "PageRolesForm": return PageRolesForm;
 
     default: return undefined;
   }
@@ -171,10 +173,10 @@ function DefaultContainer() {
               <Route path="/home" component={RequireAuth(Home)} />
               <Route exact path="/" render={() => (<Redirect to="/home" />)} />
               {(pagesData.length) && pagesData.map(item =>
-                <Route exact path={`${item.PagePath}`} key={`${item.PageRolesID}`} component={RequireAuth(matchComponentName(item.PageName))} />
+                <Route exact path={`${item.PagePath}`} key={`${item.PageID}`} component={RequireAuth(matchComponentName(item.PageName))} />
               )}
               {(subPagesData.length) && subPagesData.map(item =>
-                <Route path={`${item.SubPagePath}`} key={`${item.PageRolesID}`} component={RequireAuth(matchComponentName(item.SubPageName), item.PagePath)} />
+                <Route path={`${item.SubPagePath}`} key={`${item.SubPageID}`} component={RequireAuth(matchComponentName(item.SubPageName), item.PagePath)} />
               )}
               <Route>
                 <p>ERROR 404</p>
