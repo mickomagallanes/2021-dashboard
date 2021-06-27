@@ -46,7 +46,7 @@ class UserService {
     }
 
     /**
-     * get user info by user if
+     * get user info by user id
      * @param {String} id user id
      * @return one row of user
      */

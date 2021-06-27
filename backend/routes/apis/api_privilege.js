@@ -8,7 +8,7 @@ const router = express.Router();
 /**
  * get all privileges
  */
-router.get('/get/all', checkSession, async function (req, res, next) {
+router.get('/get/all', [checkSession, authorizeReadRoute], async function (req, res, next) {
 
     let result = await PrivilegeService.getAllPrivileges();
 

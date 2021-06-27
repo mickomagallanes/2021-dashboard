@@ -121,7 +121,6 @@ class UserModel {
     * @param {Number} obj.limit limit count
     * @return {Array} result
     */
-
     static async getAllUserPaged({ startIndex, limit }) {
 
         const limitClause = ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`;

@@ -13,6 +13,8 @@ import Roles from './Roles/Roles.lazy';
 import RolesForm from './Roles/RolesForm/RolesForm.lazy';
 import RouteRolesForm from './Roles/RouteRolesForm/RouteRolesForm.lazy';
 import PageRolesForm from './Roles/PageRolesForm/PageRolesForm.lazy';
+import ParentMenus from './ParentMenus/ParentMenus.lazy';
+import ParentMenusForm from './ParentMenus/ParentMenusForm/ParentMenusForm.lazy';
 import Home from './Home/Home.lazy';
 import Navbar from '../components/Navbar/Navbar';
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -107,6 +109,7 @@ async function fetchSubPagesData() {
 }
 
 function matchComponentName(name) {
+
   switch (name) {
     case "Users": return Users;
     case "UsersForm": return UsersForm;
@@ -114,6 +117,8 @@ function matchComponentName(name) {
     case "RolesForm": return RolesForm;
     case "RouteRolesForm": return RouteRolesForm;
     case "PageRolesForm": return PageRolesForm;
+    case "ParentMenus": return ParentMenus;
+    case "ParentMenusForm": return ParentMenusForm;
 
     default: return undefined;
   }

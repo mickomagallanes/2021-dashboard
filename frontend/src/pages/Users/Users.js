@@ -70,13 +70,15 @@ class Users extends React.Component {
       { "id": "uname", "name": "Username" },
       { "id": "rname", "name": "Role Name" }
     ];
+
+    this.idKey = "id";
   }
 
   componentDidMount() {
 
     this.fetchAndSave();
 
-    this.showSuccessAlert();
+    this.loadSuccessProp();
   }
 
   componentWillUnmount() {
@@ -136,14 +138,19 @@ class Users extends React.Component {
     this.setState({ errorMsg: [...this.state.errorMsg, errorArr] });
   }
 
-  showSuccessAlert() {
+  loadSuccessProp() {
     if (this.props.location.successMsg) {
-      this.setState({ successMsg: this.props.location.successMsg });
-
-      setTimeout(() => {
-        this.clearSuccessMsg()
-      }, 6000)
+      this.showSuccessAlert(this.props.location.successMsg)
     }
+  }
+
+  showSuccessAlert(msgArr) {
+    this.setState({ successMsg: msgArr });
+
+    setTimeout(() => {
+      this.clearSuccessMsg()
+    }, 6000)
+
   }
 
   clearSuccessMsg() {
@@ -248,6 +255,7 @@ class Users extends React.Component {
                     tblClass=""
                     colData={this.colData}
                     actionButtons={actionButtons}
+                    idKey={this.idKey}
                   />
                 </div>
               </div>

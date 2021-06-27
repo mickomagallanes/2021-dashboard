@@ -15,6 +15,8 @@ class Table extends React.Component {
 
   render() {
 
+    const idKey = this.props.idKey;
+
     return (
 
       <div className="table-responsive">
@@ -39,12 +41,12 @@ class Table extends React.Component {
               // td key used combination of data from db and hardcoded data
               // e.g: "rname2" where "rname" is hardcoded id and "2" is the row id from db
               !!this.props.data.length && this.props.data.map(x =>
-                <tr key={`tr${x.id}`}>
-                  {this.props.colData.map(y => <td key={"" + y.id + x.id}>{x[y.id]}</td>)}
+                <tr key={`tr${x[idKey]}`}>
+                  {this.props.colData.map(y => <td key={`td${x[y.id]}${x[x[idKey]]}`}>{x[y.id]}</td>)}
 
                   {!this.props.actionDisabled &&
                     <td>
-                      {this.props.actionButtons(x.id)}
+                      {this.props.actionButtons(x[idKey])}
                     </td>
                   }
                 </tr>

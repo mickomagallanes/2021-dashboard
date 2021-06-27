@@ -48,7 +48,7 @@ router.get('/get/all/count', [checkSession, authorizeReadRoute], async function 
     }
 });
 
-// insert new role, only handles role data
+// insert new role
 // returns insertId of role, for privilege insert purposes
 router.post('/insert', [checkSession, roleInsertSchema, authorizeWriteRoute], async function (req, res, next) {
 
@@ -62,7 +62,7 @@ router.post('/insert', [checkSession, roleInsertSchema, authorizeWriteRoute], as
     }
 });
 
-// edit role text data, doesn't handle the image
+// edit role
 router.put('/modify', [checkSession, roleModifySchema, authorizeWriteRoute], async function (req, res, next) {
 
     // edit role information

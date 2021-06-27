@@ -57,6 +57,32 @@ function roleModifySchema(req, res, next) {
     validateRequestBody(req, res, next, schema);
 }
 
+/**************** MENUS ****************/
+function parentMenuInsertSchema(req, res, next) {
+
+    const schema = Joi.object({
+        parentMenuName: Joi.string().max(30).required()
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function parentMenuModifySchema(req, res, next) {
+
+    const schema = Joi.object({
+        parentMenuName: Joi.string().max(30).required(),
+        parentMenuId: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function parentMenuGetAllSchema(req, res, next) {
+    const schema = Joi.object({
+        page: Joi.number().integer(),
+        limit: Joi.number().integer().min(5).max(100),
+    });
+    validateRequestQuery(req, res, next, schema);
+}
+
 /**************** GENERAL ****************/
 function validateRequestBody(req, res, next, schema) {
     validate(req.body, res, next, schema)
@@ -88,5 +114,8 @@ module.exports = {
     userGetAllSchema,
     userModifySchema,
     roleInsertSchema,
-    roleModifySchema
+    roleModifySchema,
+    parentMenuInsertSchema,
+    parentMenuModifySchema,
+    parentMenuGetAllSchema
 }
