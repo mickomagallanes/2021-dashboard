@@ -129,6 +129,7 @@ class Sidebar extends React.Component {
 
   //TODO: render Sidebar based on PageRoles of User, also add custom privilege for each User
   render() {
+
     return (
       <nav className="sidebar sidebar-offcanvas" id="sidebar">
         <div className="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
@@ -207,7 +208,7 @@ class Sidebar extends React.Component {
                   <span className="menu-icon">
                     <i className="mdi mdi-dashboard"></i>
                   </span>
-                  <span className="menu-title"><Trans>{item.ParentMenuName}</Trans></span>
+                  <span className="menu-title text-wrap"><Trans>{item.ParentMenuName}</Trans></span>
                   <i className="menu-arrow"></i>
                 </div>
                 <Collapse in={!!this.state[`${item.ParentMenuName}Open`]}>

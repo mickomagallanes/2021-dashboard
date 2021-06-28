@@ -70,7 +70,7 @@ function parentMenuModifySchema(req, res, next) {
 
     const schema = Joi.object({
         parentMenuName: Joi.string().max(30).required(),
-        parentMenuId: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
+        parentMenuID: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
     });
     validateRequestBody(req, res, next, schema);
 }

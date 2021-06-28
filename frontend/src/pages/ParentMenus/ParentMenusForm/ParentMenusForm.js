@@ -116,8 +116,11 @@ export default class ParentMenuForm extends React.Component {
       });
     } else {
       // if no parent menu is found, like param as 'add', redirect back to history or parentmenu page
-      // TODO: show error on parentmenus, pass it to location props
-      this.props.history.push('/parentmenus');
+
+      this.props.history.push({
+        pathname: '/parentmenus',
+        errorMsg: ["Invalid URL Parameter"]
+      });
     }
   }
 
@@ -135,7 +138,6 @@ export default class ParentMenuForm extends React.Component {
       );
 
       if (resp.data.status === true) {
-        // TODO: create a success alert after adding parent menu or editing
         return resp;
 
       } else {
@@ -155,9 +157,10 @@ export default class ParentMenuForm extends React.Component {
   // submits form using edit then returns insertId of parent menu for submit image to use
   submitFormEdit = async () => {
     const param = {
+      "parentMenuID": this.urlParam,
       "parentMenuName": this.state.parentMenuName
     }
-
+    console.log(param)
     try {
       const resp = await axios.put(
         editParentMenuURL,

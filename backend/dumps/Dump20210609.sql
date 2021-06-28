@@ -28,7 +28,7 @@ CREATE TABLE `Menu` (
   `ParentMenuID` int DEFAULT NULL,
   PRIMARY KEY (`MenuID`),
   KEY `fk_Menu_1_idx` (`ParentMenuID`),
-  CONSTRAINT `fk_Menu_1` FOREIGN KEY (`ParentMenuID`) REFERENCES `ParentMenu` (`parentMenuId`)
+  CONSTRAINT `fk_Menu_1` FOREIGN KEY (`ParentMenuID`) REFERENCES `ParentMenu` (`parentMenuID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -108,10 +108,10 @@ DROP TABLE IF EXISTS `ParentMenu`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ParentMenu` (
-  `parentMenuId` int NOT NULL AUTO_INCREMENT,
+  `parentMenuID` int NOT NULL AUTO_INCREMENT,
   `ParentMenuName` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `ParentMenuSort` int NOT NULL,
-  PRIMARY KEY (`parentMenuId`)
+  PRIMARY KEY (`parentMenuID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

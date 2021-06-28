@@ -72,13 +72,17 @@ class Users extends React.Component {
     ];
 
     this.idKey = "id";
+
+    this.successTimer = null;
   }
 
-  componentDidMount() {
+  async componentDidMount() {
 
-    this.fetchAndSave();
+    await this.fetchAndSave();
 
     this.loadSuccessProp();
+
+    this.loadErrorProp();
   }
 
   componentWillUnmount() {
@@ -144,11 +148,31 @@ class Users extends React.Component {
     }
   }
 
+  loadErrorProp() {
+    if (this.props.location.errorMsg) {
+      this.showErrorAlert(this.props.location.errorMsg);
+    }
+  }
+
   showSuccessAlert(msgArr) {
     this.setState({ successMsg: msgArr });
 
-    setTimeout(() => {
+    clearTimeout(this.successTimer);
+
+    this.successTimer = setTimeout(() => {
       this.clearSuccessMsg()
+    }, 6000)
+
+  }
+
+  showErrorAlert(msgArr) {
+    this.setState({ errorMsg: msgArr });
+
+    clearTimeout(this.errorTimer);
+
+    // make timeout reset when error alert is continuous
+    this.errorTimer = setTimeout(() => {
+      this.clearErrorMsg()
     }, 6000)
 
   }

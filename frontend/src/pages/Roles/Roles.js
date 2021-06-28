@@ -48,6 +48,8 @@ class Roles extends React.Component {
     ];
 
     this.idKey = "id";
+
+    this.successTimer = null;
   }
 
   async componentDidMount() {
@@ -55,9 +57,11 @@ class Roles extends React.Component {
     // import current module and call fetchRolesData for testing benefits
     let data = await currentModule.fetchRolesData();
 
-    this.saveData(data);
+    await this.saveData(data);
 
     this.loadSuccessProp();
+
+    this.loadErrorProp();
   }
 
   componentWillUnmount() {
@@ -97,11 +101,31 @@ class Roles extends React.Component {
     }
   }
 
+  loadErrorProp() {
+    if (this.props.location.errorMsg) {
+      this.showErrorAlert(this.props.location.errorMsg);
+    }
+  }
+
   showSuccessAlert(msgArr) {
     this.setState({ successMsg: msgArr });
 
-    setTimeout(() => {
+    clearTimeout(this.successTimer);
+
+    this.successTimer = setTimeout(() => {
       this.clearSuccessMsg()
+    }, 6000)
+
+  }
+
+  showErrorAlert(msgArr) {
+    this.setState({ errorMsg: msgArr });
+
+    clearTimeout(this.errorTimer);
+
+    // make timeout reset when error alert is continuous
+    this.errorTimer = setTimeout(() => {
+      this.clearErrorMsg()
     }, 6000)
 
   }

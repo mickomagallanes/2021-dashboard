@@ -230,7 +230,6 @@ export default class RolesForm extends React.Component {
       );
 
       if (resp.data.status === true) {
-        // TODO: create a success alert after adding role or editing
         return resp;
 
       } else {

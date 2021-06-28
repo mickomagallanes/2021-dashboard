@@ -185,7 +185,6 @@ export default class UsersForm extends React.Component {
       );
 
       if (resp.data.status === true) {
-        // TODO: create a success alert after adding user or editing
         return resp;
 
       } else {

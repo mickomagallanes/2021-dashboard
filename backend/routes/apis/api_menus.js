@@ -99,9 +99,9 @@ router.get('/parent/get/:id', [checkSession, authorizeReadRoute], async function
  *
  */
 router.post('/parent/sort/up', [checkSession, authorizeWriteRoute], async function (req, res, next) {
-    let parentMenuId = req.body.parentMenuId;
+    let parentMenuID = req.body.parentMenuID;
 
-    let resp = await MenusService.sortUpParentMenu(parentMenuId);
+    let resp = await MenusService.sortUpParentMenu(parentMenuID);
 
     if (resp.status !== false) {
 
@@ -119,9 +119,9 @@ router.post('/parent/sort/up', [checkSession, authorizeWriteRoute], async functi
  */
 router.post('/parent/sort/down', [checkSession, authorizeWriteRoute], async function (req, res, next) {
 
-    let parentMenuId = req.body.parentMenuId;
+    let parentMenuID = req.body.parentMenuID;
 
-    let resp = await MenusService.sortDownParentMenu(parentMenuId);
+    let resp = await MenusService.sortDownParentMenu(parentMenuID);
 
     if (resp.status !== false) {
 

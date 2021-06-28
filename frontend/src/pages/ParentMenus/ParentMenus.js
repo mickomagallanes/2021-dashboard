@@ -52,10 +52,10 @@ export async function fetchParentMenusData(pageNumber, currentEntries) {
   }
 }
 
-export async function sortUp(parentMenuId) {
+export async function sortUp(parentMenuID) {
 
   const param = {
-    "parentMenuId": parentMenuId
+    "parentMenuID": parentMenuID
   }
 
   try {
@@ -75,10 +75,10 @@ export async function sortUp(parentMenuId) {
 }
 
 
-export async function sortDown(parentMenuId) {
+export async function sortDown(parentMenuID) {
 
   const param = {
-    "parentMenuId": parentMenuId
+    "parentMenuID": parentMenuID
   }
 
   try {
@@ -116,14 +116,19 @@ class ParentMenus extends React.Component {
       { "id": "ParentMenuName", "name": "Parent Menu name" }
     ];
 
+    this.successTimer = null;
+    this.errorTimer = null;
+
     this.idKey = "ParentMenuID";
   }
 
   async componentDidMount() {
 
-    this.fetchAndSave();
+    await this.fetchAndSave();
 
     this.loadSuccessProp();
+
+    this.loadErrorProp();
   }
 
   componentWillUnmount() {
@@ -159,16 +164,36 @@ class ParentMenus extends React.Component {
 
   loadSuccessProp() {
     if (this.props.location.successMsg) {
-      this.showSuccessAlert(this.props.location.successMsg)
+      this.showSuccessAlert(this.props.location.successMsg);
+    }
+  }
+
+  loadErrorProp() {
+    if (this.props.location.errorMsg) {
+      this.showErrorAlert(this.props.location.errorMsg);
     }
   }
 
   showSuccessAlert(msgArr) {
     this.setState({ successMsg: msgArr });
 
+    clearTimeout(this.successTimer);
+
     // make timeout reset when success alert is continuous
-    setTimeout(() => {
+    this.successTimer = setTimeout(() => {
       this.clearSuccessMsg()
+    }, 6000)
+
+  }
+
+  showErrorAlert(msgArr) {
+    this.setState({ errorMsg: msgArr });
+
+    clearTimeout(this.errorTimer);
+
+    // make timeout reset when error alert is continuous
+    this.errorTimer = setTimeout(() => {
+      this.clearErrorMsg()
     }, 6000)
 
   }
@@ -221,8 +246,8 @@ class ParentMenus extends React.Component {
     }
   }
 
-  sortUpParentMenu = async (parentMenuId) => {
-    let resp = await sortUp(parentMenuId);
+  sortUpParentMenu = async (parentMenuID) => {
+    let resp = await sortUp(parentMenuID);
 
     if (resp.status !== false) {
       this.fetchAndSave();
@@ -233,8 +258,8 @@ class ParentMenus extends React.Component {
     }
   }
 
-  sortDownParentMenu = async (parentMenuId) => {
-    let resp = await sortDown(parentMenuId);
+  sortDownParentMenu = async (parentMenuID) => {
+    let resp = await sortDown(parentMenuID);
 
     if (resp.status !== false) {
       this.fetchAndSave();
@@ -249,22 +274,22 @@ class ParentMenus extends React.Component {
     const { maxPage, currentPage } = this.state;
     let isWriteable = this.props.priv === PRIVILEGES.readWrite;
 
-    const actionButtons = (parentMenuId) => {
+    const actionButtons = (parentMenuID) => {
       return (
         <>
-          <Link to={`/parentmenus/form/${parentMenuId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+          <Link to={`/parentmenus/form/${parentMenuID}`} className="btn btn-icon-text btn-outline-secondary mr-3">
             {isWriteable ? "Edit" : "Read"} Parent Menu
             <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
           </Link>
 
           {isWriteable &&
             <>
-              <button onClick={() => this.sortUpParentMenu(parentMenuId)} className="btn btn-icon-text btn-outline-secondary mr-3">
+              <button onClick={() => this.sortUpParentMenu(parentMenuID)} className="btn btn-icon-text btn-outline-secondary mr-3">
                 Sort Up
                 <i className={`mdi ${isWriteable ? "mdi-arrow-up-bold" : "mdi-read"} btn-icon-append `}></i>
               </button>
 
-              <button onClick={() => this.sortDownParentMenu(parentMenuId)} className="btn btn-icon-text btn-outline-secondary mr-3">
+              <button onClick={() => this.sortDownParentMenu(parentMenuID)} className="btn btn-icon-text btn-outline-secondary mr-3">
                 Sort Down
                 <i className={`mdi ${isWriteable ? "mdi-arrow-down-bold" : "mdi-read"} btn-icon-append `}></i>
               </button>
