@@ -15,6 +15,7 @@ import RouteRolesForm from './Roles/RouteRolesForm/RouteRolesForm.lazy';
 import PageRolesForm from './Roles/PageRolesForm/PageRolesForm.lazy';
 import ParentMenus from './ParentMenus/ParentMenus.lazy';
 import ParentMenusForm from './ParentMenus/ParentMenusForm/ParentMenusForm.lazy';
+import Menus from './Menus/Menus.lazy';
 import Home from './Home/Home.lazy';
 import Navbar from '../components/Navbar/Navbar';
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -29,12 +30,13 @@ const axiosConfig = {
 const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/page/getPagesBySession`;
 const subPagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/getSubPagesBySession`;
 
-const LoggedInContainer = RequireLogin(DefaultContainer);
-
+const MainComponent = RequireLogin(DefaultContainer);
+const LoginComponent = RequireLogout(LoginContainer);
 
 class AppRoutes extends PureComponent {
   constructor() {
     super();
+
   }
 
   render() {
@@ -46,9 +48,9 @@ class AppRoutes extends PureComponent {
 
         <Switch>
 
-          <Route path="/login" component={RequireLogout(LoginContainer)} />
+          <Route path="/login" component={LoginComponent} />
 
-          <Route component={LoggedInContainer} />
+          <Route component={MainComponent} />
 
         </Switch>
 
@@ -56,6 +58,97 @@ class AppRoutes extends PureComponent {
 
     );
   }
+}
+
+function LoginContainer() {
+
+  return (
+
+    <div className="container-fluid page-body-wrapper full-page-wrapper">
+      <div className="main-panel">
+        <div className="content-wrapper">
+          <Login />
+        </div>
+      </div>
+    </div>
+
+  );
+}
+
+
+function DefaultContainer() {
+
+  const [pagesData, setPagesData] = useState([]);
+  const [subPagesData, setSubPagesData] = useState([]);
+  const [PagesElements, setPagesElements] = useState([]);
+  const [SubPagesElements, setSubPagesElements] = useState([]);
+
+  // Similar to componentDidMount:
+  useEffect(() => {
+    let isMounted = true;
+
+    (async function () {
+      let pagesData = await fetchPagesData();
+      let subPagesData = await fetchSubPagesData();
+      if (isMounted) {
+
+        setPagesData(pagesData);
+        setSubPagesData(subPagesData);
+      }
+
+    })()
+    return () => { isMounted = false };
+  }, []);  // passing an empty array as second argument triggers the callback in 
+  // useEffect only after the initial render thus replicating `componentDidMount` lifecycle behaviour
+
+
+  // similar to componentDidUpdate
+  useEffect(() => {
+
+    if (pagesData.length) {
+      setPagesElements(pagesData.map(item =>
+        <Route exact path={`${item.PagePath}`} key={`${item.PageID}`} component={RequireAuth(matchComponentName(item.PageName))} />
+      ));
+    }
+
+  }, [pagesData]);
+
+  useEffect(() => {
+
+    if (subPagesData.length) {
+
+      setSubPagesElements(subPagesData.map(item =>
+        <Route path={`${item.SubPagePath}`} key={`${item.SubPageID}`} component={RequireAuth(matchComponentName(item.SubPageName), item.PagePath)} />
+      ));
+    }
+  }, [subPagesData]);
+
+  return (
+
+    <>
+      <Sidebar />
+      <div className="container-fluid page-body-wrapper">
+        <Navbar />
+        <div className="main-panel">
+          <div className="content-wrapper">
+
+            <Switch>
+
+              {PagesElements}
+              {SubPagesElements}
+              <Route exact path="/" render={() => (<Redirect to="/home" />)} />
+              <Route>
+                <p>ERROR 404</p>
+              </Route>
+            </Switch>
+
+          </div>
+          <Footer />
+        </div>
+      </div>
+    </>
+
+  );
 }
 
 async function fetchPagesData() {
@@ -111,6 +204,7 @@ async function fetchSubPagesData() {
 function matchComponentName(name) {
 
   switch (name) {
+    case "Home": return Home;
     case "Users": return Users;
     case "UsersForm": return UsersForm;
     case "Roles": return Roles;
@@ -119,81 +213,12 @@ function matchComponentName(name) {
     case "PageRolesForm": return PageRolesForm;
     case "ParentMenus": return ParentMenus;
     case "ParentMenusForm": return ParentMenusForm;
+    case "Menus": return Menus;
 
     default: return undefined;
   }
 
 }
 
-function LoginContainer() {
 
-  return (
-
-    <div className="container-fluid page-body-wrapper full-page-wrapper">
-      <div className="main-panel">
-        <div className="content-wrapper">
-          <Login />
-        </div>
-      </div>
-    </div>
-
-  );
-}
-
-
-function DefaultContainer() {
-
-  const [pagesData, setPagesData] = useState([]);
-  const [subPagesData, setSubPagesData] = useState([]);
-
-  // Similar to componentDidMount and componentDidUpdate:
-  useEffect(() => {
-    let isMounted = true;
-
-    (async function () {
-      let pagesData = await fetchPagesData();
-      let subPagesData = await fetchSubPagesData();
-      if (isMounted) {
-
-        setPagesData(pagesData);
-        setSubPagesData(subPagesData);
-      }
-
-    })()
-    return () => { isMounted = false };
-
-  }, []);
-
-  return (
-
-    <>
-      <Sidebar />
-      <div className="container-fluid page-body-wrapper">
-        <Navbar />
-        <div className="main-panel">
-          <div className="content-wrapper">
-
-            <Switch>
-
-              <Route path="/home" component={RequireAuth(Home)} />
-              <Route exact path="/" render={() => (<Redirect to="/home" />)} />
-              {(pagesData.length) && pagesData.map(item =>
-                <Route exact path={`${item.PagePath}`} key={`${item.PageID}`} component={RequireAuth(matchComponentName(item.PageName))} />
-              )}
-              {(subPagesData.length) && subPagesData.map(item =>
-                <Route path={`${item.SubPagePath}`} key={`${item.SubPageID}`} component={RequireAuth(matchComponentName(item.SubPageName), item.PagePath)} />
-              )}
-              <Route>
-                <p>ERROR 404</p>
-              </Route>
-            </Switch>
-
-          </div>
-          <Footer />
-        </div>
-      </div>
-    </>
-
-  );
-}
 export default withRouter(AppRoutes);

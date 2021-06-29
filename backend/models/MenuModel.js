@@ -28,7 +28,79 @@ class MenusModel {
         }
     }
 
-    // TODO: create query for new menu page
+    /**
+   * get count of all menu for pagination
+   * @return {Array} result, length = 1
+   */
+    static async getAllMenuCount() {
+        const stmt = `SELECT 
+               count(MenuID) as count
+            FROM
+                Menus`;
+        try {
+            const result = await mysql_conn.query(stmt);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+     * get all menu rows
+     * @return {Array} result
+     */
+    static async getAllMenus() {
+        const stmt = `SELECT * from Menus`;
+
+        try {
+            const result = await mysql_conn.query(stmt);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+    * get a row using by menu id
+    * @param {Number} id id of the menu
+    * @return {Array} result, length = 1
+    */
+    static async getMenuById(id) {
+        const stmt = `SELECT * from Menus
+            WHERE
+                CAST(MenuID AS CHAR) = ?;`;
+
+        try {
+            const result = await mysql_conn.query(stmt, [id]);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+        * get all menu rows
+        * @param {Object} obj - An object.
+        * @param {Number} obj.startIndex start of limit
+        * @param {Number} obj.limit limit count
+        * @return {Array} result
+        */
+    static async getAllMenusPaged({ startIndex, limit }) {
+
+        const limitClause = ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`;
+
+        const stmt = `SELECT * from Menus ${limitClause}`;
+        try {
+            const result = await mysql_conn.query(stmt);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
 }
 
 

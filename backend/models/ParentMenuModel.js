@@ -61,7 +61,7 @@ class ParentMenuModel {
     }
 
     /**
-    * get count of all user for pagination
+    * get count of all parent menu for pagination
     * @return {Array} result, length = 1
     */
     static async getAllParentMenuCount() {

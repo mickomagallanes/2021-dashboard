@@ -131,7 +131,9 @@ export default class UsersForm extends React.Component {
   }
 
   clearErrorMsg() {
-    this.setState({ errorMsg: [] });
+    if (this.state.errorMsg.length) {
+      this.setState({ errorMsg: [] });
+    }
   }
 
   setErrorMsg(errorArr) {
@@ -348,6 +350,8 @@ export default class UsersForm extends React.Component {
   // TODO: make animation transition on routing using Framer Motion
   // TODO: and use Unit Testing with Jest
   render() {
+    // TODO: find out why you have formikUsername
+    console.log("dasjpdjaosfjoasf")
     if (!this.state.roleData.length) {
       return (<Spinner />)
     } else {

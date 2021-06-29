@@ -9,6 +9,95 @@ class MenusService {
 
     }
 
+    /******************************** Menu ***************************************/
+
+    /**
+     *  get menu and parent menu based on logged-in user role
+     * @param {Number} userId id of the user
+     * @return {Array} result
+     */
+    static async getMenusByRole(userId) {
+        let menuArr = await MenuModel.getMenusByRole(userId);
+
+        if (menuArr.length) {
+            return { status: true, data: menuArr }
+        }
+        return { status: false }
+
+    }
+
+    /**
+     * get all menu rows
+     * @param {Object} obj - An object.
+     * @param {String} [obj.page] current page, must be greater than 0
+     * @param {String} [obj.limit] limit count of rows, greater than 0
+     * @return menuArr all rows of menu
+     */
+    static async getAllMenus({ page, limit }) {
+
+        if ((!!page && page > 0) && (!limit || !(limit > 0))) {
+            return { status: false }
+        } else if ((!!limit && limit > 0) && (!page || !(page > 0))) {
+            return { status: false }
+        }
+
+        let isPaged = (!!page && page > 0) && (!!limit && limit > 0); // for pagination
+
+        const startIndex = isPaged ? (page - 1) * limit : false;
+
+        let menuArr;
+        if (startIndex === false) {
+            menuArr = await MenuModel.getAllMenus();
+        } else {
+            menuArr = await MenuModel.getAllMenusPaged({ startIndex: startIndex, limit: limit });
+        }
+
+        if (menuArr.length) {
+
+            return { status: true, data: menuArr }
+
+        } else {
+            return { status: false }
+        }
+
+    }
+
+    /**
+     * get menu info by menu id
+     * @param {String} id menu id
+     * @return one row of menu
+     */
+    static async getMenuById(id) {
+        let ret = await MenuModel.getMenuById(id);
+
+        if (ret.length) {
+            return { status: true, data: ret[0] }
+
+        } else {
+            return { status: false }
+        }
+
+    }
+
+    /**
+     * get total count of menu rows
+     * @return count of all rows
+     */
+    static async getAllMenuCount() {
+
+        const menuCount = await MenuModel.getAllMenuCount();
+
+        if (menuCount.length) {
+            return { status: true, data: menuCount[0] }
+        } else {
+            return { status: false }
+        }
+
+
+    }
+
+    /*************************** Parent Menu *************************************/
+
     /**
      * inserts new parentmenu in the database
      * @param {Object} obj - An object.
@@ -69,21 +158,6 @@ class MenusService {
     }
 
     /**
-     *  get menu and parent menu based on logged-in user role
-     * @param {Number} userId id of the user
-     * @return {Array} result
-     */
-    static async getMenusByRole(userId) {
-        let menuArr = await MenuModel.getMenusByRole(userId);
-
-        if (menuArr.length) {
-            return { status: true, data: menuArr }
-        }
-        return { status: false }
-
-    }
-
-    /**
      * get all parent menu rows
      * @param {Object} obj - An object.
      * @param {String} [obj.page] current page, must be greater than 0
@@ -140,7 +214,7 @@ class MenusService {
      * get total count of parent menu rows
      * @return count of all rows
      */
-    static async getAllCount() {
+    static async getAllParentMenuCount() {
 
         const parentMenuCount = await ParentMenuModel.getAllParentMenuCount();
 

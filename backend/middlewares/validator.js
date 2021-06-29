@@ -58,6 +58,8 @@ function roleModifySchema(req, res, next) {
 }
 
 /**************** MENUS ****************/
+
+/*********** 1. PARENT MENU ************/
 function parentMenuInsertSchema(req, res, next) {
 
     const schema = Joi.object({
@@ -76,6 +78,16 @@ function parentMenuModifySchema(req, res, next) {
 }
 
 function parentMenuGetAllSchema(req, res, next) {
+    const schema = Joi.object({
+        page: Joi.number().integer(),
+        limit: Joi.number().integer().min(5).max(100),
+    });
+    validateRequestQuery(req, res, next, schema);
+}
+
+/*********** 2. MENU ************/
+
+function menuGetAllSchema(req, res, next) {
     const schema = Joi.object({
         page: Joi.number().integer(),
         limit: Joi.number().integer().min(5).max(100),
@@ -117,5 +129,6 @@ module.exports = {
     roleModifySchema,
     parentMenuInsertSchema,
     parentMenuModifySchema,
-    parentMenuGetAllSchema
+    parentMenuGetAllSchema,
+    menuGetAllSchema
 }

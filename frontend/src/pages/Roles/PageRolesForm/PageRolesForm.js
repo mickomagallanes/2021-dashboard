@@ -106,7 +106,9 @@ export default class PageRolesForm extends React.Component {
   }
 
   clearErrorMsg() {
-    this.setState({ errorMsg: [] });
+    if (this.state.errorMsg.length) {
+      this.setState({ errorMsg: [] });
+    }
   }
 
   setErrorMsg(errorArr) {

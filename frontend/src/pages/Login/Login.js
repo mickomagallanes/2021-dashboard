@@ -18,7 +18,7 @@ const axiosConfig = {
   timeout: 10000
 }
 
-const menusByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/getMenusByRole`;
+const menusByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/role`;
 
 const mapStateToProps = (state) => {
   return { userName: state.profileReducer.userName, userImg: state.profileReducer.userImg };
@@ -112,7 +112,9 @@ class Login extends React.Component {
   }
 
   clearErrorMsg() {
-    this.setState({ errorMsg: [] });
+    if (this.state.errorMsg.length) {
+      this.setState({ errorMsg: [] });
+    }
   }
 
   setErrorMsg(errorArr) {
