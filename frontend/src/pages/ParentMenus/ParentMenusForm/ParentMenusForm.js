@@ -3,7 +3,7 @@ import './ParentMenusForm.css';
 import axios from 'axios';
 import { retryRequest } from "../../../helpers/utils";
 import { Form, Alert } from 'react-bootstrap';
-import Select from '../../../components/Select/Select';
+import Select from '../../../components/FormFields/Select/Select';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';

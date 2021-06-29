@@ -3,7 +3,8 @@ import './UsersForm.css';
 import axios from 'axios';
 import { retryRequest } from "../../../helpers/utils";
 import { Form, Alert } from 'react-bootstrap';
-import Select from '../../../components/Select/Select';
+import Select from '../../../components/FormFields/Select/Select';
+import TextField from '../../../components/FormFields/Select/Select';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
@@ -350,8 +351,8 @@ export default class UsersForm extends React.Component {
   // TODO: make animation transition on routing using Framer Motion
   // TODO: and use Unit Testing with Jest
   render() {
-    // TODO: find out why you have formikUsername
-    console.log("dasjpdjaosfjoasf")
+    // TODO: change form fields like from Ben Awad
+
     if (!this.state.roleData.length) {
       return (<Spinner />)
     } else {
@@ -386,7 +387,7 @@ export default class UsersForm extends React.Component {
                     <div className="col mt-3">
                       <Formik
                         initialValues={{
-                          username: this.state.formikUsername,
+                          username: this.state.username,
                           password: "",
                           confirmPassword: ""
                         }}
