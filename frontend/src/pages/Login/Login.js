@@ -2,16 +2,18 @@ import React from 'react';
 
 import './Login.css';
 
-import { Form, Alert } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import logo from "../../assets/images/logo.svg";
 import axios from 'axios';
-import { Formik } from 'formik';
+import { Formik, Form, Field } from "formik";
+import TextFormField from '../../components/FormFields/TextFormField/TextFormField.lazy';
 import * as yup from 'yup';
 import { retryRequest } from "../../helpers/utils";
 import { withRouter } from 'react-router-dom';
 import { profileChange } from '../../actions';
 import { connect } from 'react-redux';
 import { sidebarChange } from '../../actions';
+import { List } from 'immutable';
 
 const axiosConfig = {
   withCredentials: true,
@@ -59,23 +61,21 @@ async function fetchSidebarData() {
   }
 
 }
-class Login extends React.Component {
+class Login extends React.PureComponent {
 
   constructor() {
     super();
     this.state = {
-      username: "",
-      password: "",
-      errorMsg: []
+      errorMsg: List([])
     }
   }
 
-  signIn = async () => {
+  signIn = async (fields) => {
     let axiosConfig = {
       withCredentials: true,
       timeout: 10000
     };
-    let param = { "username": this.state.username, "password": this.state.password };
+    let param = fields;
 
     try {
       const resp = await axios.post(
@@ -98,35 +98,39 @@ class Login extends React.Component {
           this.props.history.push('/home');
 
         } else {
-          this.setErrorMsg("Failed fetching sidebar data");
+          this.setErrorMsg(0, "Failed fetching sidebar data");
         }
 
       } else {
-        this.setErrorMsg(`${data.msg}`);
+        this.setErrorMsg(0, `${data.msg}`);
       }
 
     } catch (error) {
-      this.setErrorMsg(`${error}`);
+      this.setErrorMsg(0, `${error}`);
     }
 
   }
 
   clearErrorMsg() {
-    if (this.state.errorMsg.length) {
-      this.setState({ errorMsg: [] });
+
+    if (this.state.errorMsg.size) {
+      const errorArr = this.state.errorMsg.clear();
+      this.setState({ errorMsg: errorArr });
     }
   }
 
-  setErrorMsg(errorArr) {
-    this.setState({ errorMsg: [errorArr] });
+  setErrorMsg(index, errorVal) {
+    const errorArr = this.state.errorMsg.set(index, errorVal);
+
+    this.setState({ errorMsg: errorArr });
   }
 
-  pushErrorMsg(errorArr) {
-    this.setState({ errorMsg: [...this.state.errorMsg, errorArr] });
+  pushErrorMsg(errorVal) {
+    const errorArr = this.state.errorMsg.push(errorVal);
+    this.setState({ errorMsg: errorArr });
   }
 
   render() {
-
     return (
       <div>
         <div className="d-flex align-items-center auth px-0">
@@ -138,75 +142,43 @@ class Login extends React.Component {
                 </div>
                 <h4>Hello! let's get started</h4>
                 <h6 className="font-weight-light">Sign in to continue.</h6>
+
                 <Formik
                   validationSchema={schema}
-                  initialValues={{
-                    username: this.state.username,
-                    password: this.state.password
-                  }}
+                  initialValues={{ username: "", password: "" }}
+                  onSubmit={this.signIn}
                 >
-                  {props => (
-                    <Form className="pt-3" onKeyPress={e => e.key === 'Enter' && this.signIn()}>
+                  {() => (
+                    <Form>
                       {this.state.errorMsg.map((err) =>
                         <Alert
                           className="p-1"
                           variant="danger"
                           show={err}
                           transition={false}
+                          key={err}
                         >
                           {err}
                         </Alert>
                       )}
-
-                      <Form.Group>
-                        <Form.Control
-                          value={this.state.username}
+                      <div>
+                        <Field
                           type="text"
                           name="username"
                           placeholder="Username"
-                          size="lg"
-                          className="h-auto"
-                          autoComplete="username"
-                          onBlur={props.handleBlur}
-                          isInvalid={(props.errors.username && props.touched.username) || this.state.errorMsg.length}
-                          onChange={(e) => {
-                            this.setState({ username: e.target.value });
-                            props.handleChange(e);
-                            this.clearErrorMsg();
-                          }} />
-
-                        <Form.Control.Feedback type="invalid">
-                          {this.state.errorMsg.length ? null : props.errors.username}
-                        </Form.Control.Feedback>
-
-                      </Form.Group>
-
-                      <Form.Group>
-                        <Form.Control
-                          value={this.state.password}
+                          component={TextFormField}
+                        />
+                      </div>
+                      <div>
+                        <Field
                           type="password"
-                          name="password"
                           placeholder="Password"
-                          size="lg"
-                          className="h-auto"
-                          autoComplete="current-password"
-                          onBlur={props.handleBlur}
-                          isInvalid={(props.errors.password && props.touched.password) || this.state.errorMsg.length}
-                          onChange={(e) => {
-                            this.setState({ password: e.target.value });
-                            props.handleChange(e);
-                            this.clearErrorMsg();
-                          }} />
+                          name="password"
+                          component={TextFormField} />
+                      </div>
 
-                        <Form.Control.Feedback type="invalid">
-                          {this.state.errorMsg.length ? null : props.errors.password}
-                        </Form.Control.Feedback>
-
-                      </Form.Group>
                       <div className="mt-3">
-                        <button type="button" className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"
-                          onClick={this.signIn}>SIGN IN</button>
-
+                        <button type="submit" className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">SIGN IN</button>
                       </div>
 
                     </Form>

@@ -6,10 +6,10 @@ import './Select.css';
   * @param {String} id id value of the select element
   * @param {Boolean} value current selected value
   * @param {Array} data array data to be processed for options
-  * @param {Array} className classn css of the table
-  * @param {Array} idKey key value of the option value from data
-  * @param {Array} valueKey key value for the option label from data
-  * @param {Array} onChange event listener of select
+  * @param {String} className classn css of the table
+  * @param {String} idKey key value of the option value from data
+  * @param {String} valueKey key value for the option label from data
+  * @param {Function} onChange event listener of select
   * @param {String} disabled is select disabled
   */
 class Select extends React.Component {

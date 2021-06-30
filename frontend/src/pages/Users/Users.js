@@ -4,7 +4,7 @@ import axios from 'axios';
 import Table from '../../components/Table/Table.lazy';
 import { retryRequest } from "../../helpers/utils";
 import { Link } from 'react-router-dom';
-import Pagination from '../../components/Pagination/Pagination';
+import Pagination from '../../components/Pagination/Pagination.lazy';
 import { Alert } from 'react-bootstrap';
 import * as currentModule from './Users'; // use currentmodule to call func outside class, for testing
 import { PRIVILEGES } from "../../helpers/constants";

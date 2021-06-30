@@ -3,7 +3,7 @@ import './RouteRolesForm.css';
 import axios from 'axios';
 import { retryRequest } from "../../../helpers/utils";
 import { Form, Alert, Table } from 'react-bootstrap';
-import Select from '../../../components/FormFields/Select/Select';
+import Select from '../../../components/FormFields/SelectFormField/SelectFormField';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
 import { PRIVILEGES } from "../../../helpers/constants";

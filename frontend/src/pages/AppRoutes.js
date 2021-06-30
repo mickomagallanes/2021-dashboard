@@ -1,4 +1,4 @@
-import React, { PureComponent, Suspense, useState, useEffect } from 'react';
+import React, { Component, Suspense, useState, useEffect } from 'react';
 import { Redirect, Switch, Route, withRouter } from 'react-router-dom';
 import { compose } from 'redux';
 import Spinner from '../components/Spinner/Spinner';
@@ -33,14 +33,13 @@ const subPagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get
 const MainComponent = RequireLogin(DefaultContainer);
 const LoginComponent = RequireLogout(LoginContainer);
 
-class AppRoutes extends PureComponent {
+class AppRoutes extends Component {
   constructor() {
     super();
 
   }
 
   render() {
-
 
     return (
 
