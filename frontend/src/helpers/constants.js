@@ -8,4 +8,9 @@ const PRIVILEGES = {
     readWrite: "RW",
     none: "None"
 }
-export { THEMES, PRIVILEGES }
+
+const ERRORMSG = {
+    invalidUrl: "Invalid URL Parameter",
+    noPrivilege: "You have no privilege to do that"
+}
+export { THEMES, PRIVILEGES, ERRORMSG }

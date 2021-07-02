@@ -257,77 +257,77 @@ export default class RouteRolesForm extends React.Component {
               <div className="row mb-4">
                 <div className="col mt-3">
 
-                  <Form className="forms-sample" onKeyPress={e => e.key === 'Enter' && this.handleSubmitForm()}>
-                    {this.state.errorMsg.map((err) =>
-                      <Alert
-                        className="p-1"
-                        variant="danger"
-                        show={err}
-                        transition={false}
-                      >
-                        {err}
-                      </Alert>
-                    )}
 
-                    <div className="row mb-4">
-                      <div className="col">
-                        <Table responsive>
-                          <thead>
-                            <tr>
-                              <th>Route Name</th>
-                              {this.state.privData.map(priv => {
-                                return <th key={`th${priv.PrivilegeID}`}>{priv.PrivilegeName}</th>
-                              })}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {this.state.routeRoleSelected.map(routeRole => {
-                              // connect to the routeRoleSelected state
-                              let routeMatch = this.state.routeRoleData.find(e => e.RouteID == routeRole.RouteID);
-                              let routeName = !!routeMatch ? routeMatch.RouteName : routeMatch;
-                              let privMatch = this.state.privData.find(e => e.PrivilegeID == routeRole.PrivilegeID);
-                              let privName = !!privMatch ? privMatch.PrivilegeName : privMatch;
+                  {this.state.errorMsg.map((err) =>
+                    <Alert
+                      className="p-1"
+                      variant="danger"
+                      show={err}
+                      transition={false}
+                    >
+                      {err}
+                    </Alert>
+                  )}
 
-                              return (
-                                <tr key={`tr${routeRole.RouteID}`}>
-                                  <td>{routeName}</td>
-                                  {this.state.privData.map(priv => {
-
-                                    let translatedPriv = !privName ? PRIVILEGES.none : privName;
-                                    let isChecked = translatedPriv == priv.PrivilegeName;
-
-                                    return (
-                                      <td key={`td${routeRole.RouteID}${priv.PrivilegeID}`}>
-                                        <Form.Check
-                                          inline
-                                          checked={isChecked}
-                                          onChange={() => this.handlePrivSelect(priv.PrivilegeID, routeRole.RouteID, routeRole.RoleID)}
-                                          value={priv.PrivilegeID}
-                                          key={`priv${routeRole.RouteID}${priv.PrivilegeID}`}
-                                          name={`priv${routeRole.RouteID}`}
-                                          type="radio"
-                                        />
-                                      </td>
-                                    )
-                                  })}
-                                </tr>
-                              )
+                  <div className="row mb-4">
+                    <div className="col">
+                      <Table responsive>
+                        <thead>
+                          <tr>
+                            <th>Route Name</th>
+                            {this.state.privData.map(priv => {
+                              return <th key={`th${priv.PrivilegeID}`}>{priv.PrivilegeName}</th>
                             })}
-                          </tbody>
-                        </Table>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {this.state.routeRoleSelected.map(routeRole => {
+                            // connect to the routeRoleSelected state
+                            let routeMatch = this.state.routeRoleData.find(e => e.RouteID == routeRole.RouteID);
+                            let routeName = !!routeMatch ? routeMatch.RouteName : routeMatch;
+                            let privMatch = this.state.privData.find(e => e.PrivilegeID == routeRole.PrivilegeID);
+                            let privName = !!privMatch ? privMatch.PrivilegeName : privMatch;
 
-                      </div>
+                            return (
+                              <tr key={`tr${routeRole.RouteID}`}>
+                                <td>{routeName}</td>
+                                {this.state.privData.map(priv => {
+
+                                  let translatedPriv = !privName ? PRIVILEGES.none : privName;
+                                  let isChecked = translatedPriv == priv.PrivilegeName;
+
+                                  return (
+                                    <td key={`td${routeRole.RouteID}${priv.PrivilegeID}`}>
+                                      <Form.Check
+                                        inline
+                                        checked={isChecked}
+                                        onChange={() => this.handlePrivSelect(priv.PrivilegeID, routeRole.RouteID, routeRole.RoleID)}
+                                        value={priv.PrivilegeID}
+                                        key={`priv${routeRole.RouteID}${priv.PrivilegeID}`}
+                                        name={`priv${routeRole.RouteID}`}
+                                        type="radio"
+                                      />
+                                    </td>
+                                  )
+                                })}
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </Table>
+
                     </div>
+                  </div>
 
-                    {
-                      !this.isRenderedAsChild &&
-                      <div className="mt-4">
-                        {this.props.priv === PRIVILEGES.readWrite && <button type="button" className="btn btn-primary mr-2" onClick={this.submitForm}>Submit</button>}
-                      </div>
-                    }
+                  {
+                    !this.isRenderedAsChild &&
+                    <div className="mt-4">
+                      {this.props.priv === PRIVILEGES.readWrite && <button type="button" className="btn btn-primary mr-2" onClick={this.submitForm}>Submit</button>}
+                    </div>
+                  }
 
 
-                  </Form>
+
 
                 </div>
               </div>

@@ -24,9 +24,10 @@ const TextFormField = ({
 
   return (
     <Form.Group>
-      {label && <Form.Label>{label}</Form.Label>}
+      {label && <Form.Label for={field.name}>{label}</Form.Label>}
       <Form.Control
         size="lg"
+        id={field.name}
         placeholder={placeholder}
         type={type}
         className="h-auto"

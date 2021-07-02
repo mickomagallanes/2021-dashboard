@@ -125,7 +125,10 @@ class Pagination extends React.Component {
         {!maxPage &&
           <nav data-testid="Pagination" aria-label="Pagination" className="mb-2 d-flex justify-content-center">
             <ul id="page-numbers" className="pagination flex-wrap">
-              <StyledA className="page-link">1</StyledA>
+              <li className="page-item">
+                <StyledA className="page-link">1</StyledA>
+              </li>
+
             </ul>
           </nav>
         }

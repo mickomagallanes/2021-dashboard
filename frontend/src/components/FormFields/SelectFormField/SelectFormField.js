@@ -23,11 +23,12 @@ const SelectFormField = ({
     getIn(form.touched, field.name) && getIn(form.errors, field.name);
   return (
     <>
-      {label && <label>{label}</label>}
+      {label && <label for={field.name}>{label}</label>}
       <select
         data-testid="SelectFormField"
         className="form-control btn"
         disabled={errorText}
+        id={field.name}
         {...field}
         {...props}
       >

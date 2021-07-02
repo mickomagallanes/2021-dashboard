@@ -74,6 +74,7 @@ class Users extends React.Component {
     this.idKey = "id";
 
     this.successTimer = null;
+    this.errorTimer = null;
   }
 
   async componentDidMount() {

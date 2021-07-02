@@ -25,7 +25,7 @@ async function testUsers({ data, newEntry }) {
 
   // Use the asynchronous version of act to apply resolved promises
   await act(async () => {
-    render(<BrowserRouter><Users /></BrowserRouter>);
+    render(<BrowserRouter><Users location={{}} /></BrowserRouter>);
   });
 
   //  based on the hardcoded state on Users.js
@@ -134,7 +134,7 @@ async function testBlankUsers({ data }) {
 
   // Use the asynchronous version of act to apply resolved promises
   await act(async () => {
-    render(<BrowserRouter><Users /></BrowserRouter>);
+    render(<BrowserRouter><Users location={{}} /></BrowserRouter>);
   });
 
   const users = screen.getByTestId('Users');

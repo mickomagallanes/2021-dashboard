@@ -8,8 +8,9 @@ import { Formik, Form, Field } from "formik";
 import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
-import { PRIVILEGES } from "../../../helpers/constants";
+import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import SelectFormField from '../../../components/FormFields/SelectFormField/SelectFormField.lazy';
+import * as currentModule from './UsersForm'; // use currentmodule to call func outside class, for testing
 
 const userURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/`;
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
@@ -72,7 +73,6 @@ export default class UsersForm extends React.Component {
   constructor(props) {
     super();
     this.state = {
-      userData: [],
       roleData: [],
       errorMsg: [],
       formData: {
@@ -89,8 +89,11 @@ export default class UsersForm extends React.Component {
 
     // send back to users page when Privilege is Read and accessing add mode
     if (this.isAddMode() && props.priv === PRIVILEGES.read) {
-      // TODO: put error message on table page
-      props.history.push('/users');
+      // put error message on table page
+      props.history.push({
+        pathname: '/users',
+        errorMsg: [ERRORMSG.noPrivilege]
+      });
     }
 
     // dont require password field when edit mode
@@ -120,11 +123,11 @@ export default class UsersForm extends React.Component {
   async componentDidMount() {
     // check if is on add mode
     if (!this.isAddMode()) {
-      const userData = await fetchUserData(this.urlParam);
+      const userData = await currentModule.fetchUserData(this.urlParam);
       this.saveUserData(userData);
     }
 
-    const roleData = await fetchRoleData();
+    const roleData = await currentModule.fetchRoleData();
     this.saveRoleData(roleData);
   }
 
@@ -151,7 +154,6 @@ export default class UsersForm extends React.Component {
     if (userData.status === true) {
 
       this.setState({
-        userData: userData.data,
         imgSrc: imgSrcMainPath + userData.data.img,
         formData: {
           username: userData.data.uname,
@@ -162,8 +164,8 @@ export default class UsersForm extends React.Component {
         }
       });
     } else {
-      // if no user is found, like param as 'add', redirect back to history or user page
-      this.props.history.push('/users');
+      this.setErrorMsg(userData.msg);
+
     }
   }
 
@@ -333,11 +335,11 @@ export default class UsersForm extends React.Component {
   render() {
     // TODO: change form fields like from Ben Awad
 
-    if (!this.state.roleData.length) {
+    if (!this.state.roleData.length && (!this.isAddMode() && !this.state.formData.username.length)) {
       return (<Spinner />)
     } else {
       return (
-        <div>
+        <div data-testid="UsersForm">
           <div className="page-header">
             <Link className="btn btn-outline-light btn-icon-text btn-md" to="/users">
               <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
@@ -431,7 +433,9 @@ export default class UsersForm extends React.Component {
                               </div>
                             </div>
                             <div className="mt-4">
-                              <button type="submit" className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">SIGN IN</button>
+                              {this.props.priv === PRIVILEGES.readWrite &&
+                                <button type="submit" className="btn btn-primary mr-2">Submit</button>}
+
                             </div>
 
                           </div>

@@ -2,13 +2,14 @@ import React from 'react';
 import './ParentMenusForm.css';
 import axios from 'axios';
 import { retryRequest } from "../../../helpers/utils";
-import { Form, Alert } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import Select from '../../../components/FormFields/SelectFormField/SelectFormField';
-import { Formik } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
-import { PRIVILEGES } from "../../../helpers/constants";
+import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
+import TextFormField from '../../../components/FormFields/TextFormField/TextFormField.lazy'
 
 const parentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/`;
 const addParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/insert`;
@@ -49,28 +50,30 @@ export async function fetchParentMenuData(urlParam) {
 
 yup.addMethod(yup.string, 'equalTo', equalTo);
 
+const schema = yup.object().shape({
+  parentMenuName: yup.string().max(30, 'Must be 30 characters or less').required('Required')
+});
+
 export default class ParentMenuForm extends React.Component {
 
   constructor(props) {
     super();
     this.state = {
-      parentMenuData: [],
-      parentMenuName: "",
       errorMsg: [],
-      // just to not connect the initialValues to main state parentMenuName to prevent forced reinitialize, used after backend fetch parentMenuData
-      formikParentMenuName: ""
+      formData: {
+        parentMenuName: ""
+      }
     }
 
     this.urlParam = props.match.params.id;
 
     // send back to parentmenus page when Privilege is Read and accessing add mode
     if (this.isAddMode() && props.priv === PRIVILEGES.read) {
-      props.history.push('/parentmenus');
+      props.history.push({
+        pathname: '/parentmenus',
+        errorMsg: [ERRORMSG.noPrivilege]
+      });
     }
-
-    this.schema = yup.object().shape({
-      parentMenuName: yup.string().max(30, 'Must be 30 characters or less').required('Required')
-    });
 
   }
 
@@ -112,24 +115,19 @@ export default class ParentMenuForm extends React.Component {
     if (parentMenuData.status === true) {
 
       this.setState({
-        parentMenuData: parentMenuData.data,
-        parentMenuName: parentMenuData.data.ParentMenuName,
-        formikParentMenuName: parentMenuData.data.ParentMenuName
+        formData: {
+          parentMenuName: parentMenuData.data.ParentMenuName
+        }
       });
     } else {
-      // if no parent menu is found, like param as 'add', redirect back to history or parentmenu page
-
-      this.props.history.push({
-        pathname: '/parentmenus',
-        errorMsg: ["Invalid URL Parameter"]
-      });
+      this.setErrorMsg(parentMenuData.msg);
     }
   }
 
   // submits form using add then returns insertId of parent menu for submit image to use
-  submitFormAdd = async () => {
+  submitFormAdd = async (fields) => {
     const param = {
-      "parentMenuName": this.state.parentMenuName
+      "parentMenuName": fields.parentMenuName
     }
 
     try {
@@ -157,12 +155,12 @@ export default class ParentMenuForm extends React.Component {
   }
 
   // submits form using edit then returns insertId of parent menu for submit image to use
-  submitFormEdit = async () => {
+  submitFormEdit = async (fields) => {
     const param = {
       "parentMenuID": this.urlParam,
-      "parentMenuName": this.state.parentMenuName
+      "parentMenuName": fields.parentMenuName
     }
-    console.log(param)
+
     try {
       const resp = await axios.put(
         editParentMenuURL,
@@ -185,20 +183,14 @@ export default class ParentMenuForm extends React.Component {
 
   }
 
-  handleChangeParentMenuName = async (e, formikProps) => {
-    await this.setState({ parentMenuName: e.target.value }); // set first the state to update on formik validation
-    this.clearErrorMsg();
-    formikProps.handleChange(e);
-  }
-
-  handleSubmitForm = async () => {
+  handleSubmitForm = async (fields) => {
     let submitResp;
 
     if (this.isAddMode()) {
       // save new parent menu id
-      submitResp = await this.submitFormAdd();
+      submitResp = await this.submitFormAdd(fields);
     } else {
-      submitResp = await this.submitFormEdit();
+      submitResp = await this.submitFormEdit(fields);
     }
     let successArr = [];
 
@@ -218,88 +210,75 @@ export default class ParentMenuForm extends React.Component {
   // TODO: and use Unit Testing with Jest
   render() {
 
-    return (
-      <div>
-        <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to="/parentmenus">
-            <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
-            <span className="d-inline-block text-left">
-              Back
-            </span>
-          </Link>
+    if (!this.isAddMode() && !this.state.formData.parentMenuName.length) {
+      return (<Spinner />)
+    } else {
+      return (
+        <div>
+          <div className="page-header">
+            <Link className="btn btn-outline-light btn-icon-text btn-md" to="/parentmenus">
+              <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
+              <span className="d-inline-block text-left">
+                Back
+              </span>
+            </Link>
 
-        </div>
-        <div className="row w-100 mx-0">
-          <div className="col-lg-8 col-xlg-9 col-md-12">
-            <div className="card px-4 px-sm-5">
+          </div>
+          <div className="row w-100 mx-0">
+            <div className="col-lg-8 col-xlg-9 col-md-12">
+              <div className="card px-4 px-sm-5">
 
-              <div className="card-body">
+                <div className="card-body">
 
-                <h4 className="card-title">{this.isAddMode() ? 'Add' : 'Edit'} Parent Menu</h4>
-                <div className="row mb-4">
-                  <div className="col mt-3">
-                    <Formik
-                      initialValues={{
-                        parentMenuName: this.state.formikParentMenuName
-                      }}
-                      validationSchema={this.schema}
-                      enableReinitialize
-                    >
-                      {props => (
-                        <Form className="forms-sample" onKeyPress={e => e.key === 'Enter' && this.handleSubmitForm()}>
-                          {this.state.errorMsg.map((err) =>
-                            <Alert
-                              className="p-1"
-                              variant="danger"
-                              show={err}
-                              transition={false}
-                            >
-                              {err}
-                            </Alert>
-                          )}
-
-                          <div className="row">
-                            <div className="col">
-                              <Form.Group controlId="parentMenuName">
-                                <Form.Label>Parent Menu name</Form.Label>
-                                <Form.Control
-                                  value={this.state.parentMenuName}
-                                  type="text"
-                                  name="parentMenuName"
-                                  placeholder="parentMenuName"
-                                  autoComplete="parentMenuName"
-                                  onBlur={props.handleBlur}
-                                  isInvalid={(props.errors.parentMenuName && props.touched.parentMenuName) || this.state.errorMsg.length}
-                                  onChange={(e) => this.handleChangeParentMenuName(e, props)}
-                                  disabled={this.props.priv === PRIVILEGES.read}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                  {this.state.errorMsg.length ? null : props.errors.parentMenuName}
-                                </Form.Control.Feedback>
-                              </Form.Group>
+                  <h4 className="card-title">{this.isAddMode() ? 'Add' : 'Edit'} Parent Menu</h4>
+                  <div className="row mb-4">
+                    <div className="col mt-3">
+                      <Formik
+                        validationSchema={schema}
+                        initialValues={this.state.formData}
+                        onSubmit={this.handleSubmitForm}
+                      >
+                        {() => (
+                          <Form>
+                            {this.state.errorMsg.map((err) =>
+                              <Alert
+                                className="p-1"
+                                variant="danger"
+                                show={err}
+                                transition={false}
+                                key={err}
+                              >
+                                {err}
+                              </Alert>
+                            )}
+                            <div>
+                              <Field
+                                label="Parent Menu Name"
+                                type="text"
+                                name="parentMenuName"
+                                placeholder="Parent Menu Name"
+                                component={TextFormField}
+                              />
                             </div>
-                          </div>
 
-                          <div className="mt-4">
-                            {this.props.priv === PRIVILEGES.readWrite &&
-                              <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}
+                            <div className="mt-3">
+                              <button type="submit" className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">SIGN IN</button>
+                            </div>
 
-                            {/* <button className="btn btn-dark">Cancel</button> */}
-                          </div>
+                          </Form>
+                        )}
+                      </Formik>
 
-                        </Form>
-                      )}
-                    </Formik>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-    );
-
+      );
+    }
   }
 
 }

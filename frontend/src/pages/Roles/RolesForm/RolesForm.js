@@ -2,15 +2,15 @@ import React from 'react';
 import './RolesForm.css';
 import axios from 'axios';
 import { retryRequest } from "../../../helpers/utils";
-import { Form, Alert } from 'react-bootstrap';
-import Select from '../../../components/FormFields/SelectFormField/SelectFormField';
-import { Formik } from 'formik';
+import { Alert } from 'react-bootstrap';
+import { Formik, Form, Field } from "formik";
 import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
-import { PRIVILEGES } from "../../../helpers/constants";
+import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import RouteRolesForm from '../RouteRolesForm/RouteRolesForm';
 import PageRolesForm from '../PageRolesForm/PageRolesForm';
+import TextFormField from '../../../components/FormFields/TextFormField/TextFormField.lazy'
 
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/`;
 const addRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/insert`;
@@ -53,31 +53,35 @@ export async function fetchRoleData(urlParam) {
 
 yup.addMethod(yup.string, 'equalTo', equalTo);
 
+const schema = yup.object().shape({
+  rolename: yup.string().max(45, 'Must be 45 characters or less').required('Required')
+});
+
 export default class RolesForm extends React.Component {
 
   constructor(props) {
     super();
     this.state = {
-      roleData: [],
-      rolename: "",
       routeRoleSelected: [],
       pageRoleSelected: [],
       privData: [],
       errorMsg: [],
-      // just to not connect the initialValues to main state rolename to prevent forced reinitialize, used after backend fetch roledata
-      formikRoleName: ""
+      formData: {
+        rolename: ""
+      }
     }
 
     this.urlParam = props.match.params.id;
 
     // send back to roles page when Privilege is Read and accessing add mode
     if (this.isAddMode() && props.priv === PRIVILEGES.read) {
-      props.history.push('/roles');
+      props.history.push({
+        pathname: '/roles',
+        errorMsg: [ERRORMSG.noPrivilege]
+      });
     }
 
-    this.schema = yup.object().shape({
-      rolename: yup.string().max(45, 'Must be 45 characters or less').required('Required')
-    });
+
 
   }
 
@@ -117,8 +121,7 @@ export default class RolesForm extends React.Component {
   saveRoleData = async (roleData) => {
     if (roleData.status === true) {
       this.setState({
-        rolename: roleData.data.rname,
-        formikRoleName: roleData.data.rname
+        formData: { rolename: roleData.data.rname }
       });
     } else {
       this.setErrorMsg(roleData.msg);
@@ -219,9 +222,9 @@ export default class RolesForm extends React.Component {
   }
 
   // submits form using add then returns insertId of role for submit image to use
-  submitFormAdd = async () => {
+  submitFormAdd = async (fields) => {
     const param = {
-      "rolename": this.state.rolename
+      "rolename": fields.rolename
     }
 
     try {
@@ -247,9 +250,9 @@ export default class RolesForm extends React.Component {
   }
 
   // submits form using edit then returns insertId of role
-  submitFormEdit = async () => {
+  submitFormEdit = async (fields) => {
     const param = {
-      "rolename": this.state.rolename,
+      "rolename": fields.rolename,
       "roleid": this.urlParam
     }
 
@@ -299,16 +302,10 @@ export default class RolesForm extends React.Component {
 
   }
 
-  handleChangeRoleName = async (e, formikProps) => {
-    await this.setState({ rolename: e.target.value }); // set first the state to update on formik validation
-    this.clearErrorMsg();
-    formikProps.handleChange(e);
-  }
-
-  handleSubmitForm = async () => {
+  handleSubmitForm = async (fields) => {
 
     if (this.isAddMode()) {
-      let submitResp = await this.submitFormAdd();
+      let submitResp = await this.submitFormAdd(fields);
 
       if (submitResp !== false) {
         let newRoleId = submitResp.data.id;
@@ -330,7 +327,7 @@ export default class RolesForm extends React.Component {
       }
 
     } else {
-      let submitResp = await this.submitFormEdit();
+      let submitResp = await this.submitFormEdit(fields);
       if (submitResp !== false) {
         this.props.history.push({
           pathname: '/roles',
@@ -345,96 +342,91 @@ export default class RolesForm extends React.Component {
   // TODO: make animation transition on routing using Framer Motion
   // TODO: and use Unit Testing with Jest
   render() {
+    if (!this.isAddMode() && !this.state.formData.rolename.length) {
+      return (<Spinner />)
+    } else {
+      return (
+        <div>
+          <div className="page-header">
+            <Link className="btn btn-outline-light btn-icon-text btn-md" to="/roles">
+              <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
+              <span className="d-inline-block text-left">
+                Back
+              </span>
+            </Link>
 
-    return (
-      <div>
-        <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to="/roles">
-            <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
-            <span className="d-inline-block text-left">
-              Back
-            </span>
-          </Link>
+          </div>
+          <div className="row w-100 mx-0">
 
-        </div>
-        <div className="row w-100 mx-0">
+            <div className="col-lg-8 col-xlg-9 col-md-12">
+              <div className="card px-4 px-sm-5">
 
-          <div className="col-lg-8 col-xlg-9 col-md-12">
-            <div className="card px-4 px-sm-5">
+                <div className="card-body">
 
-              <div className="card-body">
-
-                <h4 className="card-title">{this.isAddMode() ? 'Add' : 'Edit'} Role</h4>
-                <div className="row mb-4">
-                  <div className="col mt-3">
-                    <Formik
-                      initialValues={{
-                        rolename: this.state.formikRoleName
-                      }}
-                      validationSchema={this.schema}
-                      enableReinitialize
-                    >
-                      {props => (
-                        <Form className="forms-sample" onKeyPress={e => e.key === 'Enter' && this.handleSubmitForm()}>
-                          {this.state.errorMsg.map((err) =>
-                            <Alert
-                              className="p-1"
-                              variant="danger"
-                              show={err}
-                              transition={false}
-                            >
-                              {err}
-                            </Alert>
-                          )}
-
-                          <div className="row">
-                            <div className="col">
-                              <Form.Group controlId="rolename">
-                                <Form.Label>Role Name</Form.Label>
-                                <Form.Control
-                                  value={this.state.rolename}
+                  <h4 className="card-title">{this.isAddMode() ? 'Add' : 'Edit'} Role</h4>
+                  <div className="row mb-4">
+                    <div className="col mt-3">
+                      <Formik
+                        initialValues={this.state.formData}
+                        validationSchema={schema}
+                        onSubmit={this.handleSubmitForm}
+                        enableReinitialize
+                      >
+                        {() => (
+                          <Form>
+                            {this.state.errorMsg.map((err) =>
+                              <Alert
+                                className="p-1"
+                                variant="danger"
+                                show={err}
+                                transition={false}
+                                key={err}
+                              >
+                                {err}
+                              </Alert>
+                            )}
+                            <div className="row">
+                              <div className="col">
+                                <Field
                                   type="text"
+                                  label="Role Name"
                                   name="rolename"
                                   placeholder="Role Name"
-                                  autoComplete="rolename"
-                                  onBlur={props.handleBlur}
-                                  isInvalid={(props.errors.rolename && props.touched.rolename) || this.state.errorMsg.length}
-                                  onChange={(e) => this.handleChangeRoleName(e, props)}
-                                  disabled={this.props.priv === PRIVILEGES.read}
+                                  component={TextFormField}
                                 />
-                                <Form.Control.Feedback type="invalid">
-                                  {this.state.errorMsg.length ? null : props.errors.rolename}
-                                </Form.Control.Feedback>
-                              </Form.Group>
+                              </div>
                             </div>
-                          </div>
 
-                        </Form>
-                      )}
-                    </Formik>
+                            {/* add privileges table only if add mode */}
+                            {this.isAddMode() &&
+                              <RouteRolesForm
+                                isRenderedAsChild={true}
+                                onChangePriv={this.saveRouteRoleFormState}
+                                onRouteRoleSave={this.saveRouteRoleFormState}
+                                header={<h5 className="card-title">Role Privileges to Routes</h5>}
+                                onAllPrivSave={this.saveAllPrivState}
+                                {...this.props} />
+                            }
 
-                    {/* add privileges table only if add mode */}
-                    {this.isAddMode() &&
-                      <RouteRolesForm
-                        isRenderedAsChild={true}
-                        onChangePriv={this.saveRouteRoleFormState}
-                        onRouteRoleSave={this.saveRouteRoleFormState}
-                        header={<h5 className="card-title">Role Privileges to Routes</h5>}
-                        onAllPrivSave={this.saveAllPrivState}
-                        {...this.props} />
-                    }
+                            {this.isAddMode() &&
+                              <PageRolesForm
+                                isRenderedAsChild={true}
+                                onChangePriv={this.savePageRoleFormState}
+                                onPageRoleSave={this.savePageRoleFormState}
+                                header={<h5 className="card-title">Role Privileges to Pages</h5>}
+                                {...this.props} />
+                            }
 
-                    {this.isAddMode() &&
-                      <PageRolesForm
-                        isRenderedAsChild={true}
-                        onChangePriv={this.savePageRoleFormState}
-                        onPageRoleSave={this.savePageRoleFormState}
-                        header={<h5 className="card-title">Role Privileges to Pages</h5>}
-                        {...this.props} />
-                    }
+                            <div className="mt-3">
+                              {this.props.priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
 
-                    <div className="mt-4">
-                      {this.props.priv === PRIVILEGES.readWrite && <button type="button" className="btn btn-primary mr-2" onClick={this.handleSubmitForm}>Submit</button>}
+                            </div>
+
+
+                          </Form>
+                        )}
+                      </Formik>
+
                     </div>
                   </div>
                 </div>
@@ -442,10 +434,9 @@ export default class RolesForm extends React.Component {
             </div>
           </div>
         </div>
-      </div>
 
-    );
-
+      );
+    }
   }
 
 }
