@@ -11,20 +11,20 @@ import { Form } from 'react-bootstrap';
   * @param {String} type type of input
   * @param {String} [label] laber for input
   */
-const TextFormField = ({
+export default function TextFormField({
   field,
   form,
   label,
   type,
   placeholder,
   ...props
-}) => {
+}) {
   const errorText =
     getIn(form.touched, field.name) && getIn(form.errors, field.name);
 
   return (
     <Form.Group>
-      {label && <Form.Label for={field.name}>{label}</Form.Label>}
+      {label && <Form.Label htmlFor={field.name}>{label}</Form.Label>}
       <Form.Control
         size="lg"
         id={field.name}
@@ -42,5 +42,3 @@ const TextFormField = ({
 
   );
 };
-
-export default TextFormField;

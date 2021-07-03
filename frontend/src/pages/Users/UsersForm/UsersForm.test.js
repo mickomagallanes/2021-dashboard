@@ -26,6 +26,12 @@ async function testUsers({ userData, roleData, matchParams }) {
     })
   );
 
+  const handleSubmitForm = jest.fn();
+
+  jest.spyOn(UsersForm.prototype, 'handleSubmitForm').mockImplementation((values) =>
+    handleSubmitForm(values)
+
+  );
 
   // Use the asynchronous version of act to apply resolved promises
   await act(async () => {
@@ -34,45 +40,44 @@ async function testUsers({ userData, roleData, matchParams }) {
 
   const users = screen.getByTestId('UsersForm');
 
-  expect(users).toBeInTheDocument();
+  await waitFor(() => {
+    expect(users).toBeInTheDocument();
+  });
 
   const username = users.querySelector('input[name="username"]');
   const password = users.querySelector('input[name="password"]');
   const confirmPassword = users.querySelector('input[name="confirmPassword"]');
-  const selectedRole = screen.getByTestId('selectedRole');
+  const selectedRole = users.querySelector('select[name="selectedRole"]');
 
-  const handleFileChange = jest.fn();
-
-  // TODO: child components not rendered
   await act(async () => {
-    console.log(username);
-
-    userEvent.type(username, 'blade');
-
-    userEvent.type(password, '123456789012345');
-    userEvent.type(confirmPassword, '123456789012345');
-    fireEvent.change(selectedRole, { target: { value: 2 } });
-
-    userEvent.click(screen.getByRole('submit'))
-
+    fireEvent.change(selectedRole, { target: { value: 3 } });
   });
 
+  userEvent.type(username, 'blade');
+
+  userEvent.type(password, '123456789012345');
+  userEvent.type(confirmPassword, '123456789012345');
+  userEvent.click(screen.getByRole('button', 'Submit'))
 
   await waitFor(() => {
-    expect(handleFileChange).toHaveBeenCalledWith({
-      username: 'blade',
+    expect(handleSubmitForm).toHaveBeenCalledWith({
+      username: 'dorcoblade',
       password: '123456789012345',
       confirmPassword: '123456789012345',
-      selectedRole: 2
+      selectedRole: "3",
+      userImg: ""
     })
 
     const selectedRole2 = users.querySelector('select[name="selectedRole"]');
-    expect(selectedRole2.options[selectedRole2.selectedIndex].text).toBe("Guest");
+    expect(selectedRole2.options[selectedRole2.selectedIndex].text).toBe("Customer");
   });
 
+
+
   // remove the mock to ensure tests are completely isolated
-  usersModule.fetchUsersData.mockRestore();
+  usersModule.fetchUserData.mockRestore();
   usersModule.fetchRoleData.mockRestore();
+  UsersForm.prototype.handleSubmitForm.mockRestore();
 }
 
 describe('<UsersForm />', () => {
@@ -83,7 +88,7 @@ describe('<UsersForm />', () => {
       img: ""
     };
 
-    const roleData = [{ id: 1, rname: "Super" }, { id: 2, rname: "Guest" }];
+    const roleData = [{ id: 1, rname: "Super" }, { id: 2, rname: "Guest" }, { id: 3, rname: "Customer" }];
 
     const match = {
       params: {

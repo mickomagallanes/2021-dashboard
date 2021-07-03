@@ -1,1 +1,0 @@
-//TODO: make an HOC for alert success and error

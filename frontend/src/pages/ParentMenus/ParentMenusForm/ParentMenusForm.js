@@ -9,7 +9,8 @@ import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
-import TextFormField from '../../../components/FormFields/TextFormField/TextFormField.lazy'
+import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
+import * as currentModule from './ParentMenusForm'; // use currentmodule to call func outside class, for testing
 
 const parentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/`;
 const addParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/insert`;
@@ -75,6 +76,7 @@ export default class ParentMenuForm extends React.Component {
       });
     }
 
+    this.handleSubmitForm = this.handleSubmitForm.bind(this);
   }
 
   componentWillUnmount() {
@@ -87,7 +89,8 @@ export default class ParentMenuForm extends React.Component {
   async componentDidMount() {
     // check if is on add mode
     if (!this.isAddMode()) {
-      const parentMenuData = await fetchParentMenuData(this.urlParam);
+      const parentMenuData = await currentModule.fetchParentMenuData(this.urlParam);
+      console.log(parentMenuData)
       this.saveParentMenuData(parentMenuData);
     }
 
@@ -120,7 +123,7 @@ export default class ParentMenuForm extends React.Component {
         }
       });
     } else {
-      this.setErrorMsg(parentMenuData.msg);
+      this.setErrorMsg(`${parentMenuData.msg}`);
     }
   }
 
@@ -183,7 +186,7 @@ export default class ParentMenuForm extends React.Component {
 
   }
 
-  handleSubmitForm = async (fields) => {
+  async handleSubmitForm(fields) {
     let submitResp;
 
     if (this.isAddMode()) {
@@ -224,7 +227,7 @@ export default class ParentMenuForm extends React.Component {
             </Link>
 
           </div>
-          <div className="row w-100 mx-0">
+          <div className="row w-100 mx-0" data-testid="ParentMenusForm">
             <div className="col-lg-8 col-xlg-9 col-md-12">
               <div className="card px-4 px-sm-5">
 

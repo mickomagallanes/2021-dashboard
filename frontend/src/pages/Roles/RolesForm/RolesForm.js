@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import RouteRolesForm from '../RouteRolesForm/RouteRolesForm';
 import PageRolesForm from '../PageRolesForm/PageRolesForm';
-import TextFormField from '../../../components/FormFields/TextFormField/TextFormField.lazy'
+import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
 
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/`;
 const addRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/insert`;

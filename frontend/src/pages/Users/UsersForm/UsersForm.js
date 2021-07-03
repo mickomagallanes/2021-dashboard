@@ -3,13 +3,13 @@ import './UsersForm.css';
 import axios from 'axios';
 import { retryRequest } from "../../../helpers/utils";
 import { Alert } from 'react-bootstrap';
-import TextFormField from '../../../components/FormFields/TextFormField/TextFormField.lazy'
+import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
 import { Formik, Form, Field } from "formik";
 import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
-import SelectFormField from '../../../components/FormFields/SelectFormField/SelectFormField.lazy';
+import SelectFormField from '../../../components/FormFields/SelectFormField/SelectFormField';
 import * as currentModule from './UsersForm'; // use currentmodule to call func outside class, for testing
 
 const userURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/`;
@@ -111,6 +111,7 @@ export default class UsersForm extends React.Component {
       });
     }
 
+    this.handleSubmitForm = this.handleSubmitForm.bind(this);
   }
 
   componentWillUnmount() {
@@ -164,7 +165,7 @@ export default class UsersForm extends React.Component {
         }
       });
     } else {
-      this.setErrorMsg(userData.msg);
+      this.setErrorMsg(`${userData.msg}`);
 
     }
   }
@@ -276,7 +277,7 @@ export default class UsersForm extends React.Component {
 
   }
 
-  handleSubmitForm = async (fields) => {
+  async handleSubmitForm(fields) {
 
     let submitResp;
     let isImageSuccess;
@@ -335,7 +336,7 @@ export default class UsersForm extends React.Component {
   render() {
     // TODO: change form fields like from Ben Awad
 
-    if (!this.state.roleData.length && (!this.isAddMode() && !this.state.formData.username.length)) {
+    if ((!this.isAddMode() && !this.state.formData.username.length) && !this.state.roleData.length) {
       return (<Spinner />)
     } else {
       return (

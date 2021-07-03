@@ -4,6 +4,7 @@ import '@testing-library/jest-dom/extend-expect';
 import { act } from "react-dom/test-utils";
 import Login from './Login';
 import { unmountComponentAtNode } from "react-dom";
+import { BrowserRouter } from 'react-router-dom';
 
 let container = null;
 beforeEach(() => {
@@ -31,7 +32,7 @@ describe('<Login />', () => {
 
     // Use the asynchronous version of act to apply resolved promises
     await act(async () => {
-      render(<Login />, container);
+      render(<BrowserRouter><Login /></BrowserRouter>, container);
     });
 
     expect(
@@ -53,7 +54,7 @@ describe('<Login />', () => {
 
     // Use the asynchronous version of act to apply resolved promises
     await act(async () => {
-      render(<Login />, container);
+      render(<BrowserRouter><Login /></BrowserRouter>, container);
     });
 
     expect(

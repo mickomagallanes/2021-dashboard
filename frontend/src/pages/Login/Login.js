@@ -6,7 +6,7 @@ import { Alert } from 'react-bootstrap';
 import logo from "../../assets/images/logo.svg";
 import axios from 'axios';
 import { Formik, Form, Field } from "formik";
-import TextFormField from '../../components/FormFields/TextFormField/TextFormField.lazy';
+import TextFormField from '../../components/FormFields/TextFormField/TextFormField';
 import * as yup from 'yup';
 import { retryRequest } from "../../helpers/utils";
 import { withRouter } from 'react-router-dom';

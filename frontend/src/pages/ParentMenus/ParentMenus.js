@@ -334,7 +334,7 @@ class ParentMenus extends React.Component {
             </Alert>
           )}
 
-          <div className="row" data-testid="ParentMenu" >
+          <div className="row" data-testid="ParentMenus" >
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card">
                 <div className="card-body">
