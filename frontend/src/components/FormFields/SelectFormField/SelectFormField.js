@@ -10,7 +10,7 @@ import { getIn } from "formik";
   * @param {String} type type of input
   * @param {String} [label] laber for input
   */
-const SelectFormField = ({
+export default function SelectFormField({
   field,
   form,
   label,
@@ -18,7 +18,7 @@ const SelectFormField = ({
   idKey,
   valueKey,
   ...props
-}) => {
+}) {
   const errorText =
     getIn(form.touched, field.name) && getIn(form.errors, field.name);
   return (
@@ -40,5 +40,3 @@ const SelectFormField = ({
     </>
   );
 };
-
-export default SelectFormField;

@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import ReactDOM from "react-dom";
 import './Menus.css';
 import axios from 'axios';
 import Table from '../../components/Table/Table.lazy';
@@ -6,8 +7,9 @@ import { retryRequest } from "../../helpers/utils";
 import { Alert } from 'react-bootstrap';
 import * as currentModule from './Menus'; // use currentmodule to call func outside class, for testing
 import { PRIVILEGES } from "../../helpers/constants"
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Pagination from '../../components/Pagination/Pagination';
+import useAlert from '../../components/useAlert';
 
 const menuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all`;
 const menuCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all/count`;
@@ -50,261 +52,194 @@ export async function fetchMenusData(pageNumber, currentEntries) {
   }
 }
 
-class Menus extends React.Component {
+function Menus({ priv }) {
 
-  constructor() {
-    super();
-    this.state = {
-      data: [],
-      errorMsg: [],
-      successMsg: [],
-      maxPage: null,
-      maxMenus: null,
-      currentPage: 1,
-      currentEntries: 5
-    }
+  // HOOKS DECLARATIONS
 
-    this.colData = [
-      { "id": "MenuID", "name": "Menu ID" },
-      { "id": "MenuName", "name": "Menu Name" }
-    ];
+  const [menuData, setMenuData] = useState([]);
 
-    this.successTimer = null;
-    this.errorTimer = null;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentEntries, setCurrentEntries] = useState(5);
+  const [maxPage, setMaxPage] = useState(null);
+  const [maxMenus, setMaxMenus] = useState(null);
 
-    this.idKey = "MenuID";
-  }
+  const {
+    timerSuccessAlert,
+    timerErrorAlert,
+    passErrorMsg,
+    alertElements,
+    clearErrorMsg,
+    clearSuccessMsg
+  } = useAlert();
 
-  async componentDidMount() {
+  const location = useLocation();
 
-    await this.fetchAndSave();
+  // CONSTANT DATA
 
-    this.loadSuccessProp();
+  const colData = [
+    { "id": "MenuID", "name": "Menu ID" },
+    { "id": "MenuName", "name": "Menu Name" }
+  ];
 
-    this.loadErrorProp();
-  }
+  const idKey = "MenuID";
 
-  componentWillUnmount() {
-    // fix Warning: Can't perform a React state update on an unmounted component
-    this.setState = () => {
-      return;
-    };
-  }
-
-  clearErrorMsg() {
-    if (this.state.errorMsg.length) {
-      this.setState({ errorMsg: [] });
+  const style = {
+    inputEntry: {
+      'maxWidth': '4rem',
+      'width': 'auto',
+      'display': 'inline-block'
     }
   }
 
-  setErrorMsg(errorVal) {
-    this.setState({ errorMsg: [errorVal] });
-  }
+  const isWriteable = priv === PRIVILEGES.readWrite;
 
-  pushErrorMsg(errorVal) {
-    this.setState({ errorMsg: [...this.state.errorMsg, errorVal] });
-  }
-
-  clearSuccessMsg() {
-    this.setState({ successMsg: [] });
-  }
-
-  setSuccessMsg(successArr) {
-    this.setState({ successMsg: [successArr] });
-  }
-
-  pushSuccessMsg(successArr) {
-    this.setState({ successMsg: [...this.state.successMsg, successArr] });
-  }
-
-  loadSuccessProp() {
-    if (this.props.location.successMsg) {
-      this.showSuccessAlert(this.props.location.successMsg);
+  // LIFECYCLES
+  useEffect(() => {
+    const loadSuccessProp = () => {
+      if (location.successMsg) {
+        timerSuccessAlert(location.successMsg);
+      }
     }
-  }
 
-  loadErrorProp() {
-    if (this.props.location.errorMsg) {
-      this.showErrorAlert(this.props.location.errorMsg);
+    const loadErrorProp = () => {
+      if (location.errorMsg) {
+        timerErrorAlert(location.errorMsg);
+      }
     }
+
+    fetchAndSave();
+
+    loadSuccessProp();
+
+    loadErrorProp();
+
+  }, [])
+
+  useEffect(() => {
+    fetchAndSave();
+  }, [currentEntries, maxPage, maxMenus, currentPage]);
+
+  // FUNCTIONS AND EVENT HANDLERS
+  const paginationClick = async (pageNumber) => {
+    setCurrentPage(pageNumber);
   }
 
-  showSuccessAlert(msgArr) {
-    this.setState({ successMsg: msgArr });
-
-    clearTimeout(this.successTimer);
-
-    // make timeout reset when success alert is continuous
-    this.successTimer = setTimeout(() => {
-      this.clearSuccessMsg()
-    }, 6000)
-
+  const entryOnChange = async (e) => {
+    setCurrentEntries(e.target.value);
   }
 
-  showErrorAlert(msgArr) {
-    this.setState({ errorMsg: msgArr });
-
-    clearTimeout(this.errorTimer);
-
-    // make timeout reset when error alert is continuous
-    this.errorTimer = setTimeout(() => {
-      this.clearErrorMsg()
-    }, 6000)
-
-  }
-
-  paginationClick = async (pageNumber) => {
-    this.fetchAndSave(pageNumber);
-  }
-
-  entryOnChange = async (e) => {
-    await this.setState({ currentEntries: e.target.value });
-    this.fetchAndSave();
-  }
-
-  fetchAndSave = async (pageNumber = this.state.currentPage) => {
+  const fetchAndSave = async () => {
     // first, fetch count first to send the right page on the next request
     let respCount = await currentModule.fetchCount();
 
     if (respCount.status === true) {
       let count = respCount.data.count;
 
-      const maxPage = Math.ceil(count / this.state.currentEntries);
+      const maxPage = Math.ceil(count / currentEntries);
 
       // if state.currentPage is higher than the maxPage, for instance when
       // state.currentEntries is changed with higher state.currentPage
-      if (pageNumber > maxPage) {
-        pageNumber = 1;
+      if (currentPage > maxPage) {
+        currentPage = 1;
       }
 
       // second, fetch the menu data
       // import current module and call fetchMenusData for testing benefits
-      const resp = await currentModule.fetchMenusData(pageNumber, this.state.currentEntries);
+      const resp = await currentModule.fetchMenusData(currentPage, currentEntries);
 
       if (resp.status === true) {
-        this.setState({
-          currentPage: pageNumber,
-          data: resp.data,
-          maxPage: maxPage,
-          maxMenus: count
+
+        ReactDOM.unstable_batchedUpdates(() => {
+          setCurrentPage(currentPage);
+          setMaxMenus(count);
+          setMaxPage(maxPage);
+          setMenuData(resp.data);
+          clearErrorMsg();
         });
 
-        this.clearErrorMsg();
-      } else {
-        this.setErrorMsg(`${resp.msg}`);
 
+      } else {
+        passErrorMsg(`${resp.msg}`);
       }
 
     } else {
-      this.setErrorMsg(`${respCount.msg}`);
+      passErrorMsg(`${respCount.msg}`);
 
     }
   }
 
-  render() {
-    const { maxPage, currentPage } = this.state;
-    let isWriteable = this.props.priv === PRIVILEGES.readWrite;
-
-    const actionButtons = (menuID) => {
-      return (
-        <>
-          <Link to={`/menus/form/${menuID}`} className="btn btn-icon-text btn-outline-secondary mr-3">
-            {isWriteable ? "Edit" : "Read"} Menu
-            <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
-          </Link>
-
-        </>
-      )
-    };
-
+  const actionButtons = (menuID) => {
     return (
-
       <>
-        <div>
-          <div className="page-header">
-            <h3 className="page-title"> Menu Page</h3>
-          </div>
-          {this.state.errorMsg.map((err) =>
-            <Alert
-              className="p-1"
-              variant="danger"
-              show={err}
-              transition={false}
-              key={err}
-            >
-              {err}
-            </Alert>
-          )}
+        <Link to={`/menus/form/${menuID}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+          {isWriteable ? "Edit" : "Read"} Menu
+          <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+        </Link>
 
-          {this.state.successMsg.map((succ) =>
-            <Alert
-              className="p-1"
-              variant="success"
-              show={succ}
-              transition={false}
-              key={succ}
-            >
-              {succ}
-            </Alert>
-          )}
+      </>
+    )
+  };
 
-          <div className="row" data-testid="Menu" >
-            <div className="col-lg-12 grid-margin stretch-card">
-              <div className="card">
-                <div className="card-body">
-                  <h4 className="card-title"> Menu Table</h4>
-                  <div className="row mb-4">
-                    <div className="col mt-3">
-                      <span className="float-sm-left d-block mt-1 mt-sm-0 text-center">
-                        Show
-                        <input
-                          id="inputEntry"
-                          className="form-control ml-2 mr-2"
-                          value={this.state.currentEntries}
-                          onChange={(e) => { this.entryOnChange(e) }}
-                          type="text" style={style.inputEntry}
-                        />
-                        of {this.state.maxMenus} entries
-                      </span>
-                    </div>
-                    <div className="col-lg-6 mt-3">
-                      <Pagination currentPage={currentPage} maxPage={maxPage} onClick={this.paginationClick} />
-                    </div>
-                    <div className="col mt-3">
-                      {this.props.priv === PRIVILEGES.readWrite &&
-                        <Link to="/menus/form/add" className="btn btn-outline-secondary float-sm-right d-block">
-                          <i className="mdi mdi-account-plus"> </i>
-                          Add Menu
-                        </Link>
-                      }
+  return (
 
-                    </div>
+    <>
+      <div>
+        <div className="page-header">
+          <h3 className="page-title"> Menu Page</h3>
+        </div>
+        {alertElements}
+        <div className="row" data-testid="Menu" >
+          <div className="col-lg-12 grid-margin stretch-card">
+            <div className="card">
+              <div className="card-body">
+                <h4 className="card-title"> Menu Table </h4>
+                <div className="row mb-4">
+                  <div className="col mt-3">
+                    <span className="float-sm-left d-block mt-1 mt-sm-0 text-center">
+                      Show
+                      <input
+                        id="inputEntry"
+                        className="form-control ml-2 mr-2"
+                        value={currentEntries}
+                        onChange={(e) => { entryOnChange(e) }}
+                        type="text" style={style.inputEntry}
+                      />
+                      of {maxMenus} entries
+                    </span>
                   </div>
-                  <Table
-                    data={this.state.data}
-                    tblClass=""
-                    colData={this.colData}
-                    idKey={this.idKey}
-                    actionButtons={actionButtons}
-                  />
+                  <div className="col-lg-6 mt-3">
+                    <Pagination currentPage={currentPage} maxPage={maxPage} onClick={paginationClick} />
+                  </div>
+                  <div className="col mt-3">
+                    {isWriteable &&
+                      <Link to="/menus/form/add" className="btn btn-outline-secondary float-sm-right d-block">
+                        <i className="mdi mdi-account-plus"> </i>
+                        Add Menu
+                      </Link>
+                    }
+
+                  </div>
                 </div>
+                <Table
+                  data={menuData}
+                  tblClass=""
+                  colData={colData}
+                  idKey={idKey}
+                  actionButtons={actionButtons}
+                />
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-      </>
-    );
-  }
-
+    </>
+  );
 }
 
-const style = {
-  inputEntry: {
-    'maxWidth': '4rem',
-    'width': 'auto',
-    'display': 'inline-block'
-  }
-}
+
+
+
+
 
 export default Menus;

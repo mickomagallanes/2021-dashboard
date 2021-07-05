@@ -95,13 +95,8 @@ class Sidebar extends React.Component {
 
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.location !== prevProps.location) {
-      this.onRouteChanged();
-    }
-  }
-
   onRouteChanged() {
+
     document.querySelector('#sidebar').classList.remove('active');
     Object.keys(this.state).forEach(i => {
       this.setState({ [i]: false });
@@ -126,6 +121,24 @@ class Sidebar extends React.Component {
     }));
 
   }
+
+  isPathActive(path) {
+
+    let matchedSidebarData = this.sidebarData.find(o => o.ParentMenuName == path);
+
+    if (matchedSidebarData != undefined) {
+      return (
+        this.props.location.pathname == path) ||
+        this.props.location.pathname.startsWith(path + "/") ||
+        matchedSidebarData.PagePath.find((e) => this.props.location.pathname == e) ||
+
+        // matches subpages. ex: "/users" matches "/users/form/1"
+        matchedSidebarData.PagePath.find((e) => this.props.location.pathname.startsWith(e + "/"));
+    }
+    return this.props.location.pathname == path ||
+      this.props.location.pathname.startsWith(path + "/")
+  }
+
 
   //TODO: render Sidebar based on PageRoles of User, also add custom privilege for each User
   render() {
@@ -372,21 +385,6 @@ class Sidebar extends React.Component {
     );
   }
 
-  isPathActive(path) {
-    let matchedSidebarData = this.sidebarData.find(o => o.ParentMenuName == path);
-
-    if (matchedSidebarData != undefined) {
-      return (
-        this.props.location.pathname == path) ||
-        this.props.location.pathname.startsWith(path + "/") ||
-        matchedSidebarData.PagePath.find((e) => this.props.location.pathname == e) ||
-
-        // matches subpages. ex: "/users" matches "/users/form/1"
-        matchedSidebarData.PagePath.find((e) => this.props.location.pathname.startsWith(e + "/"));
-    }
-    return this.props.location.pathname == path ||
-      this.props.location.pathname.startsWith(path + "/")
-  }
 
 }
 

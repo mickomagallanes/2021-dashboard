@@ -1,0 +1,107 @@
+//TODO: make an HOC for alert success and error
+
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { Alert } from 'react-bootstrap';
+
+function useAlert() {
+
+    const [errorMsg, setErrorMsg] = useState([]);
+    const [successMsg, setSuccessMsg] = useState([]);
+
+    const _errorTimer = useRef(null);
+    const _successTimer = useRef(null);
+
+    // useEffect(() => {
+
+    // }, errorMsg);
+
+    // useEffect(() => {
+
+    // }, successMsg);
+
+    const timerSuccessAlert = (msgArr) => {
+        setSuccessMsg(msgArr);
+
+        if (_successTimer.current !== null) {
+            clearTimeout(_successTimer.current);
+        }
+
+        _successTimer.current = setTimeout(() => {
+            clearSuccessMsg()
+        }, 6000)
+
+    }
+
+    const timerErrorAlert = (msgArr) => {
+        setErrorMsg(msgArr);
+
+        if (_errorTimer.current !== null) {
+            clearTimeout(_errorTimer.current);
+        }
+
+        // make timeout reset when error alert is continuous
+        _successTimer.current = setTimeout(() => {
+            clearErrorMsg();
+        }, 6000)
+
+    }
+
+    const passErrorMsg = (msgValue) => {
+        setErrorMsg([msgValue]);
+    }
+
+    const passSuccessMsg = (msgValue) => {
+        setSuccessMsg([msgValue]);
+    }
+
+    // TODO: learn how to use useCallback
+    const clearErrorMsg = () => {
+        setErrorMsg([]);
+    };
+
+
+
+    const clearSuccessMsg = () => {
+        setSuccessMsg([]);
+    }
+
+    const alertElements = (
+        <>
+            {errorMsg.map((err) =>
+                <Alert
+                    className="p-1"
+                    variant="danger"
+                    show={err}
+                    transition={false}
+                    key={err}
+                >
+                    {err}
+                </Alert>
+            )}
+            {successMsg.map((succ) => {
+                return <Alert
+                    className="p-1"
+                    variant="success"
+                    show={succ}
+                    transition={false}
+                    key={succ}
+                >
+                    {succ}
+                </Alert>
+            }
+            )}
+        </>
+    );
+
+    return {
+        timerSuccessAlert,
+        timerErrorAlert,
+        passErrorMsg,
+        alertElements,
+        passSuccessMsg,
+        clearErrorMsg,
+        clearSuccessMsg
+    }
+}
+
+export default useAlert;

@@ -1,0 +1,54 @@
+FILE STRUCTURE
+
+1. For backend, make it a 3 way architecture. Routes <--> Service <--> Models. Never pass req to Service, put your business logics in Service,
+ and one Model per schema.
+
+2. For frontend, separate Smart and Dumb Components. In this file structure, we have dumb component in the /components folder, and smart components in
+ the /pages folder. HOCs and Wrappers can go to /component root, and the rest of dumb components can be made with generate-react-cli
+
+
+PROJECT WORKFLOW
+
+1. Backend and Frontend has their own port, run separately. Pages of frontend can be nested by child, for example. /RolesForm can reside in /Roles folder
+2. Pages are declared static on AppRoutes.js, so even though you added data inside the database, you would still need to declare it in AppRoutes.js
+
+
+
+Class Components vs Functional Components.
+
+1. The following components are made with Class:
+
+ - Users
+ - UsersForm
+ - Roles
+ - RolesForm
+ - RouteRolesForm
+ - PageRolesForm
+ - ParentMenus
+ - ParentMenusForm
+ - Login
+ - Table
+ - Spinner
+ - Sidebar
+ - Select
+ - Pagination
+ - Navbar
+ - Footer
+ - RequireAuth
+ - RequireLogin
+ - RequireLogout
+
+2. The following components are made with Function:
+
+ - TextFormField
+ - SelectFormField
+ - Menus
+ - MenusForm
+
+Note: try to use hooks everytime, so starting on July 2021, all of my components are written with Functional Components
+
+
+Important Pattern Lessons for React
+
+1. Have an individual states and don't use nested states. 
+2. setters from useState hooks don't receive callbacks and not immediately updating, so use useEffect and watch for the state instead.
