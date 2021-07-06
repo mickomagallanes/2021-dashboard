@@ -40,8 +40,13 @@
     "extends": [
       "react-app",
       "react-app/jest",
+      "eslint:recommended",
+      "plugin:react/recommended",
       "plugin:react-hooks/recommended"
-    ]
+    ],
+    "rules": {
+      "react/prop-types": "off"
+    }
   },
   "browserslist": {
     "production": [
@@ -54,5 +59,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0"
   }
 }

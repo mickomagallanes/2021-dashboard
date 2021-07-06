@@ -52,3 +52,8 @@ Important Pattern Lessons for React
 
 1. Have an individual states and don't use nested states. 
 2. setters from useState hooks don't receive callbacks and not immediately updating, so use useEffect and watch for the state instead.
+3. Custom Hooks:
+    3.1. Components for UI, Hooks for Behavior. Never return a jsx, or component with Custom Hooks.
+4. Optimization with useMemo, useCallback
+    4.1. Each hook has cost, so beware on using them. Only use them if it will skip large rerenders, or to function and/or component
+        that rarely affected throughout the workflow. Read: https://kentcdodds.com/blog/usememo-and-usecallback

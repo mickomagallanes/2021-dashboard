@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import ReactDOM from "react-dom";
 import './Menus.css';
 import axios from 'axios';
 import Table from '../../components/Table/Table.lazy';
-import { retryRequest } from "../../helpers/utils";
-import { Alert } from 'react-bootstrap';
 import * as currentModule from './Menus'; // use currentmodule to call func outside class, for testing
 import { PRIVILEGES } from "../../helpers/constants"
 import { Link, useLocation } from 'react-router-dom';
 import Pagination from '../../components/Pagination/Pagination';
 import useAlert from '../../components/useAlert';
+import useFetch from '../../components/useFetch';
 
 const menuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all`;
 const menuCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all/count`;
@@ -20,7 +19,7 @@ const axiosConfig = {
 }
 
 export async function fetchCount() {
-
+  console.log("fetch count")
   try {
     const respCount = await axios.get(
       menuCountURL,
@@ -52,6 +51,18 @@ export async function fetchMenusData(pageNumber, currentEntries) {
   }
 }
 
+// TODO: move into its own module
+function useDidUpdateEffect(fn, inputs) {
+  const didMountRef = useRef(false);
+
+  useEffect(() => {
+    if (didMountRef.current)
+      fn();
+    else
+      didMountRef.current = true;
+  }, inputs);
+}
+
 function Menus({ priv }) {
 
   // HOOKS DECLARATIONS
@@ -63,13 +74,17 @@ function Menus({ priv }) {
   const [maxPage, setMaxPage] = useState(null);
   const [maxMenus, setMaxMenus] = useState(null);
 
+  const [dataCount, loadingCount] = useFetch(menuCountURL);
+  const [dataMenus, loadingMenus] = useFetch(`${menuURL}?page=${currentPage}&limit=${currentEntries}`);
+
   const {
     timerSuccessAlert,
     timerErrorAlert,
     passErrorMsg,
-    alertElements,
+    AlertElements,
     clearErrorMsg,
-    clearSuccessMsg
+    errorMsg,
+    successMsg
   } = useAlert();
 
   const location = useLocation();
@@ -93,6 +108,49 @@ function Menus({ priv }) {
 
   const isWriteable = priv === PRIVILEGES.readWrite;
 
+  // FUNCTIONS AND EVENT HANDLERS
+  const paginationClick = async (pageNumber) => {
+    setCurrentPage(pageNumber);
+  }
+
+  const entryOnChange = async (e) => {
+    setCurrentEntries(e.target.value);
+  }
+
+  const fetchAndSave = async () => {
+
+    if (dataCount.status === true) {
+      let count = dataCount.data.count;
+
+      const newMaxPage = Math.ceil(count / currentEntries);
+
+      // if state.currentPage is higher than the maxPage, for instance when
+      // state.currentEntries is changed with higher state.currentPage
+      if (currentPage > newMaxPage) {
+        setCurrentPage(1);
+      }
+
+      if (dataMenus.status === true) {
+
+        ReactDOM.unstable_batchedUpdates(() => {
+          setCurrentPage(currentPage);
+          setMaxMenus(count);
+          setMaxPage(newMaxPage);
+          setMenuData(dataMenus.data);
+          clearErrorMsg();
+        });
+
+
+      } else {
+        passErrorMsg(`${dataMenus.msg}`);
+      }
+
+    } else {
+      passErrorMsg(`${dataCount.msg}`);
+
+    }
+  }
+
   // LIFECYCLES
   useEffect(() => {
     const loadSuccessProp = () => {
@@ -113,61 +171,15 @@ function Menus({ priv }) {
 
     loadErrorProp();
 
-  }, [])
+  }, [loadingCount, loadingMenus])
 
-  useEffect(() => {
+  // TODO: optimize call of fetchAndSave, learn more about hooks
+  useDidUpdateEffect(() => {
     fetchAndSave();
-  }, [currentEntries, maxPage, maxMenus, currentPage]);
-
-  // FUNCTIONS AND EVENT HANDLERS
-  const paginationClick = async (pageNumber) => {
-    setCurrentPage(pageNumber);
-  }
-
-  const entryOnChange = async (e) => {
-    setCurrentEntries(e.target.value);
-  }
-
-  const fetchAndSave = async () => {
-    // first, fetch count first to send the right page on the next request
-    let respCount = await currentModule.fetchCount();
-
-    if (respCount.status === true) {
-      let count = respCount.data.count;
-
-      const maxPage = Math.ceil(count / currentEntries);
-
-      // if state.currentPage is higher than the maxPage, for instance when
-      // state.currentEntries is changed with higher state.currentPage
-      if (currentPage > maxPage) {
-        currentPage = 1;
-      }
-
-      // second, fetch the menu data
-      // import current module and call fetchMenusData for testing benefits
-      const resp = await currentModule.fetchMenusData(currentPage, currentEntries);
-
-      if (resp.status === true) {
-
-        ReactDOM.unstable_batchedUpdates(() => {
-          setCurrentPage(currentPage);
-          setMaxMenus(count);
-          setMaxPage(maxPage);
-          setMenuData(resp.data);
-          clearErrorMsg();
-        });
+  }, [currentEntries, maxPage, maxMenus, currentPage, loadingCount, loadingMenus]);
 
 
-      } else {
-        passErrorMsg(`${resp.msg}`);
-      }
-
-    } else {
-      passErrorMsg(`${respCount.msg}`);
-
-    }
-  }
-
+  // UI
   const actionButtons = (menuID) => {
     return (
       <>
@@ -187,7 +199,8 @@ function Menus({ priv }) {
         <div className="page-header">
           <h3 className="page-title"> Menu Page</h3>
         </div>
-        {alertElements}
+
+        <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
         <div className="row" data-testid="Menu" >
           <div className="col-lg-12 grid-margin stretch-card">
             <div className="card">

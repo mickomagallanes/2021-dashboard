@@ -2,7 +2,6 @@ import React from 'react'
 import './Users.css';
 import axios from 'axios';
 import Table from '../../components/Table/Table.lazy';
-import { retryRequest } from "../../helpers/utils";
 import { Link } from 'react-router-dom';
 import Pagination from '../../components/Pagination/Pagination.lazy';
 import { Alert } from 'react-bootstrap';

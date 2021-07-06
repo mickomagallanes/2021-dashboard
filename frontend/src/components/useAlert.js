@@ -1,6 +1,6 @@
 //TODO: make an HOC for alert success and error
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { Alert } from 'react-bootstrap';
 
 function useAlert() {
@@ -65,7 +65,27 @@ function useAlert() {
         setSuccessMsg([]);
     }
 
-    const alertElements = (
+
+    return {
+        timerSuccessAlert,
+        timerErrorAlert,
+        passErrorMsg,
+        AlertElements,
+        passSuccessMsg,
+        clearErrorMsg,
+        clearSuccessMsg,
+        errorMsg,
+        successMsg
+    }
+}
+
+
+function AlertElements({
+    errorMsg,
+    successMsg
+}) {
+
+    return (
         <>
             {errorMsg.map((err) =>
                 <Alert
@@ -92,16 +112,6 @@ function useAlert() {
             )}
         </>
     );
-
-    return {
-        timerSuccessAlert,
-        timerErrorAlert,
-        passErrorMsg,
-        alertElements,
-        passSuccessMsg,
-        clearErrorMsg,
-        clearSuccessMsg
-    }
 }
 
 export default useAlert;
