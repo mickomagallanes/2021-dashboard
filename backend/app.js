@@ -28,7 +28,9 @@ app.use(helmet());
 // TODO: secure with csurf middleware
 
 // middleware for limiter
-app.use(limiter.perMinuteLimit);
+if (process.env.NODE_ENV == "production") {
+  app.use(limiter.perMinuteLimit);
+}
 
 // app.use(function (req, res, next) {
 //   res.header('Content-Type', 'application/json;charset=UTF-8')

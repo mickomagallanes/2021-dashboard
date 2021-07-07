@@ -11,13 +11,6 @@ function useAlert() {
     const _errorTimer = useRef(null);
     const _successTimer = useRef(null);
 
-    // useEffect(() => {
-
-    // }, errorMsg);
-
-    // useEffect(() => {
-
-    // }, successMsg);
 
     const timerSuccessAlert = (msgArr) => {
         setSuccessMsg(msgArr);
@@ -54,17 +47,13 @@ function useAlert() {
         setSuccessMsg([msgValue]);
     }
 
-    // TODO: learn how to use useCallback
     const clearErrorMsg = () => {
         setErrorMsg([]);
     };
 
-
-
     const clearSuccessMsg = () => {
         setSuccessMsg([]);
     }
-
 
     return {
         timerSuccessAlert,

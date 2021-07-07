@@ -6,10 +6,10 @@ const axiosConfig = {
     timeout: 10000
 }
 
-function useFetch(apiUrl) {
+function useFetch(apiUrl, customDeps = []) {
 
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState([]);
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         (async function () {
@@ -28,7 +28,11 @@ function useFetch(apiUrl) {
             }
         })();
 
-    }, []);
+        return () => {
+            setLoading(true);
+            setData(null);
+        }
+    }, [apiUrl, ...customDeps]);
 
     return [
         data,
