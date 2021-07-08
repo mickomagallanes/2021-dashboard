@@ -82,6 +82,7 @@ export default class UsersForm extends React.Component {
         selectedRole: "",
         userImg: ""
       },
+      isLoading: true,
       imgSrc: "" // src of image, just for display purposes
     }
 
@@ -125,7 +126,10 @@ export default class UsersForm extends React.Component {
     // check if is on add mode
     if (!this.isAddMode()) {
       const userData = await currentModule.fetchUserData(this.urlParam);
+
       this.saveUserData(userData);
+    } else {
+      this.setState({ isLoading: false });
     }
 
     const roleData = await currentModule.fetchRoleData();
@@ -162,11 +166,12 @@ export default class UsersForm extends React.Component {
           confirmPassword: "",
           selectedRole: userData.data.rid,
           userImg: ""
-        }
+        },
+        isLoading: false
       });
     } else {
       this.setErrorMsg(`${userData.msg}`);
-
+      this.setState({ isLoading: false });
     }
   }
 
@@ -363,7 +368,7 @@ export default class UsersForm extends React.Component {
                   <div className="col-lg-4 col-xlg-3 col-md-12">
                     <div className="row">
                       <div className="col">
-                        <input name="userImg" type="file" onChange={(event) => {
+                        <input name="userImg" type="file" disabled={this.props.priv !== PRIVILEGES.readWrite} onChange={(event) => {
                           setFieldValue("userImg", Array.from(event.target.files));
                           this.handleFileChange(event);
                         }} className="form-control-file h-auto" />
@@ -399,6 +404,7 @@ export default class UsersForm extends React.Component {
                                   name="username"
                                   placeholder="Username"
                                   component={TextFormField}
+                                  disabled={this.props.priv !== PRIVILEGES.readWrite}
                                 />
                               </div>
                             </div>
@@ -409,7 +415,9 @@ export default class UsersForm extends React.Component {
                                   type="password"
                                   placeholder="Password"
                                   name="password"
-                                  component={TextFormField} />
+                                  component={TextFormField}
+                                  disabled={this.props.priv !== PRIVILEGES.readWrite}
+                                />
                               </div>
                             </div>
                             <div className="row">
@@ -419,7 +427,9 @@ export default class UsersForm extends React.Component {
                                   type="password"
                                   placeholder="Confirm Password"
                                   name="confirmPassword"
-                                  component={TextFormField} />
+                                  component={TextFormField}
+                                  disabled={this.props.priv !== PRIVILEGES.readWrite}
+                                />
                               </div>
                             </div>
                             <div className="row mb-4">
@@ -430,7 +440,9 @@ export default class UsersForm extends React.Component {
                                   idKey="id"
                                   valueKey="rname"
                                   name="selectedRole"
-                                  component={SelectFormField} />
+                                  component={SelectFormField}
+                                  disabled={this.props.priv !== PRIVILEGES.readWrite}
+                                />
                               </div>
                             </div>
                             <div className="mt-4">

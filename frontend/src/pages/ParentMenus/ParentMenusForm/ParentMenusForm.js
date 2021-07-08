@@ -33,7 +33,7 @@ function equalTo(ref, msg) {
       return value === this.resolve(ref)
     }
   })
-};
+}
 
 export async function fetchParentMenuData(urlParam) {
   try {
@@ -63,7 +63,8 @@ export default class ParentMenuForm extends React.Component {
       errorMsg: [],
       formData: {
         parentMenuName: ""
-      }
+      },
+      isLoading: true
     }
 
     this.urlParam = props.match.params.id;
@@ -90,8 +91,10 @@ export default class ParentMenuForm extends React.Component {
     // check if is on add mode
     if (!this.isAddMode()) {
       const parentMenuData = await currentModule.fetchParentMenuData(this.urlParam);
-      console.log(parentMenuData)
+
       this.saveParentMenuData(parentMenuData);
+    } else {
+      this.setState({ isLoading: false });
     }
 
   }
@@ -120,10 +123,13 @@ export default class ParentMenuForm extends React.Component {
       this.setState({
         formData: {
           parentMenuName: parentMenuData.data.ParentMenuName
-        }
+        },
+        isLoading: false
       });
     } else {
+
       this.setErrorMsg(`${parentMenuData.msg}`);
+      this.setState({ isLoading: false });
     }
   }
 
@@ -213,7 +219,7 @@ export default class ParentMenuForm extends React.Component {
   // TODO: and use Unit Testing with Jest
   render() {
 
-    if (!this.isAddMode() && !this.state.formData.parentMenuName.length) {
+    if (!this.isAddMode() && this.state.isLoading) {
       return (<Spinner />)
     } else {
       return (
@@ -260,12 +266,13 @@ export default class ParentMenuForm extends React.Component {
                                 type="text"
                                 name="parentMenuName"
                                 placeholder="Parent Menu Name"
+                                disabled={this.props.priv !== PRIVILEGES.readWrite}
                                 component={TextFormField}
                               />
                             </div>
 
                             <div className="mt-3">
-                              <button type="submit" className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">SIGN IN</button>
+                              {this.props.priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
                             </div>
 
                           </Form>

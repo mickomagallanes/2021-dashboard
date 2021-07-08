@@ -33,7 +33,7 @@ function useAlert() {
         }
 
         // make timeout reset when error alert is continuous
-        _successTimer.current = setTimeout(() => {
+        _errorTimer.current = setTimeout(() => {
             clearErrorMsg();
         }, 6000)
 

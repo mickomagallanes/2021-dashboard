@@ -9,6 +9,7 @@ import { Form } from 'react-bootstrap';
   * @param {Formik Prop} form
   * @param {String} placeholder placeholder of input text
   * @param {String} type type of input
+  * @param {Boolean} [disabled] is text field disabled
   * @param {String} [label] laber for input
   */
 export default function TextFormField({
@@ -17,6 +18,7 @@ export default function TextFormField({
   label,
   type,
   placeholder,
+  disabled,
   ...props
 }) {
   const errorText =
@@ -32,6 +34,7 @@ export default function TextFormField({
         type={type}
         className="h-auto"
         isInvalid={!!errorText}
+        disabled={disabled}
         {...field}
         {...props}
       />

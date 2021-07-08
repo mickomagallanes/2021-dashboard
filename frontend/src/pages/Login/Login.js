@@ -12,15 +12,7 @@ import { retryRequest } from "../../helpers/utils";
 import { withRouter } from 'react-router-dom';
 import { profileChange } from '../../actions';
 import { connect } from 'react-redux';
-import { sidebarChange } from '../../actions';
 import { List } from 'immutable';
-
-const axiosConfig = {
-  withCredentials: true,
-  timeout: 10000
-}
-
-const menusByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/role`;
 
 const mapStateToProps = (state) => {
   return { userName: state.profileReducer.userName, userImg: state.profileReducer.userImg };
@@ -28,8 +20,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return ({
-    changeProfile: (userName, userImg) => { dispatch(profileChange(userName, userImg)) },
-    changeSidebar: (sidebarData) => { dispatch(sidebarChange(sidebarData)) }
+    changeProfile: (userName, userImg) => { dispatch(profileChange(userName, userImg)) }
   })
 }
 
@@ -40,27 +31,6 @@ const schema = yup.object().shape({
 
 const loginURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/login`;
 
-async function fetchSidebarData() {
-  try {
-    const resp = await axios.get(
-      menusByRoleUrl,
-      axiosConfig
-    );
-
-    if (resp.data.status === true) {
-      return resp.data.data
-
-    } else {
-      // if no sidebar data is found
-      return false;
-    }
-
-  } catch (error) {
-    console.log(error)
-    return false;
-  }
-
-}
 class Login extends React.PureComponent {
 
   constructor() {
@@ -87,19 +57,9 @@ class Login extends React.PureComponent {
       let { data } = resp;
 
       if (data.status === true) {
-
         this.props.changeProfile(data.data.uname, data.data.uimage);
 
-        let sidebarData = await fetchSidebarData();
-
-        if (sidebarData != false) {
-          // TODO: filter sidebar data based on parentmenu
-          this.props.changeSidebar(sidebarData);
-          this.props.history.push('/home');
-
-        } else {
-          this.setErrorMsg(0, "Failed fetching sidebar data");
-        }
+        this.props.history.push('/home');
 
       } else {
         this.setErrorMsg(0, `${data.msg}`);
@@ -195,4 +155,4 @@ class Login extends React.PureComponent {
 
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Login));;
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Login));

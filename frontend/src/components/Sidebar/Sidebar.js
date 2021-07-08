@@ -22,59 +22,96 @@ class Sidebar extends React.Component {
   constructor(props) {
     super();
     this.state = {
-      isSidebarActive: false
+      isSidebarActive: false,
+      sidebarData: props.sidebarData.reduce(function (o, cur) {
+
+        // Get the index of the key-value pair.
+        let occurs = o.reduce(function (n, item, i) {
+          return (item.ParentMenuName === cur.ParentMenuName) ? i : n;
+        }, -1);
+
+        // If the name is found,
+        if (occurs >= 0) {
+
+          // append the current value to its list of values.
+          o[occurs].MenuName = o[occurs].MenuName.concat(cur.MenuName);
+          o[occurs].PagePath = o[occurs].PagePath.concat(cur.PagePath);
+
+          // Otherwise,
+        } else {
+
+          // add the current item to o (but make sure the value is an array).
+          let obj = {
+            ParentMenuName: cur.ParentMenuName,
+            PagePath: [cur.PagePath],
+            MenuName: [cur.MenuName]
+          };
+          o = o.concat([obj]);
+        }
+
+        return o;
+      }, [])
     };
     this.userImg = imgSrcMainPath + props.userimg;
-
-    this.sidebarData = props.sidebarData.reduce(function (o, cur) {
-
-      // Get the index of the key-value pair.
-      let occurs = o.reduce(function (n, item, i) {
-        return (item.ParentMenuName === cur.ParentMenuName) ? i : n;
-      }, -1);
-
-      // If the name is found,
-      if (occurs >= 0) {
-
-        // append the current value to its list of values.
-        o[occurs].MenuName = o[occurs].MenuName.concat(cur.MenuName);
-        o[occurs].PagePath = o[occurs].PagePath.concat(cur.PagePath);
-
-        // Otherwise,
-      } else {
-
-        // add the current item to o (but make sure the value is an array).
-        let obj = {
-          ParentMenuName: cur.ParentMenuName,
-          PagePath: [cur.PagePath],
-          MenuName: [cur.MenuName]
-        };
-        o = o.concat([obj]);
-      }
-
-      return o;
-    }, []);
-
 
   }
 
 
   async toggleMenuState(menuState) {
+
     if (this.state[menuState]) {
       this.setState({ [menuState]: false });
     } else if (Object.keys(this.state).length === 0) {
       this.setState({ [menuState]: true });
     } else {
-      Object.keys(this.state).forEach(i => {
-        this.setState({ [i]: false });
-      });
+      this.setState({ isSidebarActive: false });
+
       this.setState({ [menuState]: true });
     }
 
   }
 
+  // TODO: debug sidebar
+  componentDidUpdate(prevProps) {
+
+    if (prevProps.sidebarData !== this.props.sidebarData) {
+
+      this.setState({
+        sidebarData: this.props.sidebarData.reduce(function (o, cur) {
+
+          // Get the index of the key-value pair.
+          let occurs = o.reduce(function (n, item, i) {
+            return (item.ParentMenuName === cur.ParentMenuName) ? i : n;
+          }, -1);
+
+          // If the name is found,
+          if (occurs >= 0) {
+
+            // append the current value to its list of values.
+            o[occurs].MenuName = o[occurs].MenuName.concat(cur.MenuName);
+            o[occurs].PagePath = o[occurs].PagePath.concat(cur.PagePath);
+
+            // Otherwise,
+          } else {
+
+            // add the current item to o (but make sure the value is an array).
+            let obj = {
+              ParentMenuName: cur.ParentMenuName,
+              PagePath: [cur.PagePath],
+              MenuName: [cur.MenuName]
+            };
+            o = o.concat([obj]);
+          }
+
+          return o;
+        }, [])
+      });
+
+    }
+  }
 
   componentDidMount() {
+
     this.onRouteChanged();
     // add class 'hover-open' to sidebar navitem while hover in sidebar-icon-only menu
     const body = document.querySelector('body');
@@ -98,21 +135,21 @@ class Sidebar extends React.Component {
   onRouteChanged() {
 
     document.querySelector('#sidebar').classList.remove('active');
-    Object.keys(this.state).forEach(i => {
-      this.setState({ [i]: false });
-    });
+
+    this.setState({ isSidebarActive: false });
+
 
     const dropdownPaths = [];
 
-    for (let i = 0, n = this.sidebarData.length; i < n; i++) {
-      let parentMenuName = this.sidebarData[i].ParentMenuName;
+    for (let i = 0, n = this.state.sidebarData.length; i < n; i++) {
+      let parentMenuName = this.state.sidebarData[i].ParentMenuName;
 
       let pathObj = {
         path: parentMenuName,
         state: `${parentMenuName}Open`
       }
       dropdownPaths.push(pathObj);
-    };
+    }
 
     dropdownPaths.forEach((obj => {
       if (this.isPathActive(obj.path)) {
@@ -124,18 +161,18 @@ class Sidebar extends React.Component {
 
   isPathActive(path) {
 
-    let matchedSidebarData = this.sidebarData.find(o => o.ParentMenuName == path);
+    let matchedSidebarData = this.state.sidebarData.find(o => o.ParentMenuName === path);
 
-    if (matchedSidebarData != undefined) {
+    if (matchedSidebarData !== undefined) {
       return (
-        this.props.location.pathname == path) ||
+        this.props.location.pathname === path) ||
         this.props.location.pathname.startsWith(path + "/") ||
-        matchedSidebarData.PagePath.find((e) => this.props.location.pathname == e) ||
+        matchedSidebarData.PagePath.find((e) => this.props.location.pathname === e) ||
 
         // matches subpages. ex: "/users" matches "/users/form/1"
         matchedSidebarData.PagePath.find((e) => this.props.location.pathname.startsWith(e + "/"));
     }
-    return this.props.location.pathname == path ||
+    return this.props.location.pathname === path ||
       this.props.location.pathname.startsWith(path + "/")
   }
 
@@ -213,11 +250,11 @@ class Sidebar extends React.Component {
             <span className="nav-link"><Trans>Navigation</Trans></span>
           </li>
 
-          {(this.sidebarData.length) && this.sidebarData.map(item =>
+          {(this.state.sidebarData.length) && this.state.sidebarData.map(item =>
             // match parent menu to the current page location
             (item.ParentMenuName != null)
               ? <li key={`parent${item.ParentMenuName}`} className={this.isPathActive(item.ParentMenuName) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
-                <div className={!!this.state[`${item.ParentMenuName}Open`] ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState(`${item.ParentMenuName}Open`)} data-toggle="collapse">
+                <div className={this.state[`${item.ParentMenuName}Open`] ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState(`${item.ParentMenuName}Open`)} data-toggle="collapse">
                   <span className="menu-icon">
                     <i className="mdi mdi-dashboard"></i>
                   </span>

@@ -1,4 +1,5 @@
 const mysql_conn = require("./db.js");
+const { PRIVILEGES } = require('../utils/constants.js');
 
 "use strict";
 
@@ -17,10 +18,12 @@ class MenusModel {
         const stmt = `SELECT b.PagePath, c.MenuName, d.ParentMenuName FROM PageRoles as a 
         INNER JOIN Pages as b ON a.PageID = b.PageID INNER JOIN Menus as c ON b.PageID = c.PageID 
 		LEFT JOIN ParentMenus as d ON c.ParentMenuID = d.ParentMenuID
-		INNER JOIN Users as e ON a.RoleID = e.RoleID WHERE UserID = ?`;
+		INNER JOIN Users as e ON a.RoleID = e.RoleID 
+        INNER JOIN Privileges as f ON a.PrivilegeID = f.PrivilegeID WHERE (f.PrivilegeName = ? OR f.PrivilegeName = ?) 
+        AND UserID = ?;`;
 
         try {
-            const result = await mysql_conn.query(stmt, [userId]);
+            const result = await mysql_conn.query(stmt, [PRIVILEGES.readWrite, PRIVILEGES.read, userId]);
             return result;
         } catch (err) {
             console.log(err);

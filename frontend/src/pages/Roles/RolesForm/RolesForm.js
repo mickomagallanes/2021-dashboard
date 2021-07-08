@@ -35,7 +35,7 @@ function equalTo(ref, msg) {
       return value === this.resolve(ref)
     }
   })
-};
+}
 
 export async function fetchRoleData(urlParam) {
   try {
@@ -68,7 +68,8 @@ export default class RolesForm extends React.Component {
       errorMsg: [],
       formData: {
         rolename: ""
-      }
+      },
+      isLoading: true
     }
 
     this.urlParam = props.match.params.id;
@@ -96,7 +97,10 @@ export default class RolesForm extends React.Component {
     // check if is on add mode
     if (!this.isAddMode()) {
       const roleData = await fetchRoleData(this.urlParam);
+
       this.saveRoleData(roleData);
+    } else {
+      this.setState({ isLoading: false });
     }
   }
 
@@ -121,11 +125,12 @@ export default class RolesForm extends React.Component {
   saveRoleData = async (roleData) => {
     if (roleData.status === true) {
       this.setState({
-        formData: { rolename: roleData.data.rname }
+        formData: { rolename: roleData.data.rname },
+        isLoading: false
       });
     } else {
       this.setErrorMsg(roleData.msg);
-
+      this.setState({ isLoading: false });
     }
   }
 
@@ -142,7 +147,7 @@ export default class RolesForm extends React.Component {
         RoleID: (e.RoleID == null ? roleId : e.RoleID),
         // convert all "null" values of priv to ID of "None"
         PrivilegeID: (e.PrivilegeID == null ?
-          (this.state.privData.find(e => e.PrivilegeName == PRIVILEGES.none)).PrivilegeID :
+          (this.state.privData.find(e => e.PrivilegeName === PRIVILEGES.none)).PrivilegeID :
           e.PrivilegeID)
       }
     });
@@ -188,7 +193,7 @@ export default class RolesForm extends React.Component {
         RoleID: (e.RoleID == null ? roleId : e.RoleID),
         // convert all "null" values of priv to ID of "None"
         PrivilegeID: (e.PrivilegeID == null ?
-          (this.state.privData.find(e => e.PrivilegeName == PRIVILEGES.none)).PrivilegeID :
+          (this.state.privData.find(e => e.PrivilegeName === PRIVILEGES.none)).PrivilegeID :
           e.PrivilegeID)
       }
     });
@@ -342,7 +347,7 @@ export default class RolesForm extends React.Component {
   // TODO: make animation transition on routing using Framer Motion
   // TODO: and use Unit Testing with Jest
   render() {
-    if (!this.isAddMode() && !this.state.formData.rolename.length) {
+    if (!this.isAddMode() && this.state.isLoading) {
       return (<Spinner />)
     } else {
       return (
@@ -393,6 +398,7 @@ export default class RolesForm extends React.Component {
                                   name="rolename"
                                   placeholder="Role Name"
                                   component={TextFormField}
+                                  disabled={this.props.priv !== PRIVILEGES.readWrite}
                                 />
                               </div>
                             </div>

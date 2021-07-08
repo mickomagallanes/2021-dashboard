@@ -13,9 +13,24 @@ import Spinner from '../../components/Spinner/Spinner';
 const menuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all`;
 const menuCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all/count`;
 
+const colData = [
+  { "id": "MenuID", "name": "Menu ID" },
+  { "id": "MenuName", "name": "Menu Name" }
+];
+
+const idKey = "MenuID";
+
+const style = {
+  inputEntry: {
+    'maxWidth': '4rem',
+    'width': 'auto',
+    'display': 'inline-block'
+  }
+}
+
 function Menus({ priv }) {
 
-  // HOOKS DECLARATIONS
+  // HOOKS DECLARATIONS AND VARIABLES
 
   const [menuData, setMenuData] = useState([]);
 
@@ -23,6 +38,9 @@ function Menus({ priv }) {
   const [currentEntries, setCurrentEntries] = useState(5);
   const [maxPage, setMaxPage] = useState(null);
   const [maxMenus, setMaxMenus] = useState(null);
+
+  // to determine if initial fetch of data is done
+  const [initialFetchStatus, setInitialFetchStatus] = useState(false);
 
   const fetchDeps = [currentEntries, currentPage];
 
@@ -41,23 +59,6 @@ function Menus({ priv }) {
   } = useAlert();
 
   const location = useLocation();
-
-  // CONSTANT DATA
-
-  const colData = [
-    { "id": "MenuID", "name": "Menu ID" },
-    { "id": "MenuName", "name": "Menu Name" }
-  ];
-
-  const idKey = "MenuID";
-
-  const style = {
-    inputEntry: {
-      'maxWidth': '4rem',
-      'width': 'auto',
-      'display': 'inline-block'
-    }
-  }
 
   const isWriteable = priv === PRIVILEGES.readWrite;
 
@@ -90,6 +91,7 @@ function Menus({ priv }) {
             setMaxPage(newMaxPage);
             setMenuData(dataMenus.data);
             clearErrorMsg();
+            setInitialFetchStatus(true);
           });
 
 
@@ -106,23 +108,32 @@ function Menus({ priv }) {
 
   // LIFECYCLES
   useEffect(() => {
-    const loadSuccessProp = () => {
-      if (location.successMsg) {
-        timerSuccessAlert(location.successMsg);
+    if (initialFetchStatus) {
+
+      const loadSuccessProp = () => {
+        if (location.successMsg) {
+          timerSuccessAlert(location.successMsg);
+        }
+      }
+
+      const loadErrorProp = () => {
+        if (location.errorMsg) {
+          timerErrorAlert(location.errorMsg);
+        }
+      }
+
+      loadSuccessProp();
+
+      loadErrorProp();
+
+      return () => {
+        location.errorMsg = null;
+        location.successMsg = null;
       }
     }
 
-    const loadErrorProp = () => {
-      if (location.errorMsg) {
-        timerErrorAlert(location.errorMsg);
-      }
-    }
-
-    loadSuccessProp();
-
-    loadErrorProp();
-
-  }, []) // fix this issue, lying about dependency
+    // show error after setting the menu data
+  }, [location, initialFetchStatus, timerSuccessAlert, timerErrorAlert])
 
   // TODO: optimize call of fetchAndSave, learn more about hooks
   useDidUpdateEffect(() => {

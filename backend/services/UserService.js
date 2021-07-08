@@ -173,6 +173,8 @@ class UserService {
                 }
 
                 return { status: true, data: userData }
+            } else {
+                return { status: false }
             }
         } else {
             return { status: false }

@@ -57,3 +57,5 @@ Important Pattern Lessons for React
 4. Optimization with useMemo, useCallback
     4.1. Each hook has cost, so beware on using them. Only use them if it will skip large rerenders, or to function and/or component
         that rarely affected throughout the workflow. Read: https://kentcdodds.com/blog/usememo-and-usecallback
+5. useEffect
+    5.1. Don't lie about dependencies array, fix your code if its producing infinite loop with the required dependencies

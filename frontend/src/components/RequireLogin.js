@@ -8,7 +8,7 @@ const pageRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/cookie`;
 
 const RequireLogin = (Component) => {
 
-    return class extends React.Component {
+    return class RequireLogin extends React.Component {
         state = {
             isLogin: false,
             isLoading: true
@@ -50,7 +50,7 @@ const RequireLogin = (Component) => {
             if (isLoading) {
                 return <Spinner />
             }
-            if (!isLogin) {
+            if (!isLoading && !isLogin) {
 
                 return <Redirect to="/login" />
             }

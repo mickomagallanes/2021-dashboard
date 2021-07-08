@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect } from 'react-router-dom'
 import axios from 'axios';
 import { retryRequest } from "../helpers/utils";
-import Spinner from '../components/Spinner/Spinner';
+import Spinner from './Spinner/Spinner';
 
 const pageRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/authorize`;
 
@@ -11,13 +11,12 @@ const pageRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/authoriz
  * @param {Component} Component rendered component
  * @param {String} [apiURL] parent page path, specified if Component is only a subpage
  */
-const RequireAuth = (Component, apiURL = false) => {
+const withPriv = (Component, apiURL = false) => {
 
-    return class extends React.Component {
+    return class withPriv extends React.Component {
         state = {
-            isAuthenticated: false,
             isLoading: true,
-            priv: 0
+            priv: null
         }
 
         componentDidMount() {
@@ -39,7 +38,7 @@ const RequireAuth = (Component, apiURL = false) => {
             }
 
             const { location } = this.props;
-            const param = { "pagepath": !!apiURL ? apiURL : location.pathname };
+            const param = { "pagepath": apiURL ? apiURL : location.pathname };
 
             try {
                 const resp = await axios.post(
@@ -49,9 +48,10 @@ const RequireAuth = (Component, apiURL = false) => {
                 );
 
                 if (resp.data.status === true) {
-                    this.setState({ isAuthenticated: true, isLoading: false, priv: resp.data.data });
+                    this.setState({ isLoading: false, priv: resp.data.data });
                 } else {
-                    this.setState({ isAuthenticated: false, isLoading: false });
+                    // TODO: find a way to not reload the page, but reload sidebar data
+                    window.location.reload();
                 }
 
             } catch (error) {
@@ -61,13 +61,15 @@ const RequireAuth = (Component, apiURL = false) => {
 
         render() {
 
-            const { isAuthenticated, isLoading } = this.state;
+            const { priv, isLoading } = this.state;
 
-            if (isLoading || isAuthenticated) {
-                return <Component priv={this.state.priv} {...this.props} />
-            }
-            if (!isAuthenticated) {
-
+            if (isLoading) {
+                return <Spinner />
+            } else if (!isLoading && priv !== null) {
+                return <Component priv={priv} {...this.props} />
+            } else {
+                // when privilege data is not found, that means the data is deleted
+                // so the sidebar data in the frontend must load again
                 return <Redirect to="/login" />
             }
 
@@ -76,4 +78,4 @@ const RequireAuth = (Component, apiURL = false) => {
 
 }
 
-export default RequireAuth;
+export default withPriv;
