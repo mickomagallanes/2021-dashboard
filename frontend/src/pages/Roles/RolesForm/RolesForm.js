@@ -1,7 +1,7 @@
 import React from 'react';
 import './RolesForm.css';
 import axios from 'axios';
-import { retryRequest } from "../../../helpers/utils";
+import { axiosConfig, equalTo } from "../../../helpers/utils";
 import { Alert } from 'react-bootstrap';
 import { Formik, Form, Field } from "formik";
 import * as yup from 'yup';
@@ -17,25 +17,6 @@ const addRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/insert`;
 const editRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/modify`;
 const routeRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/routerole/post/data`;
 const pageRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/post/data`;
-
-const axiosConfig = {
-  withCredentials: true,
-  timeout: 10000
-}
-
-function equalTo(ref, msg) {
-  return this.test({
-    name: 'equalTo',
-    exclusive: false,
-    message: msg,
-    params: {
-      reference: ref.path
-    },
-    test: function (value) {
-      return value === this.resolve(ref)
-    }
-  })
-}
 
 export async function fetchRoleData(urlParam) {
   try {

@@ -289,6 +289,11 @@ $table-bg-light: #fff;
 $body-color-light: #000000;
 $table-text-color-light: #2f3337;
 
+$btnlink-hover-bg-light: #e9e9e9;
+$btnlink-bg-light: #fff;
+$btnlink-border-color-light: #747474;
+$btnlink-color-light: #000000;
+
 .light-theme > div{
     .content-wrapper { 
       background: $wrapper-bg-light;
@@ -308,9 +313,10 @@ $table-text-color-light: #2f3337;
       }
       > a {
           &:hover {
-            color: $wrapper-bg-light;;
-            border-color: $wrapper-bg-light;
-            background: $body-color-light;
+            color: $btnlink-color-light;
+            border-color: $btnlink-border-color-light;
+            background: $btnlink-hover-bg-light;
+  
           }
       }
     }
@@ -321,25 +327,28 @@ $table-text-color-light: #2f3337;
       .card {
         border: none;
       }
-      // pagination
-      a {
-        background: $table-bg-light;
-        color: $body-color-light;
+     
+     
+      // pagination, table buttons
+      a, button:not(.btn-primary) {
+        background: $btnlink-bg-light;
+        color: $btnlink-color-light;
         
         &:hover {
-          color: $table-bg-light;
-          border-color: $table-bg-light;
-          background: $body-color-light;
+          color: $btnlink-color-light;
+          border-color: $btnlink-border-color-light;
+          background: $btnlink-hover-bg-light;
 
           span {
-            color: $table-bg-light;
+            color: $btnlink-color-light;
           }
         }
 
         span {
-          color: $body-color-light;
+          color: $btnlink-color-light;
         
         }
+        
      }
 
       div {
@@ -359,4 +368,113 @@ $table-text-color-light: #2f3337;
         color: $table-text-color-light;
       }
     }
+}
+
+// /* Dropdowns */
+$dropdown-item-hover-bg-light: #e9e9e9;
+$dropdown-bg-light: #fff;
+$dropdown-border-color-light: #e2e2e2;
+$dropdown-link-color-light: #2b2c2c;
+$dropdown-link-active-bg-light: #e6e6e6;
+$dropdown-link-active-color-light: #212222;
+
+.light-theme { 
+  .dropdown {
+  .dropdown-menu {
+    color: $dropdown-link-color-light;
+    background-color: $dropdown-bg-light;
+    border: 1px solid $dropdown-border-color-light;
+    .dropdown-item {
+      color: $dropdown-link-color-light;
+      &:hover {
+        color: $dropdown-link-color-light;
+      }
+    }
+    &:hover {
+      color: $dropdown-link-color-light;
+    }
+  }
+ }
+ // REACT BOOTSTRAP
+ .dropdown-menu {
+ 
+    color: $dropdown-link-color-light;
+    background-color: $dropdown-bg-light;
+    border: 1px solid $dropdown-border-color-light;
+    .dropdown-item {
+      color: $dropdown-link-color-light;
+
+      @include hover-focus() {
+        color: $dropdown-link-color-light;
+        background-color: $dropdown-item-hover-bg-light;
+      }
+
+      &.active,
+      &:active {
+        color: $dropdown-link-active-color-light;
+       background-color: $dropdown-link-active-bg-light;
+      }
+
+      &.disabled,
+      &:disabled {
+        color: $dropdown-link-disabled-color;
+        pointer-events: none;
+        background-color: transparent;
+        // Remove CSS gradients if they're enabled
+        @if $enable-gradients {
+          background-image: none;
+        }
+      }
+      &:hover {
+        color: $dropdown-link-color-light;
+        background-color: $dropdown-item-hover-bg-light;
+      }
+    }
+    &:hover {
+      color: $dropdown-link-color-light;
+    }
+  }
+}
+
+// _preview.scss
+$border-color-light: #e4e4e4;
+$preview-bg-color-light: rgb(223, 223, 223);
+
+/* Preview */
+
+.light-theme {
+   .preview-list {
+  .preview-item {
+    .preview-thumbnail {
+      color: color(black);
+     
+      .badge {
+        border: 2px solid color(black);
+      }
+      .preview-icon {
+        background-color: $preview-bg-color-light !important;
+      }
+    }
+    .preview-item-content {
+     
+      p {
+        .content-category {
+          border-right: 1px solid $border-color-light;
+        }
+      }
+    
+    }
+    .preview-actions {
+      i {
+        color: color(gray-darkest);
+        border: 2px solid color(gray-darkest);
+      }
+    }
+  }
+  &.bordered {
+    .preview-item {
+      border-bottom: 1px solid $border-color-light;
+    }
+  }
+ }
 }

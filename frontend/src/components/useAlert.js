@@ -1,4 +1,4 @@
-//TODO: make an HOC for alert success and error
+
 
 import React, { useState, useRef } from 'react';
 import { Alert } from 'react-bootstrap';

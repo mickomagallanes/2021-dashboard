@@ -17,40 +17,43 @@ const mapStateToProps = (state) => {
   };
 };
 
+function reduceSidebar(sidebarData) {
+  return sidebarData.reduce(function (o, cur) {
+
+    // Get the index of the key-value pair.
+    let occurs = o.reduce(function (n, item, i) {
+      return (item.ParentMenuName === cur.ParentMenuName) ? i : n;
+    }, -1);
+
+    // If the name is found,
+    if (occurs >= 0) {
+
+      // append the current value to its list of values.
+      o[occurs].MenuName = o[occurs].MenuName.concat(cur.MenuName);
+      o[occurs].PagePath = o[occurs].PagePath.concat(cur.PagePath);
+
+      // Otherwise,
+    } else {
+
+      // add the current item to o (but make sure the value is an array).
+      let obj = {
+        ParentMenuName: cur.ParentMenuName,
+        PagePath: [cur.PagePath],
+        MenuName: [cur.MenuName]
+      };
+      o = o.concat([obj]);
+    }
+
+    return o;
+  }, [])
+}
 
 class Sidebar extends React.Component {
   constructor(props) {
     super();
     this.state = {
       isSidebarActive: false,
-      sidebarData: props.sidebarData.reduce(function (o, cur) {
-
-        // Get the index of the key-value pair.
-        let occurs = o.reduce(function (n, item, i) {
-          return (item.ParentMenuName === cur.ParentMenuName) ? i : n;
-        }, -1);
-
-        // If the name is found,
-        if (occurs >= 0) {
-
-          // append the current value to its list of values.
-          o[occurs].MenuName = o[occurs].MenuName.concat(cur.MenuName);
-          o[occurs].PagePath = o[occurs].PagePath.concat(cur.PagePath);
-
-          // Otherwise,
-        } else {
-
-          // add the current item to o (but make sure the value is an array).
-          let obj = {
-            ParentMenuName: cur.ParentMenuName,
-            PagePath: [cur.PagePath],
-            MenuName: [cur.MenuName]
-          };
-          o = o.concat([obj]);
-        }
-
-        return o;
-      }, [])
+      sidebarData: reduceSidebar(props.sidebarData)
     };
     this.userImg = imgSrcMainPath + props.userimg;
 
@@ -71,40 +74,11 @@ class Sidebar extends React.Component {
 
   }
 
-  // TODO: debug sidebar
   componentDidUpdate(prevProps) {
 
     if (prevProps.sidebarData !== this.props.sidebarData) {
-
       this.setState({
-        sidebarData: this.props.sidebarData.reduce(function (o, cur) {
-
-          // Get the index of the key-value pair.
-          let occurs = o.reduce(function (n, item, i) {
-            return (item.ParentMenuName === cur.ParentMenuName) ? i : n;
-          }, -1);
-
-          // If the name is found,
-          if (occurs >= 0) {
-
-            // append the current value to its list of values.
-            o[occurs].MenuName = o[occurs].MenuName.concat(cur.MenuName);
-            o[occurs].PagePath = o[occurs].PagePath.concat(cur.PagePath);
-
-            // Otherwise,
-          } else {
-
-            // add the current item to o (but make sure the value is an array).
-            let obj = {
-              ParentMenuName: cur.ParentMenuName,
-              PagePath: [cur.PagePath],
-              MenuName: [cur.MenuName]
-            };
-            o = o.concat([obj]);
-          }
-
-          return o;
-        }, [])
+        sidebarData: reduceSidebar(this.props.sidebarData)
       });
 
     }

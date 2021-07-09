@@ -12,6 +12,53 @@ class MenusService {
     /******************************** Menu ***************************************/
 
     /**
+     * inserts new menu in the database
+     * @param {Object} obj - An object.
+     * @param {String} obj.menuName name of the  menu
+     * @return {Object} result
+     * @return {Number} result.insertId role id of last inserted
+     */
+    static async insertMenu({ menuName }) {
+
+        const obj = {
+            menuName: menuName
+        }
+        let ret = await MenuModel.insertMenu(obj);
+
+        if (ret === false) {
+
+            return { status: false }
+        } else {
+            return { status: true, data: ret.insertId }
+        }
+
+    }
+
+    /**
+    * modify menu information to the database, doesn't have sort because its handled differently
+    * @param {Object} obj - An object.
+    * @param {String} obj.menuID id of the menu
+    * @param {String} [obj.menuName] name of the menu
+    * @return {Object} result
+    * @return {Number} result.insertId menu id of last inserted
+    */
+    static async modifyMenu({ menuID, menuName }) {
+
+        let obj = {
+            menuID: menuID,
+            menuName: menuName
+        };
+
+        let ret = await MenuModel.modifyMenu(obj);
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true, data: ret.insertId }
+        }
+
+    }
+
+    /**
      *  get menu and parent menu based on logged-in user role
      * @param {Number} userId id of the user
      * @return {Array} result

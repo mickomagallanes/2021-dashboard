@@ -7,14 +7,10 @@ import Pagination from '../../components/Pagination/Pagination.lazy';
 import { Alert } from 'react-bootstrap';
 import * as currentModule from './Users'; // use currentmodule to call func outside class, for testing
 import { PRIVILEGES } from "../../helpers/constants";
+import { axiosConfig } from '../../helpers/utils';
 
 const userURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/all`;
 const userCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/all/count`;
-
-const axiosConfig = {
-  withCredentials: true,
-  timeout: 10000
-}
 
 export async function fetchCount() {
 

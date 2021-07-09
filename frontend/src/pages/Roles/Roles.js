@@ -2,18 +2,13 @@ import React from 'react'
 import './Roles.css';
 import axios from 'axios';
 import Table from '../../components/Table/Table.lazy';
-import { retryRequest } from "../../helpers/utils";
+import { axiosConfig } from "../../helpers/utils";
 import { Alert } from 'react-bootstrap';
 import * as currentModule from './Roles'; // use currentmodule to call func outside class, for testing
 import { PRIVILEGES } from "../../helpers/constants"
 import { Link } from 'react-router-dom';
 
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
-
-const axiosConfig = {
-  withCredentials: true,
-  timeout: 10000
-}
 
 export async function fetchRolesData() {
 

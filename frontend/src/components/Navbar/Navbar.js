@@ -8,14 +8,10 @@ import { connect } from 'react-redux';
 import { THEMES } from '../../helpers/constants';
 import { themeChange } from '../../actions';
 import axios from 'axios';
+import { axiosConfig } from '../../helpers/utils';
 
 const imgSrcMainPath = `${process.env.REACT_APP_BACKEND_HOST}`;
 const logoutPath = `${process.env.REACT_APP_BACKEND_HOST}/API/user/logout`;
-
-const axiosConfig = {
-  withCredentials: true,
-  timeout: 10000
-}
 
 const mapStateToProps = (state) => {
   return {

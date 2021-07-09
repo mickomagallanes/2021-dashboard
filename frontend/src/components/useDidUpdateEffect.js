@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 
-// TODO: move into its own module
 function useDidUpdateEffect(fn, inputs) {
     const didMountRef = useRef(false);
 

@@ -4,9 +4,41 @@ const MenusService = require('../../services/MenusService.js');
 const express = require('express');
 const router = express.Router();
 const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../../middlewares/routesauth.js');
-const { parentMenuInsertSchema, parentMenuModifySchema, parentMenuGetAllSchema, menuGetAllSchema } = require('../../middlewares/validator.js');
+const {
+    parentMenuInsertSchema,
+    parentMenuModifySchema,
+    parentMenuGetAllSchema,
+    menuGetAllSchema,
+    menuInsertSchema,
+    menuModifySchema
+} = require('../../middlewares/validator.js');
 
 /******************************** Menu ***************************************/
+
+// insert new menu
+// returns insertId of menu
+router.post('/insert', [checkSession, menuInsertSchema, authorizeWriteRoute], async function (req, res, next) {
+
+    // insert role information
+    let result = await MenusService.insertMenu(req.body);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed inserting" });
+    } else {
+        res.json({ "status": true, "msg": "Successful inserting", "id": result.data });
+    }
+});
+
+// edit menu
+router.put('/modify', [checkSession, menuModifySchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await MenusService.modifyMenu(req.body);
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed modification" });
+    } else {
+        res.json({ "status": true, "msg": "Successful modification", "id": result.data });
+    }
+});
+
 
 /**
  * get pages based on the logged-in user role

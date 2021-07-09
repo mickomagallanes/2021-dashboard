@@ -8,7 +8,7 @@ import axios from 'axios';
 import { Formik, Form, Field } from "formik";
 import TextFormField from '../../components/FormFields/TextFormField/TextFormField';
 import * as yup from 'yup';
-import { retryRequest } from "../../helpers/utils";
+import { retryRequest, axiosConfig } from "../../helpers/utils";
 import { withRouter } from 'react-router-dom';
 import { profileChange } from '../../actions';
 import { connect } from 'react-redux';
@@ -41,10 +41,7 @@ class Login extends React.PureComponent {
   }
 
   signIn = async (fields) => {
-    let axiosConfig = {
-      withCredentials: true,
-      timeout: 10000
-    };
+
     let param = fields;
 
     try {
@@ -56,6 +53,7 @@ class Login extends React.PureComponent {
 
       let { data } = resp;
 
+      // save user data because it is returned after login
       if (data.status === true) {
         this.props.changeProfile(data.data.uname, data.data.uimage);
 

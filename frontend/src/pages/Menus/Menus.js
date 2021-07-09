@@ -135,7 +135,6 @@ function Menus({ priv }) {
     // show error after setting the menu data
   }, [location, initialFetchStatus, timerSuccessAlert, timerErrorAlert])
 
-  // TODO: optimize call of fetchAndSave, learn more about hooks
   useDidUpdateEffect(() => {
 
     checkFetchedData();

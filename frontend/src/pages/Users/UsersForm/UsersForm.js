@@ -1,7 +1,7 @@
 import React from 'react';
 import './UsersForm.css';
 import axios from 'axios';
-import { retryRequest } from "../../../helpers/utils";
+import { axiosConfig, equalTo } from "../../../helpers/utils";
 import { Alert } from 'react-bootstrap';
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
 import { Formik, Form, Field } from "formik";
@@ -18,25 +18,6 @@ const addUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/insert`;
 const editUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/modify`;
 const uploadImgUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/upload/img`;
 const imgSrcMainPath = `${process.env.REACT_APP_BACKEND_HOST}`;
-
-const axiosConfig = {
-  withCredentials: true,
-  timeout: 10000
-}
-
-function equalTo(ref, msg) {
-  return this.test({
-    name: 'equalTo',
-    exclusive: false,
-    message: msg,
-    params: {
-      reference: ref.path
-    },
-    test: function (value) {
-      return value === this.resolve(ref)
-    }
-  })
-};
 
 export async function fetchUserData(urlParam) {
   try {

@@ -10,6 +10,52 @@ class MenusModel {
     }
 
     /**
+  * inserts new menu in the database
+  * @param {Object} obj - An object.
+  * @param {String} obj.menuName name of the menu
+  * @return {Object} result
+  * @return {Number} result.insertId menu id of last inserted
+  */
+    static async insertMenu({ menuName }) {
+        const stmt = `INSERT INTO Menus (MenuName) VALUES (?)`;
+        try {
+            const result = await mysql_conn.query(stmt, [menuName]);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+     * modify menu information to the database
+     * @param {Object} obj - An object.
+     * @param {String} obj.menuID id of the menu
+     * @param {String} [obj.menuName] name of the menu
+     * @return {Object} result
+     * @return {Number} result.insertId menu id of last inserted
+     */
+    static async modifyMenu({ menuID, menuName }) {
+        let whereParams = [menuID];
+        let setObj = {};
+        let stmtWhere = ` WHERE MenuID = ?`
+
+        if (menuName !== undefined) {
+            setObj.menuName = menuName
+        }
+
+        try {
+            const result = await mysql_conn.update("Menus", setObj, stmtWhere, whereParams);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
      * get menu and parent menu based on logged-in user role
      * @param {Number} userId id of the user
      * @return {Array} result

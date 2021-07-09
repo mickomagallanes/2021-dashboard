@@ -87,6 +87,23 @@ function parentMenuGetAllSchema(req, res, next) {
 
 /*********** 2. MENU ************/
 
+function menuInsertSchema(req, res, next) {
+
+    const schema = Joi.object({
+        menuName: Joi.string().max(30).required()
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function menuModifySchema(req, res, next) {
+
+    const schema = Joi.object({
+        menuName: Joi.string().max(30).required(),
+        menuID: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
 function menuGetAllSchema(req, res, next) {
     const schema = Joi.object({
         page: Joi.number().integer(),
@@ -130,5 +147,7 @@ module.exports = {
     parentMenuInsertSchema,
     parentMenuModifySchema,
     parentMenuGetAllSchema,
-    menuGetAllSchema
+    menuGetAllSchema,
+    menuInsertSchema,
+    menuModifySchema
 }

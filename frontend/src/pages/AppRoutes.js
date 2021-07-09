@@ -22,6 +22,7 @@ import Footer from '../components/Footer/Footer';
 import { sidebarChange } from '../actions';
 import { useDispatch } from 'react-redux';
 import useFetch from '../components/useFetch';
+import MenusForm from './Menus/MenusForm/MenusForm';
 
 const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/page/getPagesBySession`;
 const subPagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/getSubPagesBySession`;
@@ -67,25 +68,8 @@ function LoginContainer() {
   );
 }
 
-// TODO: use custom hooks for priv routes
-// function AuthComponent(Component) {
-//     const { privValue, isLoading } = usePriv();
-
-//     useEffect(
-//       () => {
-//         if (!isAuthenticated) {
-//           history.push("/signin");
-//         }
-//       },
-//       [isAuthenticated]
-//     );
-//     return isAuthenticated && <MyPage {...props} />;
-// }
-
 function DefaultContainer() {
 
-  // const [pagesData, setPagesData] = useState([]);
-  // const [subPagesData, setSubPagesData] = useState([]);
   const [PagesElements, setPagesElements] = useState(null);
   const [SubPagesElements, setSubPagesElements] = useState(null);
 
@@ -167,6 +151,7 @@ function matchComponentName(name) {
     case "ParentMenus": return ParentMenus;
     case "ParentMenusForm": return ParentMenusForm;
     case "Menus": return Menus;
+    case "MenusForm": return MenusForm;
 
     default: return undefined;
   }

@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-
-const axiosConfig = {
-    withCredentials: true,
-    timeout: 10000
-}
+import { axiosConfig } from '../helpers/utils';
 
 function useFetch(apiUrl, customDeps = []) {
 

@@ -2,7 +2,7 @@ import React from 'react'
 import './ParentMenus.css';
 import axios from 'axios';
 import Table from '../../components/Table/Table.lazy';
-import { retryRequest } from "../../helpers/utils";
+import { axiosConfig } from "../../helpers/utils";
 import { Alert } from 'react-bootstrap';
 import * as currentModule from './ParentMenus'; // use currentmodule to call func outside class, for testing
 import { PRIVILEGES } from "../../helpers/constants"
@@ -13,11 +13,6 @@ const parentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/ge
 const parentMenuCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/all/count`;
 const sortUpURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/sort/up`;
 const sortDownURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/sort/down`;
-
-const axiosConfig = {
-  withCredentials: true,
-  timeout: 10000
-}
 
 export async function fetchCount() {
 

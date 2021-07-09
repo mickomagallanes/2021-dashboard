@@ -1,7 +1,7 @@
 import React from 'react';
 import './PageRolesForm.css';
 import axios from 'axios';
-import { retryRequest } from "../../../helpers/utils";
+import { axiosConfig } from "../../../helpers/utils";
 import { Form, Alert, Table } from 'react-bootstrap';
 import Select from '../../../components/FormFields/SelectFormField/SelectFormField';
 import Spinner from '../../../components/Spinner/Spinner';
@@ -12,11 +12,6 @@ import * as currentModule from './PageRolesForm'; // use currentmodule to call f
 const pagesRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/get/left/`;
 const privUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/privilege/get/all`;
 const editURL = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/post/data`;
-
-const axiosConfig = {
-  withCredentials: true,
-  timeout: 10000
-}
 
 export async function fetchPageRoleData(roleIdParam) {
   try {

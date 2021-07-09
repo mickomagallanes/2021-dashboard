@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom'
 import axios from 'axios';
-import { retryRequest } from "../helpers/utils";
+import { retryRequest, axiosConfig } from "../helpers/utils";
 import Spinner from './Spinner/Spinner';
 
 const pageRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/authorize`;
@@ -32,10 +32,6 @@ const withPriv = (Component, apiURL = false) => {
         }
 
         authorizeRole = async () => {
-            const axiosConfig = {
-                withCredentials: true,
-                timeout: 10000
-            }
 
             const { location } = this.props;
             const param = { "pagepath": apiURL ? apiURL : location.pathname };
@@ -67,10 +63,6 @@ const withPriv = (Component, apiURL = false) => {
                 return <Spinner />
             } else if (!isLoading && priv !== null) {
                 return <Component priv={priv} {...this.props} />
-            } else {
-                // when privilege data is not found, that means the data is deleted
-                // so the sidebar data in the frontend must load again
-                return <Redirect to="/login" />
             }
 
         }

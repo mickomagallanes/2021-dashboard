@@ -1,14 +1,14 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom'
 import axios from 'axios';
-import { retryRequest } from "../helpers/utils";
+import { retryRequest, axiosConfig } from "../helpers/utils";
 import Spinner from './Spinner/Spinner';
 
 const pageRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/cookie`;
 
 const RequireLogout = (Component) => {
 
-    return class extends React.Component {
+    return class RequireLogout extends React.Component {
         state = {
             isLogout: false,
             isLoading: true
@@ -20,11 +20,6 @@ const RequireLogout = (Component) => {
         }
 
         checkIfLogout = async () => {
-
-            const axiosConfig = {
-                withCredentials: true,
-                timeout: 10000
-            }
 
             try {
                 const resp = await axios.get(

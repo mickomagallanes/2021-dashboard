@@ -1,9 +1,7 @@
 import React from 'react';
 import './ParentMenusForm.css';
 import axios from 'axios';
-import { retryRequest } from "../../../helpers/utils";
 import { Alert } from 'react-bootstrap';
-import Select from '../../../components/FormFields/SelectFormField/SelectFormField';
 import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
@@ -11,29 +9,11 @@ import { Link } from 'react-router-dom';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
 import * as currentModule from './ParentMenusForm'; // use currentmodule to call func outside class, for testing
+import { axiosConfig, equalTo } from '../../../helpers/utils';
 
 const parentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/`;
 const addParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/insert`;
 const editParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/modify`;
-
-const axiosConfig = {
-  withCredentials: true,
-  timeout: 10000
-}
-
-function equalTo(ref, msg) {
-  return this.test({
-    name: 'equalTo',
-    exclusive: false,
-    message: msg,
-    params: {
-      reference: ref.path
-    },
-    test: function (value) {
-      return value === this.resolve(ref)
-    }
-  })
-}
 
 export async function fetchParentMenuData(urlParam) {
   try {
