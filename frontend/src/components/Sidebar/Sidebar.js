@@ -5,6 +5,7 @@ import { Trans } from 'react-i18next';
 import logo from "../../assets/images/logo.svg";
 import logoMini from '../../assets/images/logo-mini.svg';
 import { connect } from 'react-redux';
+import { DEFAULT_IMAGE } from '../../helpers/constants';
 
 const imgSrcMainPath = `${process.env.REACT_APP_BACKEND_HOST}`;
 
@@ -18,11 +19,12 @@ const mapStateToProps = (state) => {
 };
 
 function reduceSidebar(sidebarData) {
+
   return sidebarData.reduce(function (o, cur) {
 
     // Get the index of the key-value pair.
     let occurs = o.reduce(function (n, item, i) {
-      return (item.ParentMenuName === cur.ParentMenuName) ? i : n;
+      return (item.ParentMenuID === cur.ParentMenuID) ? i : n;
     }, -1);
 
     // If the name is found,
@@ -39,7 +41,8 @@ function reduceSidebar(sidebarData) {
       let obj = {
         ParentMenuName: cur.ParentMenuName,
         PagePath: [cur.PagePath],
-        MenuName: [cur.MenuName]
+        MenuName: [cur.MenuName],
+        ParentMenuID: cur.ParentMenuID
       };
       o = o.concat([obj]);
     }
@@ -56,7 +59,6 @@ class Sidebar extends React.Component {
       sidebarData: reduceSidebar(props.sidebarData)
     };
     this.userImg = imgSrcMainPath + props.userimg;
-
   }
 
 
@@ -117,10 +119,11 @@ class Sidebar extends React.Component {
 
     for (let i = 0, n = this.state.sidebarData.length; i < n; i++) {
       let parentMenuName = this.state.sidebarData[i].ParentMenuName;
+      let parentMenuID = this.state.sidebarData[i].ParentMenuID;
 
       let pathObj = {
         path: parentMenuName,
-        state: `${parentMenuName}Open`
+        state: `${parentMenuID}Open`
       }
       dropdownPaths.push(pathObj);
     }
@@ -170,7 +173,9 @@ class Sidebar extends React.Component {
             <div className="profile-desc">
               <div className="profile-pic">
                 <div className="count-indicator">
-                  <img className="img-xs rounded-circle " src={this.userImg} alt="profile" />
+                  <img className="img-xs rounded-circle " src={this.userImg} alt="profile" ref={img => this.img = img} onError={
+                    () => this.img.src = `${imgSrcMainPath}${DEFAULT_IMAGE}`
+                  } />
                   <span className="count bg-success"></span>
                 </div>
                 <div className="profile-name">
@@ -226,16 +231,16 @@ class Sidebar extends React.Component {
 
           {(this.state.sidebarData.length) && this.state.sidebarData.map(item =>
             // match parent menu to the current page location
-            (item.ParentMenuName != null)
-              ? <li key={`parent${item.ParentMenuName}`} className={this.isPathActive(item.ParentMenuName) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
-                <div className={this.state[`${item.ParentMenuName}Open`] ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState(`${item.ParentMenuName}Open`)} data-toggle="collapse">
+            (item.ParentMenuID !== null)
+              ? <li key={`parent${item.ParentMenuID}`} className={this.isPathActive(item.ParentMenuID) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
+                <div className={this.state[`${item.ParentMenuID}Open`] ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState(`${item.ParentMenuID}Open`)} data-toggle="collapse">
                   <span className="menu-icon">
                     <i className="mdi mdi-dashboard"></i>
                   </span>
                   <span className="menu-title text-wrap"><Trans>{item.ParentMenuName}</Trans></span>
                   <i className="menu-arrow"></i>
                 </div>
-                <Collapse in={!!this.state[`${item.ParentMenuName}Open`]}>
+                <Collapse in={!!this.state[`${item.ParentMenuID}Open`]}>
                   <div>
                     <ul className="nav flex-column sub-menu">
 
@@ -251,6 +256,7 @@ class Sidebar extends React.Component {
                   </div>
                 </Collapse>
               </li>
+              // if no ParentMenuID
               : item.MenuName.map((item2, key2) => {
                 return <li key={`menu${item.PagePath[key2]}`} className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
                   <Link className="nav-link" key={`link${item.PagePath[key2]}`} to={`${item.PagePath[key2]}`}>

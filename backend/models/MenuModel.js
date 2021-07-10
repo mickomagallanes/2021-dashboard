@@ -61,12 +61,12 @@ class MenusModel {
      * @return {Array} result
      */
     static async getMenusByRole(userId) {
-        const stmt = `SELECT b.PagePath, c.MenuName, d.ParentMenuName FROM PageRoles as a 
+        const stmt = `SELECT b.PagePath, c.MenuID, c.MenuName, d.ParentMenuName, d.ParentMenuID FROM PageRoles as a 
         INNER JOIN Pages as b ON a.PageID = b.PageID INNER JOIN Menus as c ON b.PageID = c.PageID 
 		LEFT JOIN ParentMenus as d ON c.ParentMenuID = d.ParentMenuID
 		INNER JOIN Users as e ON a.RoleID = e.RoleID 
         INNER JOIN Privileges as f ON a.PrivilegeID = f.PrivilegeID WHERE (f.PrivilegeName = ? OR f.PrivilegeName = ?) 
-        AND UserID = ?;`;
+        AND UserID = ? ORDER BY d.ParentMenuSort;`;
 
         try {
             const result = await mysql_conn.query(stmt, [PRIVILEGES.readWrite, PRIVILEGES.read, userId]);
