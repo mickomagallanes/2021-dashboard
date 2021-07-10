@@ -110,14 +110,14 @@ class UserService {
 
     /**
       * modify user data
+      * @param {String} userid id of the user
       * @param {Object} obj - An object.
-      * @param {String} obj.userid id of the user
       * @param {String} obj.username username of the user
       * @param {String} obj.password plain password of the user
       * @param {String} obj.roleid id from roles table if it is admin, etc
       */
 
-    static async modifyUser({ userid, username, password, roleid, imagePath }) {
+    static async modifyUser(userid, { username, password, roleid, imagePath }) {
         let ret;
         if (password !== undefined && password.length) {
             const saltRounds = 10;

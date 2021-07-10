@@ -66,10 +66,10 @@ router.post('/insert', [checkSession, userInsertSchema, authorizeWriteRoute], as
 });
 
 // edit user text data, doesn't handle the image
-router.put('/modify', [checkSession, userModifySchema, authorizeWriteRoute], async function (req, res, next) {
+router.put('/modify/:id', [checkSession, userModifySchema, authorizeWriteRoute], async function (req, res, next) {
 
     // edit user infos
-    let result = await UserService.modifyUser(req.body);
+    let result = await UserService.modifyUser(req.params.id, req.body);
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed modification" });
     } else {

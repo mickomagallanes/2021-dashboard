@@ -30,8 +30,9 @@ router.post('/insert', [checkSession, menuInsertSchema, authorizeWriteRoute], as
 });
 
 // edit menu
-router.put('/modify', [checkSession, menuModifySchema, authorizeWriteRoute], async function (req, res, next) {
-    let result = await MenusService.modifyMenu(req.body);
+router.put('/modify/:id', [checkSession, menuModifySchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await MenusService.modifyMenu(req.params.id, req.body);
+
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed modification" });
     } else {
@@ -123,8 +124,8 @@ router.post('/parent/insert', [checkSession, parentMenuInsertSchema, authorizeWr
 });
 
 // edit parent menu
-router.put('/parent/modify', [checkSession, parentMenuModifySchema, authorizeWriteRoute], async function (req, res, next) {
-    let result = await MenusService.modifyParentMenu(req.body);
+router.put('/parent/modify/:id', [checkSession, parentMenuModifySchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await MenusService.modifyParentMenu(req.params.id, req.body);
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed modification" });
     } else {

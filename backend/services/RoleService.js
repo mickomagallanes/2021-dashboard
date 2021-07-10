@@ -32,14 +32,14 @@ class RoleService {
 
     /**
      * modify role information to the database
+     * @param {String} roleid id of the role
      * @param {Object} obj - An object.
-     * @param {String} obj.roleid id of the role
      * @param {String} [obj.rolename] name of the role
      * @return {Object} result
      * @return {Number} result.insertId user id of last inserted
      */
 
-    static async modifyRole({ roleid, rolename }) {
+    static async modifyRole(roleid, { rolename }) {
 
         let obj = {
             roleid: roleid,

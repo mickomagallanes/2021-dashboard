@@ -36,13 +36,13 @@ class MenusService {
 
     /**
     * modify menu information to the database, doesn't have sort because its handled differently
+    * @param {String} menuID id of the menu
     * @param {Object} obj - An object.
-    * @param {String} obj.menuID id of the menu
     * @param {String} [obj.menuName] name of the menu
     * @return {Object} result
     * @return {Number} result.insertId menu id of last inserted
     */
-    static async modifyMenu({ menuID, menuName }) {
+    static async modifyMenu(menuID, { menuName }) {
 
         let obj = {
             menuID: menuID,
@@ -182,13 +182,13 @@ class MenusService {
 
     /**
     * modify parent menu information to the database, doesn't have sort because its handled differently
+    * @param {String} parentMenuID id of the parent menu
     * @param {Object} obj - An object.
-    * @param {String} obj.parentMenuID id of the parent menu
     * @param {String} [obj.parentMenuName] name of the parent menu
     * @return {Object} result
     * @return {Number} result.insertId parent menu id of last inserted
     */
-    static async modifyParentMenu({ parentMenuID, parentMenuName }) {
+    static async modifyParentMenu(parentMenuID, { parentMenuName }) {
 
         let obj = {
             parentMenuID: parentMenuID,

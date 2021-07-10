@@ -79,11 +79,12 @@ app.use(session({
 app.use('/api', apiRouter);
 
 app.use('/uploads', checkSession, express.static(path.join(__dirname, 'public/uploads')));
+app.use('/images', checkSession, express.static(path.join(__dirname, 'public/images')));
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  res.status(404);
-});
+// app.use(function (req, res, next) {
+//   res.status(404);
+// });
 
 // error handler
 app.use(function (err, req, res, next) {

@@ -63,10 +63,10 @@ router.post('/insert', [checkSession, roleInsertSchema, authorizeWriteRoute], as
 });
 
 // edit role
-router.put('/modify', [checkSession, roleModifySchema, authorizeWriteRoute], async function (req, res, next) {
+router.put('/modify/:id', [checkSession, roleModifySchema, authorizeWriteRoute], async function (req, res, next) {
 
     // edit role information
-    let result = await RoleService.modifyRole(req.body);
+    let result = await RoleService.modifyRole(req.params.id, req.body);
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed modification" });
     } else {
