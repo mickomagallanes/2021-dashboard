@@ -13,4 +13,7 @@ const ERRORMSG = {
     invalidUrl: "Invalid URL Parameter",
     noPrivilege: "You have no privilege to do that"
 }
-export { THEMES, PRIVILEGES, ERRORMSG }
+
+const DEFAULT_IMAGE = "/images/default.png"
+
+export { THEMES, PRIVILEGES, ERRORMSG, DEFAULT_IMAGE }

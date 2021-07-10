@@ -72,7 +72,6 @@ function Menus({ priv }) {
   }
 
   const checkFetchedData = async () => {
-
     if (dataMenus && dataCount) {
       if (dataCount.status === true) {
         let count = dataCount.data.count;

@@ -14,7 +14,7 @@ import TextFormField from '../../../components/FormFields/TextFormField/TextForm
 
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/`;
 const addRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/insert`;
-const editRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/modify`;
+const editRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/modify/`;
 const routeRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/routerole/post/data`;
 const pageRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/post/data`;
 
@@ -238,13 +238,12 @@ export default class RolesForm extends React.Component {
   // submits form using edit then returns insertId of role
   submitFormEdit = async (fields) => {
     const param = {
-      "rolename": fields.rolename,
-      "roleid": this.urlParam
+      "rolename": fields.rolename
     }
 
     try {
       const resp = await axios.put(
-        editRoleURL,
+        editRoleURL + this.urlParam,
         param,
         axiosConfig
       );

@@ -13,7 +13,7 @@ import { axiosConfig, equalTo } from '../../../helpers/utils';
 
 const parentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/`;
 const addParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/insert`;
-const editParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/modify`;
+const editParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/modify/`;
 
 export async function fetchParentMenuData(urlParam) {
   try {
@@ -146,13 +146,12 @@ export default class ParentMenuForm extends React.Component {
   // submits form using edit then returns insertId of parent menu for submit image to use
   submitFormEdit = async (fields) => {
     const param = {
-      "parentMenuID": this.urlParam,
       "parentMenuName": fields.parentMenuName
     }
 
     try {
       const resp = await axios.put(
-        editParentMenuURL,
+        editParentMenuURL + this.urlParam,
         param,
         axiosConfig
       );

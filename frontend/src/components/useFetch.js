@@ -1,13 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { axiosConfig } from '../helpers/utils';
+import ReactDOM from "react-dom";
 
 function useFetch(apiUrl, customDeps = []) {
 
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const isCancelled = useRef(false);
 
     useEffect(() => {
+        // reset value if deps is changed
+        isCancelled.current = false;
         (async function () {
             try {
                 const respCount = await axios.get(
@@ -16,17 +20,30 @@ function useFetch(apiUrl, customDeps = []) {
                 );
                 const { data } = respCount;
 
-                setData(data);
-                setLoading(false);
+                if (!isCancelled.current) {
+                    ReactDOM.unstable_batchedUpdates(() => {
+                        setData(data);
+                        setLoading(false);
+                    });
+                }
+
+
             } catch (error) {
-                setData({ status: false, msg: error });
-                setLoading(false);
+                if (!isCancelled.current) {
+                    ReactDOM.unstable_batchedUpdates(() => {
+                        setData({ status: false, msg: error });
+                        setLoading(false);
+                    });
+                }
             }
         })();
 
         return () => {
-            setLoading(true);
-            setData(null);
+            ReactDOM.unstable_batchedUpdates(() => {
+                setData(null);
+                setLoading(true);
+                isCancelled.current = true;
+            });
         }
     }, [apiUrl, ...customDeps]);
 

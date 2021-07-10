@@ -9,6 +9,7 @@ import { THEMES } from '../../helpers/constants';
 import { themeChange } from '../../actions';
 import axios from 'axios';
 import { axiosConfig } from '../../helpers/utils';
+import { DEFAULT_IMAGE } from '../../helpers/constants';
 
 const imgSrcMainPath = `${process.env.REACT_APP_BACKEND_HOST}`;
 const logoutPath = `${process.env.REACT_APP_BACKEND_HOST}/API/user/logout`;
@@ -48,11 +49,11 @@ class Navbar extends React.Component {
         axiosConfig
       );
 
-      if (ret.data.status == true) {
+      if (ret.data.status === true) {
         window.location = '/login';
       }
     } catch (error) {
-
+      console.error(error)
     }
 
   }
@@ -241,7 +242,9 @@ class Navbar extends React.Component {
             <Dropdown alignRight as="li" className="nav-item">
               <Dropdown.Toggle as="a" className="nav-link cursor-pointer no-caret">
                 <div className="navbar-profile">
-                  <img className="img-xs rounded-circle" src={this.userImg} alt="profile photo" />
+                  <img className="img-xs rounded-circle" src={this.userImg} alt="profile" ref={img => this.img = img} onError={
+                    () => this.img.src = `${imgSrcMainPath}${DEFAULT_IMAGE}`
+                  } />
                   <p className="mb-0 d-none d-sm-block navbar-profile-name"><Trans>{this.props.username}</Trans></p>
                   <i className="mdi mdi-menu-down d-none d-sm-block"></i>
                 </div>

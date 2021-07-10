@@ -2,13 +2,13 @@ import { useState } from 'react';
 import axios from 'axios';
 import { axiosConfig } from '../helpers/utils';
 
-function usePost(apiUrl) {
+function usePut(apiUrl) {
 
     const [data, setData] = useState(null);
 
     const postData = async (params) => {
         try {
-            const resp = await axios.post(
+            const resp = await axios.put(
                 apiUrl,
                 params,
                 axiosConfig
@@ -30,4 +30,4 @@ function usePost(apiUrl) {
     ]
 }
 
-export default usePost;
+export default usePut;

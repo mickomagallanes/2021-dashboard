@@ -1,7 +1,6 @@
-import React, { useEffect, useReducer, useState } from 'react'
-import ReactDOM from "react-dom";
+import React, { useEffect, useReducer } from 'react'
 import './MenusForm.css';
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import useAlert from '../../../components/useAlert';
 import useFetch from '../../../components/useFetch';
 import useDidUpdateEffect from '../../../components/useDidUpdateEffect';
@@ -12,10 +11,11 @@ import TextFormField from '../../../components/FormFields/TextFormField/TextForm
 import { equalTo } from '../../../helpers/utils';
 import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
+import usePut from '../../../components/usePut';
 
 const menuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/`;
 const addMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/insert`;
-const editMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/modify`;
+const editMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/modify/`;
 
 yup.addMethod(yup.string, 'equalTo', equalTo);
 
@@ -37,35 +37,29 @@ const mapDispatch = dispatch => ({
   changeMenuName: (payload) => dispatch({ type: 'changeMenuName', payload: payload })
 })
 
+const menuFormInitialState = {
+  menuName: ""
+};
+
 function MenusForm({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
-  const menuFormInitialState = {
-    menuName: ""
-  };
 
   const [menuFormData, dispatchMenu] = useReducer(menuReducer, menuFormInitialState);
   const actionsMenuData = mapDispatch(dispatchMenu);
 
-  const [submitEdit, editData] = usePost(editMenuURL);
-  const [submitAdd, addData] = usePost(addMenuURL);
-
   const urlParamObj = useParams();
 
   const urlParam = urlParamObj.id;
+
+  const [submitEdit, editData] = usePut(editMenuURL + urlParam);
+  const [submitAdd, addData] = usePost(addMenuURL);
 
   const [dataMenus, loadingMenus] = useFetch(menuURL + urlParam);
 
   const isAddMode = urlParam === "add";
 
   const history = useHistory();
-
-  if (isAddMode && priv === PRIVILEGES.read) {
-    history.push({
-      pathname: '/menus',
-      errorMsg: [ERRORMSG.noPrivilege]
-    });
-  }
 
   const {
     passErrorMsg,
@@ -80,7 +74,6 @@ function MenusForm({ priv }) {
 
     if (isAddMode) {
       const param = {
-        "menuID": this.urlParam,
         "menuName": fields.menuName
       }
       // save new menu id
@@ -95,43 +88,54 @@ function MenusForm({ priv }) {
 
   }
 
+  const postSuccessCallback = (respData, successArr) => {
+
+    if (respData.status === true) {
+      successArr.push(respData.msg);
+
+      history.push({
+        pathname: '/menus',
+        successMsg: [successArr]
+      });
+    } else {
+      passErrorMsg(`${respData.msg}`);
+    }
+  }
+
   // LIFECYCLES
+  useEffect(() => {
+    if (isAddMode && priv === PRIVILEGES.read) {
+      history.push({
+        pathname: '/menus',
+        errorMsg: [ERRORMSG.noPrivilege]
+      });
+    }
+  }, [history, isAddMode, priv])
 
   useDidUpdateEffect(() => {
-    if (!isAddMode) {
-      actionsMenuData.changeMenuName(dataMenus.data.MenuName);
+
+    if (!isAddMode && dataMenus.status) {
+
+      if (dataMenus.status) {
+        actionsMenuData.changeMenuName(dataMenus.data.MenuName);
+      } else if (!dataMenus.status) {
+        passErrorMsg(`${dataMenus.msg}`);
+      }
     }
 
   }, [dataMenus]);
 
   useDidUpdateEffect(() => {
+
     let successArr = [];
 
     // simplify this, it breaks DRY
     if (isAddMode) {
-      if (addData.data.status === true) {
-        successArr.push(addData.data.msg);
-
-        history.push({
-          pathname: '/menus',
-          successMsg: [successArr]
-        });
-      } else {
-        passErrorMsg(`${addData.data.msg}`);
-      }
+      postSuccessCallback(addData, successArr);
 
     } else {
 
-      if (editData.data.status === true) {
-        successArr.push(editData.data.msg);
-
-        history.push({
-          pathname: '/menus',
-          successMsg: [successArr]
-        });
-      } else {
-        passErrorMsg(`${editData.data.msg}`);
-      }
+      postSuccessCallback(editData, successArr);
     }
 
   }, [addData, editData]);
@@ -155,7 +159,6 @@ function MenusForm({ priv }) {
             <div className="card px-4 px-sm-5">
 
               <div className="card-body">
-
                 <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} Menu</h4>
                 <div className="row mb-4">
                   <div className="col mt-3">
@@ -163,6 +166,7 @@ function MenusForm({ priv }) {
                       validationSchema={schema}
                       initialValues={menuFormData}
                       onSubmit={handleSubmitForm}
+                      enableReinitialize
                     >
                       {() => (
                         <Form>
@@ -199,10 +203,5 @@ function MenusForm({ priv }) {
     </>
   );
 }
-
-
-
-
-
 
 export default MenusForm;

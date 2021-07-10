@@ -59,3 +59,15 @@ Important Pattern Lessons for React
         that rarely affected throughout the workflow. Read: https://kentcdodds.com/blog/usememo-and-usecallback
 5. useEffect
     5.1. Don't lie about dependencies array, fix your code if its producing infinite loop with the required dependencies
+6. useState
+    6.1. whenever the state changes, it will have its new reference, so when you pass it like this:
+    ```
+     const [count, setCount] = useState(0);
+     useEffect(() => {
+        setTimeout(() => {
+        alert("You clicked on: " + count);
+        }, 3000);
+     }, []);
+
+    ```
+    and count changes, the alerted count will be the outdated value, because the reference of count called is different. 

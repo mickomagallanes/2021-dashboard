@@ -15,7 +15,7 @@ import * as currentModule from './UsersForm'; // use currentmodule to call func 
 const userURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/`;
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
 const addUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/insert`;
-const editUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/modify`;
+const editUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/modify/`;
 const uploadImgUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/upload/img`;
 const imgSrcMainPath = `${process.env.REACT_APP_BACKEND_HOST}`;
 
@@ -203,13 +203,12 @@ export default class UsersForm extends React.Component {
     const param = {
       "username": fields.username,
       "password": fields.password,
-      "roleid": fields.selectedRole,
-      "userid": this.urlParam
+      "roleid": fields.selectedRole
     }
 
     try {
       const resp = await axios.put(
-        editUserURL,
+        editUserURL + this.urlParam,
         param,
         axiosConfig
       );
