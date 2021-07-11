@@ -1,9 +1,8 @@
 import React from 'react';
 import './RouteRolesForm.css';
 import axios from 'axios';
-import { retryRequest, axiosConfig } from "../../../helpers/utils";
+import { axiosConfig } from "../../../helpers/utils";
 import { Form, Alert, Table } from 'react-bootstrap';
-import Select from '../../../components/FormFields/SelectFormField/SelectFormField';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
 import { PRIVILEGES } from "../../../helpers/constants";
@@ -81,6 +80,8 @@ export default class RouteRolesForm extends React.Component {
     this.header = props.header;
 
     this.roleIdParam = props.match.params.id;
+
+    this.isReadPriv = props.priv === PRIVILEGES.read;
   }
 
   componentWillUnmount() {
@@ -162,7 +163,7 @@ export default class RouteRolesForm extends React.Component {
         RoleID: (e.RoleID == null ? this.roleIdParam : e.RoleID),
         // convert all "null" values of priv to ID of "None"
         PrivilegeID: (e.PrivilegeID == null ?
-          (this.state.privData.find(e => e.PrivilegeName == PRIVILEGES.none)).PrivilegeID :
+          (this.state.privData.find(e => e.PrivilegeName === PRIVILEGES.none)).PrivilegeID :
           e.PrivilegeID)
       }
     });
@@ -252,12 +253,12 @@ export default class RouteRolesForm extends React.Component {
               <div className="row mb-4">
                 <div className="col mt-3">
 
-
                   {this.state.errorMsg.map((err) =>
                     <Alert
                       className="p-1"
                       variant="danger"
                       show={err}
+                      key={err}
                       transition={false}
                     >
                       {err}
@@ -278,10 +279,10 @@ export default class RouteRolesForm extends React.Component {
                         <tbody>
                           {this.state.routeRoleSelected.map(routeRole => {
                             // connect to the routeRoleSelected state
-                            let routeMatch = this.state.routeRoleData.find(e => e.RouteID == routeRole.RouteID);
-                            let routeName = !!routeMatch ? routeMatch.RouteName : routeMatch;
-                            let privMatch = this.state.privData.find(e => e.PrivilegeID == routeRole.PrivilegeID);
-                            let privName = !!privMatch ? privMatch.PrivilegeName : privMatch;
+                            let routeMatch = this.state.routeRoleData.find(e => e.RouteID === routeRole.RouteID);
+                            let routeName = routeMatch ? routeMatch.RouteName : routeMatch;
+                            let privMatch = this.state.privData.find(e => e.PrivilegeID === routeRole.PrivilegeID);
+                            let privName = privMatch ? privMatch.PrivilegeName : privMatch;
 
                             return (
                               <tr key={`tr${routeRole.RouteID}`}>
@@ -289,7 +290,7 @@ export default class RouteRolesForm extends React.Component {
                                 {this.state.privData.map(priv => {
 
                                   let translatedPriv = !privName ? PRIVILEGES.none : privName;
-                                  let isChecked = translatedPriv == priv.PrivilegeName;
+                                  let isChecked = translatedPriv === priv.PrivilegeName;
 
                                   return (
                                     <td key={`td${routeRole.RouteID}${priv.PrivilegeID}`}>
@@ -301,6 +302,7 @@ export default class RouteRolesForm extends React.Component {
                                         key={`priv${routeRole.RouteID}${priv.PrivilegeID}`}
                                         name={`priv${routeRole.RouteID}`}
                                         type="radio"
+                                        disabled={this.isReadPriv}
                                       />
                                     </td>
                                   )

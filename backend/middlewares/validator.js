@@ -6,20 +6,28 @@ function userInsertSchema(req, res, next) {
     const schema = Joi.object({
         username: Joi.string().max(45).required(),
         password: Joi.string().min(12).required(),
-        roleid: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
+        roleid: Joi.alternatives().try(Joi.number().required(), Joi.string().required()) // TODO: does it really sanitize? what if "doggo" is passed here?
     });
     validateRequestBody(req, res, next, schema);
 }
 
 function userModifySchema(req, res, next) {
 
-    const schema = Joi.object({
+    const schemaBody = Joi.object({
         username: Joi.string().max(45).required(),
         password: Joi.string().min(12).allow('').optional(),
-        roleid: Joi.alternatives().try(Joi.number().required(), Joi.string().required()),
-        userid: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
+        roleid: Joi.alternatives().try(Joi.number().required(), Joi.string().required()) // TODO: does it really sanitize? what if "doggo" is passed here?
     });
-    validateRequestBody(req, res, next, schema);
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+    validateRequest(req, res, next, wholeSchema);
+
 }
 
 function userLoginSchema(req, res, next) {
@@ -50,11 +58,19 @@ function roleInsertSchema(req, res, next) {
 
 function roleModifySchema(req, res, next) {
 
-    const schema = Joi.object({
-        rolename: Joi.string().max(45).required(),
-        roleid: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
+    const schemaBody = Joi.object({
+        rolename: Joi.string().max(45).required()
     });
-    validateRequestBody(req, res, next, schema);
+
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+    validateRequest(req, res, next, wholeSchema);
 }
 
 /**************** MENUS ****************/
@@ -70,11 +86,19 @@ function parentMenuInsertSchema(req, res, next) {
 
 function parentMenuModifySchema(req, res, next) {
 
-    const schema = Joi.object({
-        parentMenuName: Joi.string().max(30).required(),
-        parentMenuID: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
+    const schemaBody = Joi.object({
+        parentMenuName: Joi.string().max(30).required()
+
     });
-    validateRequestBody(req, res, next, schema);
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+    validateRequest(req, res, next, wholeSchema);
 }
 
 function parentMenuGetAllSchema(req, res, next) {
@@ -90,21 +114,71 @@ function parentMenuGetAllSchema(req, res, next) {
 function menuInsertSchema(req, res, next) {
 
     const schema = Joi.object({
-        menuName: Joi.string().max(30).required()
+        menuName: Joi.string().max(30).required(),
+        pageID: Joi.number().required(),
+        parentMenuID: Joi.number(),
     });
     validateRequestBody(req, res, next, schema);
 }
 
 function menuModifySchema(req, res, next) {
 
-    const schema = Joi.object({
+    const schemaBody = Joi.object({
         menuName: Joi.string().max(30).required(),
-        menuID: Joi.alternatives().try(Joi.number().required(), Joi.string().required())
+        pageID: Joi.alternatives().try(Joi.number().required(), Joi.string().required()),
+        parentMenuID: Joi.alternatives().try(Joi.number().required(), Joi.string().required()),
+    });
+
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+    validateRequest(req, res, next, wholeSchema);
+}
+
+function menuGetAllSchema(req, res, next) {
+    const schema = Joi.object({
+        page: Joi.number().integer(),
+        limit: Joi.number().integer().min(5).max(100),
+    });
+    validateRequestQuery(req, res, next, schema);
+}
+
+/**************** PAGE ****************/
+function pageInsertSchema(req, res, next) {
+
+    const schema = Joi.object({
+        pageName: Joi.string().max(30).required(),
+        pagePath: Joi.string().max(30).required()
     });
     validateRequestBody(req, res, next, schema);
 }
 
-function menuGetAllSchema(req, res, next) {
+function pageModifySchema(req, res, next) {
+
+    const schemaBody = Joi.object({
+        pageName: Joi.string().max(30).required(),
+        pagePath: Joi.string().max(30).required()
+    });
+
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+
+    validateRequest(req, res, next, wholeSchema);
+
+}
+
+function pageGetAllSchema(req, res, next) {
     const schema = Joi.object({
         page: Joi.number().integer(),
         limit: Joi.number().integer().min(5).max(100),
@@ -125,11 +199,15 @@ function validateRequestParams(req, res, next, schema) {
     validate(req.params, res, next, schema)
 }
 
-function validate(reqBody, res, next, schema) {
+function validateRequest(req, res, next, schema) {
+    validate(req, res, next, schema)
+}
+
+function validate(req, res, next, schema) {
     const options = {
         abortEarly: false // include all errors
     };
-    const { error } = schema.validate(reqBody, options);
+    const { error } = schema.validate(req, options);
 
     if (error) {
         res.json({ "status": false, "msg": error.details[0].message });
@@ -149,5 +227,8 @@ module.exports = {
     parentMenuGetAllSchema,
     menuGetAllSchema,
     menuInsertSchema,
-    menuModifySchema
+    menuModifySchema,
+    pageGetAllSchema,
+    pageInsertSchema,
+    pageModifySchema
 }

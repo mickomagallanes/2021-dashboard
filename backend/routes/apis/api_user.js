@@ -29,7 +29,7 @@ router.get('/get/all', [checkSession, userGetAllSchema, authorizeReadRoute], asy
  * get all user rows
  * @param {number} req.params.id id of user
  */
-router.get('/get/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
     let result = await UserService.getUserById(req.params.id);
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed getting row by id" });

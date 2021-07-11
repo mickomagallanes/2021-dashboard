@@ -18,7 +18,6 @@ export default function TextFormField({
   label,
   type,
   placeholder,
-  disabled,
   ...props
 }) {
   const errorText =
@@ -34,7 +33,6 @@ export default function TextFormField({
         type={type}
         className="h-auto"
         isInvalid={!!errorText}
-        disabled={disabled}
         {...field}
         {...props}
       />

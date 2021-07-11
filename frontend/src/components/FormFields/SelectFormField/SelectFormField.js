@@ -9,6 +9,7 @@ import { getIn } from "formik";
   * @param {String} placeholder placeholder of input text
   * @param {String} type type of input
   * @param {String} [label] laber for input
+  * @param {Boolean} allowDefaultNull specify whether to put a default option with Blank value
   */
 export default function SelectFormField({
   field,
@@ -17,6 +18,7 @@ export default function SelectFormField({
   options,
   idKey,
   valueKey,
+  allowDefaultNull,
   ...props
 }) {
   const errorText =
@@ -32,6 +34,7 @@ export default function SelectFormField({
         {...field}
         {...props}
       >
+        {allowDefaultNull && <option value={null}> SELECT OPTIONAL OPTIONS </option>}
         {options.map(x =>
           <option key={x[idKey]} value={x[idKey]}>{x[valueKey]}</option>
         )}

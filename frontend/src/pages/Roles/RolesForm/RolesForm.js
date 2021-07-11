@@ -12,7 +12,7 @@ import RouteRolesForm from '../RouteRolesForm/RouteRolesForm';
 import PageRolesForm from '../PageRolesForm/PageRolesForm';
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
 
-const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/`;
+const roleByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/by/`;
 const addRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/insert`;
 const editRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/modify/`;
 const routeRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/routerole/post/data`;
@@ -21,7 +21,7 @@ const pageRoleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/post/dat
 export async function fetchRoleData(urlParam) {
   try {
     const resp = await axios.get(
-      roleURL + urlParam,
+      roleByIdURL + urlParam,
       axiosConfig
     );
 

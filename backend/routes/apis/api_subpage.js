@@ -9,7 +9,7 @@ const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../..
  * get pages based on the logged-in user role
  *
  */
-router.get('/getSubPagesBySession', [checkSession], async function (req, res, next) {
+router.get('/get/by/session', [checkSession], async function (req, res, next) {
 
     let userId = req.session.userData.userid;
 

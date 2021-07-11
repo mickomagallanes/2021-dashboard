@@ -25,7 +25,7 @@ router.get('/get/all', checkSession, async function (req, res, next) {
  * get all role rows
  * @param {number} req.params.id id of role
  */
-router.get('/get/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
 
     let result = await RoleService.getRoleById(req.params.id);
     if (result.status === false) {

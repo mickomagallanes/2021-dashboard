@@ -6,7 +6,7 @@ function ApiCRUD(router, routeName, service) {
         service.getAll(res);
     });
 
-    router.get(`/${routeName}/get/:id`, function (req, res, next) {
+    router.get(`/${routeName}/get/by/:id`, function (req, res, next) {
         service.getById(res, req.params.id);
     });
 

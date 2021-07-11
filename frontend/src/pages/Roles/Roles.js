@@ -150,19 +150,16 @@ class Roles extends React.Component {
             <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
           </Link>
 
-          {isWriteable &&
-            <>
-              <Link to={`/routeroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
-                Edit Role-Routes Privileges
-                <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
-              </Link>
+          <Link to={`/routeroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+            {isWriteable ? "Edit" : "Read"} Role-Routes Privileges
+            <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+          </Link>
 
-              <Link to={`/pageroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
-                Edit Role-Pages Privileges
-                <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
-              </Link>
-            </>
-          }
+          <Link to={`/pageroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+            {isWriteable ? "Edit" : "Read"} Role-Pages Privileges
+            <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+          </Link>
+
         </>
       )
     };

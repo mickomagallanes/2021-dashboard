@@ -45,7 +45,7 @@ router.put('/modify/:id', [checkSession, menuModifySchema, authorizeWriteRoute],
  * get pages based on the logged-in user role
  *
  */
-router.get('/get/role', [checkSession], async function (req, res, next) {
+router.get('/get/by/role', [checkSession], async function (req, res, next) {
 
     let userId = req.session.userData.userid;
 
@@ -95,10 +95,28 @@ router.get('/get/all', [checkSession, menuGetAllSchema, authorizeReadRoute], asy
 });
 
 /**
+ * get all menu rows
+ *
+ */
+router.get('/get/all/and/count', [checkSession, menuGetAllSchema, authorizeReadRoute], async function (req, res, next) {
+
+    let resp = await MenusService.getAllMenusAndCount(req.query);
+
+    if (resp.status !== false) {
+
+        res.json({ "status": true, "msg": "Successfully fetched pages", "data": resp.data });
+    } else {
+
+        res.json({ "status": false, "msg": "Failed getting menus!" });
+    }
+
+});
+
+/**
  * get menu row by menu id
  * @param {number} req.params.id id of menu
  */
-router.get('/get/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
 
     let result = await MenusService.getMenuById(req.params.id);
 
@@ -134,18 +152,6 @@ router.put('/parent/modify/:id', [checkSession, parentMenuModifySchema, authoriz
 });
 
 /**
- * get count of all parent menu rows
- */
-router.get('/parent/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
-    let result = await MenusService.getAllParentMenuCount();
-    if (result.status === false) {
-        res.json({ "status": false, "msg": "Failed getting count" });
-    } else {
-        res.json({ "status": true, "msg": "Successful getting count", "data": result.data });
-    }
-});
-
-/**
  * get all parent menu rows
  *
  */
@@ -167,7 +173,7 @@ router.get('/parent/get/all', [checkSession, parentMenuGetAllSchema, authorizeRe
  * get a row by parent menu id
  * @param {number} req.params.id id of parent menu
  */
-router.get('/parent/get/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
+router.get('/parent/get/by/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
 
     let result = await MenusService.getParentMenuById(req.params.id);
 

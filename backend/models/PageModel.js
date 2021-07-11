@@ -1,7 +1,12 @@
 const mysql_conn = require("./db.js");
 const { PRIVILEGES } = require('../utils/constants.js');
+const GettersModel = require("./GettersModel.js");
 
 "use strict";
+
+const tableName = "Pages";
+const primaryKey = "PageID";
+const getterModel = new GettersModel(tableName, primaryKey);
 
 class PageModel {
 
@@ -29,7 +34,9 @@ class PageModel {
         }
     }
 
+
 }
 
 
+Object.setPrototypeOf(PageModel, getterModel);
 module.exports = PageModel;

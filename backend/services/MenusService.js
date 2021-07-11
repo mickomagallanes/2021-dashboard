@@ -15,14 +15,13 @@ class MenusService {
      * inserts new menu in the database
      * @param {Object} obj - An object.
      * @param {String} obj.menuName name of the  menu
+     * @param {String} obj.pageID id of page, foreign key
+     * @param {String} obj.parentMenuID id of parent menu, foreign key
      * @return {Object} result
      * @return {Number} result.insertId role id of last inserted
      */
-    static async insertMenu({ menuName }) {
+    static async insertMenu(obj) {
 
-        const obj = {
-            menuName: menuName
-        }
         let ret = await MenuModel.insertMenu(obj);
 
         if (ret === false) {
@@ -94,9 +93,9 @@ class MenusService {
 
         let menuArr;
         if (startIndex === false) {
-            menuArr = await MenuModel.getAllMenus();
+            menuArr = await MenuModel.getAll();
         } else {
-            menuArr = await MenuModel.getAllMenusPaged({ startIndex: startIndex, limit: limit });
+            menuArr = await MenuModel.getAllPaged({ startIndex: startIndex, limit: limit });
         }
 
         if (menuArr.length) {
@@ -115,7 +114,7 @@ class MenusService {
      * @return one row of menu
      */
     static async getMenuById(id) {
-        let ret = await MenuModel.getMenuById(id);
+        let ret = await MenuModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -132,7 +131,7 @@ class MenusService {
      */
     static async getAllMenuCount() {
 
-        const menuCount = await MenuModel.getAllMenuCount();
+        const menuCount = await MenuModel.getAllCount();
 
         if (menuCount.length) {
             return { status: true, data: menuCount[0] }
@@ -225,9 +224,9 @@ class MenusService {
 
         let parentMenuArr;
         if (startIndex === false) {
-            parentMenuArr = await ParentMenuModel.getAllParentMenus();
+            parentMenuArr = await ParentMenuModel.getAll();
         } else {
-            parentMenuArr = await ParentMenuModel.getAllParentMenusPaged({ startIndex: startIndex, limit: limit });
+            parentMenuArr = await ParentMenuModel.getAllPaged({ startIndex: startIndex, limit: limit });
         }
 
         if (parentMenuArr.length) {
@@ -246,7 +245,7 @@ class MenusService {
      * @return one row of parent menu
      */
     static async getParentMenuById(id) {
-        let ret = await ParentMenuModel.getParentMenuById(id);
+        let ret = await ParentMenuModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -263,7 +262,7 @@ class MenusService {
      */
     static async getAllParentMenuCount() {
 
-        const parentMenuCount = await ParentMenuModel.getAllParentMenuCount();
+        const parentMenuCount = await ParentMenuModel.getAllCount();
 
         if (parentMenuCount.length) {
             return { status: true, data: parentMenuCount[0] }

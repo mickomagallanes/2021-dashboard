@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect, useReducer, useState } from 'react'
 import './MenusForm.css';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import useAlert from '../../../components/useAlert';
@@ -12,8 +12,11 @@ import { equalTo } from '../../../helpers/utils';
 import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
+import SelectFormField from '../../../components/FormFields/SelectFormField/SelectFormField';
 
-const menuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/`;
+const menuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/by/`;
+const parentMenuAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/all`;
+const pageAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all`;
 const addMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/insert`;
 const editMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/modify/`;
 
@@ -27,18 +30,27 @@ const schema = yup.object().shape({
 const menuReducer = (state, action) => {
   switch (action.type) {
     case 'changeMenuName':
-      return { menuName: action.payload };
+      return { ...state, menuName: action.payload };
+    case 'changePageID':
+      // TODO: if fetched column value is null, make the first option of select be the value, apply to all selects in app
+      return { ...state, pageID: action.payload || "" }; // cant be null, so return blank instead
+    case 'changeParentMenuID':
+      return { ...state, parentMenuID: action.payload || "" };
     default:
       return state;
   }
 }
 
 const mapDispatch = dispatch => ({
-  changeMenuName: (payload) => dispatch({ type: 'changeMenuName', payload: payload })
+  changeMenuName: (payload) => dispatch({ type: 'changeMenuName', payload: payload }),
+  changePageID: (payload) => dispatch({ type: 'changePageID', payload: payload }),
+  changeParentMenuID: (payload) => dispatch({ type: 'changeParentMenuID', payload: payload })
 })
 
 const menuFormInitialState = {
-  menuName: ""
+  menuName: "",
+  pageID: "",
+  parentMenuID: ""
 };
 
 function MenusForm({ priv }) {
@@ -48,18 +60,24 @@ function MenusForm({ priv }) {
   const [menuFormData, dispatchMenu] = useReducer(menuReducer, menuFormInitialState);
   const actionsMenuData = mapDispatch(dispatchMenu);
 
-  const urlParamObj = useParams();
+  const [pagesArray, setPagesArray] = useState([]);
+  const [parentMenuArray, setParentMenuArray] = useState([]);
 
+  const urlParamObj = useParams();
   const urlParam = urlParamObj.id;
 
   const [submitEdit, editData] = usePut(editMenuURL + urlParam);
   const [submitAdd, addData] = usePost(addMenuURL);
+  const [dataMenu, loadingMenu] = useFetch(menuByIdURL + urlParam);
+  const [dataParentMenus, loadingParentMenus] = useFetch(parentMenuAllURL);
+  const [dataPages, loadingPages] = useFetch(pageAllURL);
 
-  const [dataMenus, loadingMenus] = useFetch(menuURL + urlParam);
 
   const isAddMode = urlParam === "add";
 
   const history = useHistory();
+
+  const isWriteable = priv !== PRIVILEGES.readWrite;
 
   const {
     passErrorMsg,
@@ -71,18 +89,17 @@ function MenusForm({ priv }) {
   // FUNCTIONS AND EVENT HANDLERS
 
   const handleSubmitForm = async (fields) => {
+    const param = {
+      "menuName": fields.menuName,
+      "pageID": fields.pageID,
+      "parentMenuID": fields.parentMenuID
+    }
 
     if (isAddMode) {
-      const param = {
-        "menuName": fields.menuName
-      }
       // save new menu id
       submitAdd(param);
 
     } else {
-      const param = {
-        "menuName": fields.menuName
-      }
       submitEdit(param);
     }
 
@@ -113,17 +130,37 @@ function MenusForm({ priv }) {
   }, [history, isAddMode, priv])
 
   useDidUpdateEffect(() => {
+    if (dataPages && dataPages.status === true) {
+      setPagesArray(dataPages.data);
+    } else {
+      passErrorMsg(`${dataPages.msg}`);
+    }
+  }, [dataPages])
 
-    if (!isAddMode && dataMenus.status) {
+  useDidUpdateEffect(() => {
+    if (dataParentMenus && dataParentMenus.status === true) {
+      setParentMenuArray(dataParentMenus.data);
+    } else {
+      passErrorMsg(`${dataParentMenus.msg}`);
+    }
+  }, [dataParentMenus])
 
-      if (dataMenus.status) {
-        actionsMenuData.changeMenuName(dataMenus.data.MenuName);
-      } else if (!dataMenus.status) {
-        passErrorMsg(`${dataMenus.msg}`);
+  useDidUpdateEffect(() => {
+
+    if (!isAddMode && dataMenu.status) {
+
+      if (dataMenu.status) {
+        const { data } = dataMenu;
+        actionsMenuData.changeMenuName(data.MenuName);
+        actionsMenuData.changeParentMenuID(data.ParentMenuID);
+        actionsMenuData.changePageID(data.PageID);
+
+      } else if (!dataMenu.status) {
+        passErrorMsg(`${dataMenu.msg}`);
       }
     }
 
-  }, [dataMenus]);
+  }, [dataMenu]);
 
   useDidUpdateEffect(() => {
 
@@ -171,7 +208,7 @@ function MenusForm({ priv }) {
                       {() => (
                         <Form>
                           <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
-                          {loadingMenus ? <Spinner /> :
+                          {loadingMenu && loadingPages && loadingParentMenus ? <Spinner /> :
                             <>
                               <div>
                                 <Field
@@ -179,11 +216,33 @@ function MenusForm({ priv }) {
                                   type="text"
                                   name="menuName"
                                   placeholder="Menu Name"
-                                  disabled={priv !== PRIVILEGES.readWrite}
+                                  disabled={isWriteable}
                                   component={TextFormField}
                                 />
                               </div>
-
+                              <div>
+                                <Field
+                                  label="Parent Menu ID"
+                                  options={parentMenuArray}
+                                  idKey="ParentMenuID"
+                                  valueKey="ParentMenuName"
+                                  name="parentMenuID"
+                                  component={SelectFormField}
+                                  allowDefaultNull={true}
+                                  disabled={isWriteable}
+                                />
+                              </div>
+                              <div>
+                                <Field
+                                  label="Page"
+                                  options={pagesArray}
+                                  idKey="PageID"
+                                  valueKey="PageName"
+                                  name="pageID"
+                                  component={SelectFormField}
+                                  disabled={isWriteable}
+                                />
+                              </div>
                               <div className="mt-3">
                                 {priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
                               </div>

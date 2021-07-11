@@ -1,6 +1,12 @@
 const mysql_conn = require("./db.js");
+const GettersModel = require("./GettersModel.js");
 
 "use strict";
+
+const tableName = "ParentMenus";
+const primaryKey = "ParentMenuID";
+const sortCol = "ParentMenuSort";
+const getterModel = new GettersModel(tableName, primaryKey, sortCol);
 
 // LESSON: One model per table
 class ParentMenuModel {
@@ -54,80 +60,6 @@ class ParentMenuModel {
             const result = await mysql_conn.update("ParentMenus", setObj, stmtWhere, whereParams);
             return result;
 
-        } catch (err) {
-            console.log(err);
-            return false;
-        }
-    }
-
-    /**
-    * get count of all parent menu for pagination
-    * @return {Array} result, length = 1
-    */
-    static async getAllParentMenuCount() {
-        const stmt = `SELECT 
-               count(ParentMenuID) as count
-            FROM
-                ParentMenus`;
-        try {
-            const result = await mysql_conn.query(stmt);
-            return result;
-        } catch (err) {
-            console.log(err);
-            return false;
-        }
-    }
-
-    /**
-     * get all parent menu rows
-     * @return {Array} result
-     */
-    static async getAllParentMenus() {
-        const stmt = `SELECT * from ParentMenus ORDER BY ParentMenuSort ASC`;
-
-        try {
-            const result = await mysql_conn.query(stmt);
-            return result;
-        } catch (err) {
-            console.log(err);
-            return false;
-        }
-    }
-
-    /**
-    * get a row using by parent menu id
-    * @param {Number} id id of the parent menu
-    * @return {Array} result, length = 1
-    */
-    static async getParentMenuById(id) {
-        const stmt = `SELECT * from ParentMenus
-            WHERE
-                CAST(ParentMenuID AS CHAR) = ?;`;
-
-        try {
-            const result = await mysql_conn.query(stmt, [id]);
-            return result;
-        } catch (err) {
-            console.log(err);
-            return false;
-        }
-    }
-
-    /**
-        * get all parent menu rows
-        * @param {Object} obj - An object.
-        * @param {Number} obj.startIndex start of limit
-        * @param {Number} obj.limit limit count
-        * @return {Array} result
-        */
-    static async getAllParentMenusPaged({ startIndex, limit }) {
-
-        const limitClause = ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`;
-
-        const stmt = `SELECT * from ParentMenus ORDER BY ParentMenuSort ASC ${limitClause}`;
-        try {
-            const result = await mysql_conn.query(stmt);
-            return result;
         } catch (err) {
             console.log(err);
             return false;
@@ -213,4 +145,5 @@ class ParentMenuModel {
 }
 
 
+Object.setPrototypeOf(ParentMenuModel, getterModel);
 module.exports = ParentMenuModel;

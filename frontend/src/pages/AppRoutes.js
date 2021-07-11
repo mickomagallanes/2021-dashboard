@@ -23,10 +23,11 @@ import { sidebarChange } from '../actions';
 import { useDispatch } from 'react-redux';
 import useFetch from '../components/useFetch';
 import MenusForm from './Menus/MenusForm/MenusForm';
+import Pages from './Pages/Pages';
 
-const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/page/getPagesBySession`;
-const subPagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/getSubPagesBySession`;
-const menusByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/role`;
+const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/session`;
+const subPagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/by/session`;
+const menusByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/by/role`;
 
 const MainComponent = RequireLogin(DefaultContainer);
 const LoginComponent = RequireLogout(LoginContainer);
@@ -152,6 +153,8 @@ function matchComponentName(name) {
     case "ParentMenusForm": return ParentMenusForm;
     case "Menus": return Menus;
     case "MenusForm": return MenusForm;
+    case "Pages": return Pages;
+
 
     default: return undefined;
   }

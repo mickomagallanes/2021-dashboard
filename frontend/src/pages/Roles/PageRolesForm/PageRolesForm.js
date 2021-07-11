@@ -3,7 +3,6 @@ import './PageRolesForm.css';
 import axios from 'axios';
 import { axiosConfig } from "../../../helpers/utils";
 import { Form, Alert, Table } from 'react-bootstrap';
-import Select from '../../../components/FormFields/SelectFormField/SelectFormField';
 import Spinner from '../../../components/Spinner/Spinner';
 import { Link } from 'react-router-dom';
 import { PRIVILEGES } from "../../../helpers/constants";
@@ -81,6 +80,7 @@ export default class PageRolesForm extends React.Component {
     this.header = props.header;
 
     this.roleIdParam = props.match.params.id;
+    this.isReadPriv = props.priv === PRIVILEGES.read;
   }
 
   componentWillUnmount() {
@@ -162,7 +162,7 @@ export default class PageRolesForm extends React.Component {
         RoleID: (e.RoleID == null ? this.roleIdParam : e.RoleID),
         // convert all "null" values of priv to ID of "None"
         PrivilegeID: (e.PrivilegeID == null ?
-          (this.state.privData.find(e => e.PrivilegeName == PRIVILEGES.none)).PrivilegeID :
+          (this.state.privData.find(e => e.PrivilegeName === PRIVILEGES.none)).PrivilegeID :
           e.PrivilegeID)
       }
     });
@@ -258,6 +258,7 @@ export default class PageRolesForm extends React.Component {
                       className="p-1"
                       variant="danger"
                       show={err}
+                      key={err}
                       transition={false}
                     >
                       {err}
@@ -278,10 +279,10 @@ export default class PageRolesForm extends React.Component {
                         <tbody>
                           {this.state.pageRoleSelected.map(pageRole => {
                             // connect to the pageRoleSelected state
-                            let pageMatch = this.state.pageRoleData.find(e => e.PageID == pageRole.PageID);
-                            let pageName = !!pageMatch ? pageMatch.PageName : pageMatch;
-                            let privMatch = this.state.privData.find(e => e.PrivilegeID == pageRole.PrivilegeID);
-                            let privName = !!privMatch ? privMatch.PrivilegeName : privMatch;
+                            let pageMatch = this.state.pageRoleData.find(e => e.PageID === pageRole.PageID);
+                            let pageName = pageMatch ? pageMatch.PageName : pageMatch;
+                            let privMatch = this.state.privData.find(e => e.PrivilegeID === pageRole.PrivilegeID);
+                            let privName = privMatch ? privMatch.PrivilegeName : privMatch;
 
                             return (
                               <tr key={`tr${pageRole.PageID}`}>
@@ -289,7 +290,7 @@ export default class PageRolesForm extends React.Component {
                                 {this.state.privData.map(priv => {
 
                                   let translatedPriv = !privName ? PRIVILEGES.none : privName;
-                                  let isChecked = translatedPriv == priv.PrivilegeName;
+                                  let isChecked = translatedPriv === priv.PrivilegeName;
 
                                   return (
                                     <td key={`td${pageRole.PageID}${priv.PrivilegeID}`}>
@@ -301,6 +302,7 @@ export default class PageRolesForm extends React.Component {
                                         key={`priv${pageRole.PageID}${priv.PrivilegeID}`}
                                         name={`priv${pageRole.PageID}`}
                                         type="radio"
+                                        disabled={this.isReadPriv}
                                       />
                                     </td>
                                   )

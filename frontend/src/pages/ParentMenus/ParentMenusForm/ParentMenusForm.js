@@ -11,14 +11,14 @@ import TextFormField from '../../../components/FormFields/TextFormField/TextForm
 import * as currentModule from './ParentMenusForm'; // use currentmodule to call func outside class, for testing
 import { axiosConfig, equalTo } from '../../../helpers/utils';
 
-const parentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/`;
+const parentMenuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/by/`;
 const addParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/insert`;
 const editParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/modify/`;
 
 export async function fetchParentMenuData(urlParam) {
   try {
     const resp = await axios.get(
-      parentMenuURL + urlParam,
+      parentMenuByIdURL + urlParam,
       axiosConfig
     );
     const { data } = resp;

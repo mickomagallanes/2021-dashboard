@@ -12,7 +12,7 @@ import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import SelectFormField from '../../../components/FormFields/SelectFormField/SelectFormField';
 import * as currentModule from './UsersForm'; // use currentmodule to call func outside class, for testing
 
-const userURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/`;
+const userByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/by/`;
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
 const addUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/insert`;
 const editUserURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/modify/`;
@@ -22,7 +22,7 @@ const imgSrcMainPath = `${process.env.REACT_APP_BACKEND_HOST}`;
 export async function fetchUserData(urlParam) {
   try {
     const resp = await axios.get(
-      userURL + urlParam,
+      userByIdURL + urlParam,
       axiosConfig
     );
     const { data } = resp;
