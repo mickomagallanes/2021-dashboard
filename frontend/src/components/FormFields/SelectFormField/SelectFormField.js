@@ -34,7 +34,7 @@ export default function SelectFormField({
         {...field}
         {...props}
       >
-        {allowDefaultNull && <option value={null}> SELECT OPTIONAL OPTIONS </option>}
+        {allowDefaultNull && <option value={""}> SELECT OPTIONAL OPTIONS </option>}
         {options.map(x =>
           <option key={x[idKey]} value={x[idKey]}>{x[valueKey]}</option>
         )}

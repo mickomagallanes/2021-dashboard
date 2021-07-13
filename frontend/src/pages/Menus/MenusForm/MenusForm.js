@@ -1,6 +1,7 @@
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useEffect, useReducer } from 'react'
+import ReactDOM from "react-dom";
 import './MenusForm.css';
-import { Link, useHistory, useParams } from 'react-router-dom';
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import useAlert from '../../../components/useAlert';
 import useFetch from '../../../components/useFetch';
 import useDidUpdateEffect from '../../../components/useDidUpdateEffect';
@@ -26,13 +27,12 @@ const schema = yup.object().shape({
   menuName: yup.string().max(30, 'Must be 30 characters or less').required('Required')
 });
 
-// TODO: not rerendering when action.payload saved
+
 const menuReducer = (state, action) => {
   switch (action.type) {
     case 'changeMenuName':
       return { ...state, menuName: action.payload };
     case 'changePageID':
-      // TODO: if fetched column value is null, make the first option of select be the value, apply to all selects in app
       return { ...state, pageID: action.payload || "" }; // cant be null, so return blank instead
     case 'changeParentMenuID':
       return { ...state, parentMenuID: action.payload || "" };
@@ -56,18 +56,17 @@ const menuFormInitialState = {
 function MenusForm({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
+  const location = useLocation();
 
   const [menuFormData, dispatchMenu] = useReducer(menuReducer, menuFormInitialState);
   const actionsMenuData = mapDispatch(dispatchMenu);
-
-  const [pagesArray, setPagesArray] = useState([]);
-  const [parentMenuArray, setParentMenuArray] = useState([]);
 
   const urlParamObj = useParams();
   const urlParam = urlParamObj.id;
 
   const [submitEdit, editData] = usePut(editMenuURL + urlParam);
   const [submitAdd, addData] = usePost(addMenuURL);
+
   const [dataMenu, loadingMenu] = useFetch(menuByIdURL + urlParam);
   const [dataParentMenus, loadingParentMenus] = useFetch(parentMenuAllURL);
   const [dataPages, loadingPages] = useFetch(pageAllURL);
@@ -89,14 +88,15 @@ function MenusForm({ priv }) {
   // FUNCTIONS AND EVENT HANDLERS
 
   const handleSubmitForm = async (fields) => {
+
     const param = {
       "menuName": fields.menuName,
       "pageID": fields.pageID,
-      "parentMenuID": fields.parentMenuID
+      "parentMenuID": fields.parentMenuID.length ? fields.parentMenuID : null
     }
 
     if (isAddMode) {
-      // save new menu id
+
       submitAdd(param);
 
     } else {
@@ -112,7 +112,8 @@ function MenusForm({ priv }) {
 
       history.push({
         pathname: '/menus',
-        successMsg: [successArr]
+        successMsg: [successArr],
+        search: location.search
       });
     } else {
       passErrorMsg(`${respData.msg}`);
@@ -124,25 +125,30 @@ function MenusForm({ priv }) {
     if (isAddMode && priv === PRIVILEGES.read) {
       history.push({
         pathname: '/menus',
-        errorMsg: [ERRORMSG.noPrivilege]
+        errorMsg: [ERRORMSG.noPrivilege],
+        search: location.search
       });
     }
-  }, [history, isAddMode, priv])
+  }, [history, isAddMode, location.search, priv])
 
   useDidUpdateEffect(() => {
     if (dataPages && dataPages.status === true) {
-      setPagesArray(dataPages.data);
+
+      // set first option as default value if it has no value
+      if (menuFormData.pageID === null || menuFormData.pageID === "") {
+        actionsMenuData.changePageID(dataPages.data[0].PageID);
+      }
+
     } else {
       passErrorMsg(`${dataPages.msg}`);
     }
   }, [dataPages])
 
   useDidUpdateEffect(() => {
-    if (dataParentMenus && dataParentMenus.status === true) {
-      setParentMenuArray(dataParentMenus.data);
-    } else {
+    if (!dataParentMenus.status) {
       passErrorMsg(`${dataParentMenus.msg}`);
     }
+
   }, [dataParentMenus])
 
   useDidUpdateEffect(() => {
@@ -151,9 +157,13 @@ function MenusForm({ priv }) {
 
       if (dataMenu.status) {
         const { data } = dataMenu;
-        actionsMenuData.changeMenuName(data.MenuName);
-        actionsMenuData.changeParentMenuID(data.ParentMenuID);
-        actionsMenuData.changePageID(data.PageID);
+
+        ReactDOM.unstable_batchedUpdates(() => {
+          actionsMenuData.changeMenuName(data.MenuName);
+          actionsMenuData.changeParentMenuID(data.ParentMenuID);
+          actionsMenuData.changePageID(data.PageID);
+        });
+
 
       } else if (!dataMenu.status) {
         passErrorMsg(`${dataMenu.msg}`);
@@ -183,7 +193,7 @@ function MenusForm({ priv }) {
     <>
       <div>
         <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to="/menus">
+          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`menus${location.search}`}>
             <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
             <span className="d-inline-block text-left">
               Back
@@ -223,7 +233,7 @@ function MenusForm({ priv }) {
                               <div>
                                 <Field
                                   label="Parent Menu ID"
-                                  options={parentMenuArray}
+                                  options={(dataParentMenus && dataParentMenus.data) || []}
                                   idKey="ParentMenuID"
                                   valueKey="ParentMenuName"
                                   name="parentMenuID"
@@ -235,7 +245,7 @@ function MenusForm({ priv }) {
                               <div>
                                 <Field
                                   label="Page"
-                                  options={pagesArray}
+                                  options={(dataPages && dataPages.data) || []}
                                   idKey="PageID"
                                   valueKey="PageName"
                                   name="pageID"

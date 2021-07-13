@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import './Menus.css';
 import Table from '../../components/Table/Table.lazy';
 import { PRIVILEGES } from "../../helpers/constants"
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import Pagination from '../../components/Pagination/Pagination';
 import useAlert from '../../components/useAlert';
 import useFetch from '../../components/useFetch';
@@ -32,6 +32,8 @@ function Menus({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
 
+  const location = useLocation();
+
   const [menuData, setMenuData] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,14 +41,14 @@ function Menus({ priv }) {
   const [maxPage, setMaxPage] = useState(null);
   const [maxMenus, setMaxMenus] = useState(null);
 
+  const history = useHistory();
+
   // to determine if initial fetch of data is done
-  const [initialFetchStatus, setInitialFetchStatus] = useState(false);
 
   const fetchDeps = [currentEntries, currentPage];
 
   const [dataCount, loadingCount] = useFetch(menuCountURL, fetchDeps);
   const [dataMenus, loadingMenus] = useFetch(`${menuURL}?page=${currentPage}&limit=${currentEntries}`, fetchDeps);
-
 
   const {
     timerSuccessAlert,
@@ -58,7 +60,6 @@ function Menus({ priv }) {
     successMsg
   } = useAlert();
 
-  const location = useLocation();
 
   const isWriteable = priv === PRIVILEGES.readWrite;
 
@@ -82,6 +83,8 @@ function Menus({ priv }) {
         // state.currentEntries is changed with higher state.currentPage
         if (currentPage > newMaxPage) {
           setCurrentPage(1); // triggers fetch again
+
+          return;
         }
 
         if (dataMenus.status === true) {
@@ -90,9 +93,7 @@ function Menus({ priv }) {
             setMaxPage(newMaxPage);
             setMenuData(dataMenus.data);
             clearErrorMsg();
-            setInitialFetchStatus(true);
           });
-
 
         } else {
           passErrorMsg(`${dataMenus.msg}`);
@@ -106,33 +107,73 @@ function Menus({ priv }) {
   }
 
   // LIFECYCLES
-  useEffect(() => {
-    if (initialFetchStatus) {
 
-      const loadSuccessProp = () => {
-        if (location.successMsg) {
-          timerSuccessAlert(location.successMsg);
-        }
+  // set currentPage and currentEntries with location.search
+  useEffect(() => {
+
+    const searchParams = new URLSearchParams(location.search);
+    const pageParams = searchParams.get('page');
+    const entryParams = searchParams.get('entry');
+
+    ReactDOM.unstable_batchedUpdates(() => {
+
+      if (pageParams) {
+        setCurrentPage(c => {
+          if (c !== pageParams) {
+            return parseInt(pageParams);
+          } else {
+            return c;
+          }
+        });
+
       }
+
+      if (entryParams) {
+        setCurrentEntries(c => {
+          if (c !== entryParams) {
+            return parseInt(entryParams);
+          } else {
+            return c;
+          }
+        });
+
+      }
+
+    });
+
+  }, [location.search])
+
+  // show passed errorMsg or successMsg only once
+  useEffect(() => {
+
+    if (location.errorMsg) {
 
       const loadErrorProp = () => {
-        if (location.errorMsg) {
-          timerErrorAlert(location.errorMsg);
-        }
-      }
 
-      loadSuccessProp();
+        timerErrorAlert(location.errorMsg);
+      }
 
       loadErrorProp();
 
       return () => {
         location.errorMsg = null;
+      }
+    }
+
+    if (location.successMsg) {
+
+      const loadSuccessProp = () => {
+        timerSuccessAlert(location.successMsg);
+      }
+
+      loadSuccessProp();
+      return () => {
         location.successMsg = null;
       }
     }
 
-    // show error after setting the menu data
-  }, [location, initialFetchStatus, timerSuccessAlert, timerErrorAlert])
+  }, [location, timerErrorAlert, timerSuccessAlert])
+
 
   useDidUpdateEffect(() => {
 
@@ -140,11 +181,23 @@ function Menus({ priv }) {
   }, [dataMenus, dataCount]);
 
 
+  // update url search params when currentPage or currentEntries changes
+  useDidUpdateEffect(() => {
+    const currSearch = `?page=${currentPage}&entry=${currentEntries}`;
+
+    if (location.search !== currSearch) {
+      history.push({
+        search: currSearch
+      })
+    }
+
+  }, [currentPage, currentEntries]);
+
   // UI
   const actionButtons = (menuID) => {
     return (
       <>
-        <Link to={`/menus/form/${menuID}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+        <Link to={`/menus/form/${menuID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
           {isWriteable ? "Edit" : "Read"} Menu
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>

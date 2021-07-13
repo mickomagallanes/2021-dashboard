@@ -41,8 +41,14 @@ class RouteRoleService {
      * @param {Array} routeRolesArr
      */
     static async postRouteRoleData(routeRolesArr) {
+        let valueArr;
 
-        let valueArr = await mapArr(routeRolesArr, e => { return [e.RouteID, e.RoleID, e.PrivilegeID] });
+        try {
+            valueArr = await mapArr(routeRolesArr, e => { return [e.RouteID, e.RoleID, e.PrivilegeID] });
+        } catch (err) {
+            return { status: true }
+        }
+
 
         let result = await RouteRoleModel.postRouteRoleData(valueArr);
 

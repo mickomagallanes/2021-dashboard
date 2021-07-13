@@ -6,7 +6,7 @@ function userInsertSchema(req, res, next) {
     const schema = Joi.object({
         username: Joi.string().max(45).required(),
         password: Joi.string().min(12).required(),
-        roleid: Joi.alternatives().try(Joi.number().required(), Joi.string().required()) // TODO: does it really sanitize? what if "doggo" is passed here?
+        roleid: Joi.number().required()
     });
     validateRequestBody(req, res, next, schema);
 }
@@ -16,7 +16,7 @@ function userModifySchema(req, res, next) {
     const schemaBody = Joi.object({
         username: Joi.string().max(45).required(),
         password: Joi.string().min(12).allow('').optional(),
-        roleid: Joi.alternatives().try(Joi.number().required(), Joi.string().required()) // TODO: does it really sanitize? what if "doggo" is passed here?
+        roleid: Joi.number().required()
     });
     const schemaID = Joi.object({
         id: Joi.number().required()
@@ -125,8 +125,8 @@ function menuModifySchema(req, res, next) {
 
     const schemaBody = Joi.object({
         menuName: Joi.string().max(30).required(),
-        pageID: Joi.alternatives().try(Joi.number().required(), Joi.string().required()),
-        parentMenuID: Joi.alternatives().try(Joi.number().required(), Joi.string().required()),
+        pageID: Joi.number().required(),
+        parentMenuID: Joi.alternatives().try(Joi.number().required(), Joi.string().allow(null).required()),
     });
 
     const schemaID = Joi.object({

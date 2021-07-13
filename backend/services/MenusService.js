@@ -20,8 +20,12 @@ class MenusService {
      * @return {Object} result
      * @return {Number} result.insertId role id of last inserted
      */
-    static async insertMenu(obj) {
-
+    static async insertMenu({ menuName, pageID, parentMenuID }) {
+        let obj = {
+            menuName: menuName,
+            pageID: pageID,
+            parentMenuID: parentMenuID === "null" ? null : parentMenuID
+        };
         let ret = await MenuModel.insertMenu(obj);
 
         if (ret === false) {
@@ -37,15 +41,19 @@ class MenusService {
     * modify menu information to the database, doesn't have sort because its handled differently
     * @param {String} menuID id of the menu
     * @param {Object} obj - An object.
-    * @param {String} [obj.menuName] name of the menu
+    * @param {String} obj.menuName name of the menu
+    * @param {String} obj.pageID id of page, foreign key
+    * @param {String} obj.parentMenuID id of parent menu, foreign key
     * @return {Object} result
     * @return {Number} result.insertId menu id of last inserted
     */
-    static async modifyMenu(menuID, { menuName }) {
+    static async modifyMenu(menuID, { menuName, pageID, parentMenuID }) {
 
         let obj = {
             menuID: menuID,
-            menuName: menuName
+            menuName: menuName,
+            pageID: pageID,
+            parentMenuID: parentMenuID === "null" ? null : parentMenuID
         };
 
         let ret = await MenuModel.modifyMenu(obj);

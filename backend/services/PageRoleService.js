@@ -41,8 +41,13 @@ class PageRoleService {
      * @param {Array} pageRolesArr
      */
     static async postPageRoleData(pageRolesArr) {
+        let valueArr;
 
-        let valueArr = await mapArr(pageRolesArr, e => { return [e.PageID, e.RoleID, e.PrivilegeID] });
+        try {
+            valueArr = await mapArr(pageRolesArr, e => { return [e.PageID, e.RoleID, e.PrivilegeID] });
+        } catch (err) {
+            return { status: true }
+        }
 
         let result = await PageRoleModel.postPageRoleData(valueArr);
 

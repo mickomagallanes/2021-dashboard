@@ -202,7 +202,7 @@ class UserService {
             });
         }
 
-        let result = await UserService.modifyUser({ "imagePath": fileName, "userid": userId });
+        let result = await UserService.modifyUser(userId, { "imagePath": fileName });
         return result;
     }
 

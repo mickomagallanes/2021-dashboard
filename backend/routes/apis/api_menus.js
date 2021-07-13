@@ -95,24 +95,6 @@ router.get('/get/all', [checkSession, menuGetAllSchema, authorizeReadRoute], asy
 });
 
 /**
- * get all menu rows
- *
- */
-router.get('/get/all/and/count', [checkSession, menuGetAllSchema, authorizeReadRoute], async function (req, res, next) {
-
-    let resp = await MenusService.getAllMenusAndCount(req.query);
-
-    if (resp.status !== false) {
-
-        res.json({ "status": true, "msg": "Successfully fetched pages", "data": resp.data });
-    } else {
-
-        res.json({ "status": false, "msg": "Failed getting menus!" });
-    }
-
-});
-
-/**
  * get menu row by menu id
  * @param {number} req.params.id id of menu
  */
@@ -167,6 +149,18 @@ router.get('/parent/get/all', [checkSession, parentMenuGetAllSchema, authorizeRe
         res.json({ "status": false, "msg": "Failed getting menus!" });
     }
 
+});
+
+/**
+ * get count of all parent menu rows
+ */
+router.get('/parent/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
+    let result = await MenusService.getAllParentMenuCount();
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed getting count" });
+    } else {
+        res.json({ "status": true, "msg": "Successful getting count", "data": result.data });
+    }
 });
 
 /**

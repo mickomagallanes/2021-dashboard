@@ -17,10 +17,12 @@ class MenusModel {
   * inserts new menu in the database
   * @param {Object} obj - An object.
   * @param {String} obj.menuName name of the menu
+  * @param {String} obj.pageID id of page, foreign key
+  * @param {String} obj.parentMenuID id of parent menu, foreign key
   * @return {Object} result
   * @return {Number} result.insertId menu id of last inserted
   */
-    static async insertMenu({ menuName }) {
+    static async insertMenu({ menuName, pageID, parentMenuID }) {
         const stmt = `INSERT INTO Menus (MenuName) VALUES (?)`;
         try {
             const result = await mysql_conn.query(stmt, [menuName]);
@@ -36,17 +38,27 @@ class MenusModel {
      * modify menu information to the database
      * @param {Object} obj - An object.
      * @param {String} obj.menuID id of the menu
-     * @param {String} [obj.menuName] name of the menu
+     * @param {String} obj.menuName name of the menu
+     * @param {String} obj.pageID id of page, foreign key
+     * @param {String} obj.parentMenuID id of parent menu, foreign key
      * @return {Object} result
      * @return {Number} result.insertId menu id of last inserted
      */
-    static async modifyMenu({ menuID, menuName }) {
+    static async modifyMenu({ menuID, menuName, pageID, parentMenuID }) {
         let whereParams = [menuID];
         let setObj = {};
         let stmtWhere = ` WHERE MenuID = ?`
 
         if (menuName !== undefined) {
-            setObj.menuName = menuName
+            setObj.MenuName = menuName
+        }
+
+        if (pageID !== undefined) {
+            setObj.PageID = pageID
+        }
+
+        if (parentMenuID !== undefined) {
+            setObj.ParentMenuID = parentMenuID
         }
 
         try {
