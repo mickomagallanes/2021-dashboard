@@ -9,6 +9,57 @@ class PageService {
     }
 
     /**
+   * inserts new page in the database
+   * @param {Object} obj - An object.
+   * @param {String} obj.pageName name of the  page
+   * @param {String} obj.pagePath path of page
+   * @return {Object} result
+   * @return {Number} result.insertId role id of last inserted
+   */
+    static async insertPage({ pageName, pagePath }) {
+        let obj = {
+            pageName: pageName,
+            pagePath: pagePath
+        };
+        let ret = await PageModel.insertPage(obj);
+
+        if (ret === false) {
+
+            return { status: false }
+        } else {
+            return { status: true, data: ret.insertId }
+        }
+
+    }
+
+    /**
+    * modify page information to the database, doesn't have sort because its handled differently
+    * @param {String} pageID id of the page
+    * @param {Object} obj - An object.
+    * @param {String} obj.pageName name of the page
+    * @param {String} obj.pagePath path of page
+    * @return {Object} result
+    * @return {Number} result.insertId page id of last inserted
+    */
+    static async modifyPage(pageID, { pageName, pagePath }) {
+
+        let obj = {
+            pageID: pageID,
+            pageName: pageName,
+            pagePath: pagePath
+        };
+
+        let ret = await PageModel.modifyPage(obj);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true, data: ret.insertId }
+        }
+
+    }
+
+    /**
     *  get pages based on logged-in user role
     * @param {Number} userId id of the user
     */

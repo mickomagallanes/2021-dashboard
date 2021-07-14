@@ -3,15 +3,15 @@ import ReactDOM from "react-dom";
 import './Pages.css';
 import Table from '../../components/Table/Table.lazy';
 import { PRIVILEGES } from "../../helpers/constants"
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import Pagination from '../../components/Pagination/Pagination';
 import useAlert from '../../components/useAlert';
 import useFetch from '../../components/useFetch';
 import useDidUpdateEffect from '../../components/useDidUpdateEffect';
 import Spinner from '../../components/Spinner/Spinner';
 
-const pageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/pages/get/all`;
-const pageCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/pages/get/all/count`;
+const pageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all`;
+const pageCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all/count`;
 
 const colData = [
   { "id": "PageID", "name": "Page ID" },
@@ -32,21 +32,29 @@ function Pages({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
 
+  const location = useLocation();
+
   const [pageData, setPageData] = useState([]);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [currentEntries, setCurrentEntries] = useState(5);
+  const searchParams = new URLSearchParams(location.search);
+  const pageParams = searchParams.get('page');
+  const entryParams = searchParams.get('entry');
+  const pageInitOptional = parseInt(pageParams);
+  const entryInitOptional = parseInt(entryParams);
+
+  const [currentPage, setCurrentPage] = useState(pageParams ? pageInitOptional : 1);
+  const [currentEntries, setCurrentEntries] = useState(entryParams ? entryInitOptional : 5);
   const [maxPage, setMaxPage] = useState(null);
   const [maxPages, setMaxPages] = useState(null);
 
+  const history = useHistory();
+
   // to determine if initial fetch of data is done
-  const [initialFetchStatus, setInitialFetchStatus] = useState(false);
 
   const fetchDeps = [currentEntries, currentPage];
 
   const [dataCount, loadingCount] = useFetch(pageCountURL, fetchDeps);
   const [dataPages, loadingPages] = useFetch(`${pageURL}?page=${currentPage}&limit=${currentEntries}`, fetchDeps);
-
 
   const {
     timerSuccessAlert,
@@ -58,7 +66,6 @@ function Pages({ priv }) {
     successMsg
   } = useAlert();
 
-  const location = useLocation();
 
   const isWriteable = priv === PRIVILEGES.readWrite;
 
@@ -82,6 +89,8 @@ function Pages({ priv }) {
         // state.currentEntries is changed with higher state.currentPage
         if (currentPage > newMaxPage) {
           setCurrentPage(1); // triggers fetch again
+
+          return;
         }
 
         if (dataPages.status === true) {
@@ -90,9 +99,7 @@ function Pages({ priv }) {
             setMaxPage(newMaxPage);
             setPageData(dataPages.data);
             clearErrorMsg();
-            setInitialFetchStatus(true);
           });
-
 
         } else {
           passErrorMsg(`${dataPages.msg}`);
@@ -106,33 +113,38 @@ function Pages({ priv }) {
   }
 
   // LIFECYCLES
-  useEffect(() => {
-    if (initialFetchStatus) {
 
-      const loadSuccessProp = () => {
-        if (location.successMsg) {
-          timerSuccessAlert(location.successMsg);
-        }
-      }
+  // show passed errorMsg or successMsg only once
+  useEffect(() => {
+
+    if (location.errorMsg) {
 
       const loadErrorProp = () => {
-        if (location.errorMsg) {
-          timerErrorAlert(location.errorMsg);
-        }
-      }
 
-      loadSuccessProp();
+        timerErrorAlert(location.errorMsg);
+      }
 
       loadErrorProp();
 
       return () => {
         location.errorMsg = null;
+      }
+    }
+
+    if (location.successMsg) {
+
+      const loadSuccessProp = () => {
+        timerSuccessAlert(location.successMsg);
+      }
+
+      loadSuccessProp();
+      return () => {
         location.successMsg = null;
       }
     }
 
-    // show error after setting the page data
-  }, [location, initialFetchStatus, timerSuccessAlert, timerErrorAlert])
+  }, [location, timerErrorAlert, timerSuccessAlert])
+
 
   useDidUpdateEffect(() => {
 
@@ -140,11 +152,23 @@ function Pages({ priv }) {
   }, [dataPages, dataCount]);
 
 
+  // update url search params when currentPage or currentEntries changes
+  useDidUpdateEffect(() => {
+    const currSearch = `?page=${currentPage}&entry=${currentEntries}`;
+
+    if (location.search !== currSearch) {
+      history.push({
+        search: currSearch
+      })
+    }
+
+  }, [currentPage, currentEntries]);
+
   // UI
   const actionButtons = (pageID) => {
     return (
       <>
-        <Link to={`/pages/form/${pageID}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+        <Link to={`/pages/form/${pageID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
           {isWriteable ? "Edit" : "Read"} Page
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
@@ -189,7 +213,7 @@ function Pages({ priv }) {
                     </div>}
                   <div className="col mt-3">
                     {isWriteable &&
-                      <Link to="/pages/form/add" className="btn btn-outline-secondary float-sm-right d-block">
+                      <Link to={`/pages/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
                         <i className="mdi mdi-account-plus"> </i>
                         Add Page
                       </Link>

@@ -31,8 +31,6 @@ router.get('/get/by/session', [checkSession], async function (req, res, next) {
 
 });
 
-
-
 /**
  * get count of all page rows
  */
@@ -79,4 +77,31 @@ router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (re
         res.json({ "status": true, "msg": "Successful getting row by id", "data": result.data });
     }
 });
+
+// insert new page
+// returns insertId of page
+router.post('/insert', [checkSession, pageInsertSchema, authorizeWriteRoute], async function (req, res, next) {
+
+    // insert role information
+    let result = await PageService.insertPage(req.body);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed inserting" });
+    } else {
+        res.json({ "status": true, "msg": "Successful inserting", "id": result.data });
+    }
+});
+
+// edit page
+router.put('/modify/:id', [checkSession, pageModifySchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await PageService.modifyPage(req.params.id, req.body);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed modification" });
+    } else {
+        res.json({ "status": true, "msg": "Successful modification", "id": result.data });
+    }
+});
+
+
 module.exports = router;

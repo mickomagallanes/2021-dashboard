@@ -14,18 +14,18 @@ class MenusModel {
     }
 
     /**
-  * inserts new menu in the database
-  * @param {Object} obj - An object.
-  * @param {String} obj.menuName name of the menu
-  * @param {String} obj.pageID id of page, foreign key
-  * @param {String} obj.parentMenuID id of parent menu, foreign key
-  * @return {Object} result
-  * @return {Number} result.insertId menu id of last inserted
-  */
+     * inserts new menu in the database
+     * @param {Object} obj - An object.
+     * @param {String} obj.menuName name of the menu
+     * @param {String} obj.pageID id of page, foreign key
+     * @param {String} obj.parentMenuID id of parent menu, foreign key
+     * @return {Object} result
+     * @return {Number} result.insertId menu id of last inserted
+     */
     static async insertMenu({ menuName, pageID, parentMenuID }) {
-        const stmt = `INSERT INTO Menus (MenuName) VALUES (?)`;
+        const stmt = `INSERT INTO Menus (MenuName, PageID, parentMenuID) VALUES (?, ?, ?)`;
         try {
-            const result = await mysql_conn.query(stmt, [menuName]);
+            const result = await mysql_conn.query(stmt, [menuName, pageID, parentMenuID]);
             return result;
 
         } catch (err) {

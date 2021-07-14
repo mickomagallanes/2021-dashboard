@@ -92,7 +92,7 @@ function MenusForm({ priv }) {
     const param = {
       "menuName": fields.menuName,
       "pageID": fields.pageID,
-      "parentMenuID": fields.parentMenuID.length ? fields.parentMenuID : null
+      "parentMenuID": fields.parentMenuID ? fields.parentMenuID : null
     }
 
     if (isAddMode) {
@@ -193,7 +193,7 @@ function MenusForm({ priv }) {
     <>
       <div>
         <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`menus${location.search}`}>
+          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/menus${location.search}`}>
             <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
             <span className="d-inline-block text-left">
               Back
@@ -201,7 +201,7 @@ function MenusForm({ priv }) {
           </Link>
 
         </div>
-        <div className="row w-100 mx-0" data-testid="ParentMenusForm">
+        <div className="row w-100 mx-0" data-testid="MenusForm">
           <div className="col-lg-8 col-xlg-9 col-md-12">
             <div className="card px-4 px-sm-5">
 

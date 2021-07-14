@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ReactDOM from "react-dom";
-import './Menus.css';
+import './SubPages.css';
 import Table from '../../components/Table/Table.lazy';
 import { PRIVILEGES } from "../../helpers/constants"
 import { Link, useHistory, useLocation } from 'react-router-dom';
@@ -10,15 +10,15 @@ import useFetch from '../../components/useFetch';
 import useDidUpdateEffect from '../../components/useDidUpdateEffect';
 import Spinner from '../../components/Spinner/Spinner';
 
-const menuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all`;
-const menuCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all/count`;
+const subPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/all`;
+const subPageCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/all/count`;
 
 const colData = [
-  { "id": "MenuID", "name": "Menu ID" },
-  { "id": "MenuName", "name": "Menu Name" }
+  { "id": "SubPageID", "name": "SubPage ID" },
+  { "id": "SubPageName", "name": "SubPage Name" }
 ];
 
-const idKey = "MenuID";
+const idKey = "SubPageID";
 
 const style = {
   inputEntry: {
@@ -28,13 +28,13 @@ const style = {
   }
 }
 
-function Menus({ priv }) {
+function SubPages({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
 
   const location = useLocation();
 
-  const [menuData, setMenuData] = useState([]);
+  const [subPageData, setSubPageData] = useState([]);
 
   const searchParams = new URLSearchParams(location.search);
   const pageParams = searchParams.get('page');
@@ -45,7 +45,7 @@ function Menus({ priv }) {
   const [currentPage, setCurrentPage] = useState(pageParams ? pageInitOptional : 1);
   const [currentEntries, setCurrentEntries] = useState(entryParams ? entryInitOptional : 5);
   const [maxPage, setMaxPage] = useState(null);
-  const [maxMenus, setMaxMenus] = useState(null);
+  const [maxSubPages, setMaxSubPages] = useState(null);
 
   const history = useHistory();
 
@@ -53,8 +53,8 @@ function Menus({ priv }) {
 
   const fetchDeps = [currentEntries, currentPage];
 
-  const [dataCount, loadingCount] = useFetch(menuCountURL, fetchDeps);
-  const [dataMenus, loadingMenus] = useFetch(`${menuURL}?page=${currentPage}&limit=${currentEntries}`, fetchDeps);
+  const [dataCount, loadingCount] = useFetch(subPageCountURL, fetchDeps);
+  const [dataSubPages, loadingSubPages] = useFetch(`${subPageURL}?page=${currentPage}&limit=${currentEntries}`, fetchDeps);
 
   const {
     timerSuccessAlert,
@@ -79,7 +79,7 @@ function Menus({ priv }) {
   }
 
   const checkFetchedData = async () => {
-    if (dataMenus && dataCount) {
+    if (dataSubPages && dataCount) {
       if (dataCount.status === true) {
         let count = dataCount.data.count;
 
@@ -93,16 +93,16 @@ function Menus({ priv }) {
           return;
         }
 
-        if (dataMenus.status === true) {
+        if (dataSubPages.status === true) {
           ReactDOM.unstable_batchedUpdates(() => {
-            setMaxMenus(count);
+            setMaxSubPages(count);
             setMaxPage(newMaxPage);
-            setMenuData(dataMenus.data);
+            setSubPageData(dataSubPages.data);
             clearErrorMsg();
           });
 
         } else {
-          passErrorMsg(`${dataMenus.msg}`);
+          passErrorMsg(`${dataSubPages.msg}`);
         }
 
       } else {
@@ -149,7 +149,7 @@ function Menus({ priv }) {
   useDidUpdateEffect(() => {
 
     checkFetchedData();
-  }, [dataMenus, dataCount]);
+  }, [dataSubPages, dataCount]);
 
 
   // update url search params when currentPage or currentEntries changes
@@ -165,11 +165,11 @@ function Menus({ priv }) {
   }, [currentPage, currentEntries]);
 
   // UI
-  const actionButtons = (menuID) => {
+  const actionButtons = (subPageID) => {
     return (
       <>
-        <Link to={`/menus/form/${menuID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
-          {isWriteable ? "Edit" : "Read"} Menu
+        <Link to={`/subPages/form/${subPageID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+          {isWriteable ? "Edit" : "Read"} SubPage
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
 
@@ -182,15 +182,15 @@ function Menus({ priv }) {
     <>
       <div>
         <div className="page-header">
-          <h3 className="page-title"> Menu Page</h3>
+          <h3 className="page-title"> SubPage Page</h3>
         </div>
 
         <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
-        <div className="row" data-testid="Menu" >
+        <div className="row" data-testid="SubPage" >
           <div className="col-lg-12 grid-margin stretch-card">
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title"> Menu Table </h4>
+                <h4 className="card-title"> SubPage Table </h4>
 
                 <div className="row mb-4">
                   <div className="col mt-3">
@@ -203,27 +203,27 @@ function Menus({ priv }) {
                         onChange={(e) => { entryOnChange(e) }}
                         type="text" style={style.inputEntry}
                       />
-                      of {maxMenus} entries
+                      of {maxSubPages} entries
                     </span>
                   </div>
 
-                  {loadingMenus && loadingCount ? <Spinner /> :
+                  {loadingSubPages && loadingCount ? <Spinner /> :
                     <div className="col-lg-6 mt-3">
                       <Pagination currentPage={currentPage} maxPage={maxPage} onClick={paginationClick} />
                     </div>}
                   <div className="col mt-3">
                     {isWriteable &&
-                      <Link to={`/menus/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
+                      <Link to={`/subPages/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
                         <i className="mdi mdi-account-plus"> </i>
-                        Add Menu
+                        Add SubPage
                       </Link>
                     }
 
                   </div>
                 </div>
-                {loadingMenus && loadingCount ? <Spinner /> :
+                {loadingSubPages && loadingCount ? <Spinner /> :
                   <Table
-                    data={menuData}
+                    data={subPageData}
                     tblClass=""
                     colData={colData}
                     idKey={idKey}
@@ -241,8 +241,4 @@ function Menus({ priv }) {
 }
 
 
-
-
-
-
-export default Menus;
+export default SubPages;

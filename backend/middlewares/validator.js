@@ -116,7 +116,7 @@ function menuInsertSchema(req, res, next) {
     const schema = Joi.object({
         menuName: Joi.string().max(30).required(),
         pageID: Joi.number().required(),
-        parentMenuID: Joi.number(),
+        parentMenuID: Joi.alternatives().try(Joi.number().required(), Joi.string().allow(null).required()),
     });
     validateRequestBody(req, res, next, schema);
 }
@@ -186,6 +186,46 @@ function pageGetAllSchema(req, res, next) {
     validateRequestQuery(req, res, next, schema);
 }
 
+/**************** PAGE ****************/
+function subPageInsertSchema(req, res, next) {
+
+    const schema = Joi.object({
+        subPageName: Joi.string().max(30).required(),
+        subPagePath: Joi.string().max(30).required(),
+        pageID: Joi.number().required()
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function subPageModifySchema(req, res, next) {
+
+    const schemaBody = Joi.object({
+        subPageName: Joi.string().max(30).required(),
+        subPagePath: Joi.string().max(30).required(),
+        pageID: Joi.number().required()
+    });
+
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+
+    validateRequest(req, res, next, wholeSchema);
+
+}
+
+function subPageGetAllSchema(req, res, next) {
+    const schema = Joi.object({
+        page: Joi.number().integer(),
+        limit: Joi.number().integer().min(5).max(100),
+    });
+    validateRequestQuery(req, res, next, schema);
+}
+
 /**************** GENERAL ****************/
 function validateRequestBody(req, res, next, schema) {
     validate(req.body, res, next, schema)
@@ -230,5 +270,8 @@ module.exports = {
     menuModifySchema,
     pageGetAllSchema,
     pageInsertSchema,
-    pageModifySchema
+    pageModifySchema,
+    subPageGetAllSchema,
+    subPageInsertSchema,
+    subPageModifySchema
 }

@@ -24,6 +24,8 @@ import { useDispatch } from 'react-redux';
 import useFetch from '../components/useFetch';
 import MenusForm from './Menus/MenusForm/MenusForm';
 import Pages from './Pages/Pages';
+import PagesForm from './Pages/PagesForm/PagesForm';
+import SubPages from './SubPages/SubPages';
 
 const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/session`;
 const subPagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/by/session`;
@@ -154,7 +156,8 @@ function matchComponentName(name) {
     case "Menus": return Menus;
     case "MenusForm": return MenusForm;
     case "Pages": return Pages;
-
+    case "PagesForm": return PagesForm;
+    case "SubPages": return SubPages;
 
     default: return undefined;
   }

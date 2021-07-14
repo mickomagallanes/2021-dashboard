@@ -1,12 +1,75 @@
 const mysql_conn = require("./db.js");
 const { PRIVILEGES } = require('../utils/constants.js');
+const GettersModel = require("./GettersModel.js");
 
 "use strict";
+
+const tableName = "SubPages";
+const primaryKey = "SubPagesID";
+const getterModel = new GettersModel(tableName, primaryKey);
 
 class SubPageModel {
 
     constructor() {
 
+    }
+
+    /**
+   * inserts new subPage in the database
+   * @param {Object} obj - An object.
+   * @param {String} obj.subPageName name of the subPage
+   * @param {String} obj.subPagePath path of subpage
+   * @param {String} obj.pageID id of page, foreign key
+   * @return {Object} result
+   * @return {Number} result.insertId subPage id of last inserted
+   */
+    static async insertSubPage({ subPageName, subPagePath, pageID }) {
+        const stmt = `INSERT INTO SubPages (SubPageName, SubPagePath, PageID) VALUES (?, ?, ?)`;
+        try {
+            const result = await mysql_conn.query(stmt, [subPageName, subPagePath, pageID]);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+     * modify subPage information to the database
+     * @param {Object} obj - An object.
+     * @param {String} obj.subPageID id of the subPage
+     * @param {String} obj.subPageName name of the subPage
+     * @param {String} obj.subPagePath path of subpage
+     * @param {String} obj.pageID id of page, foreign key
+     * @return {Object} result
+     * @return {Number} result.insertId subPage id of last inserted
+     */
+    static async modifySubPage({ subPageID, subPageName, subPagePath, pageID }) {
+        let whereParams = [subPageID];
+        let setObj = {};
+        let stmtWhere = ` WHERE SubPageID = ?`
+
+        if (subPageName !== undefined) {
+            setObj.SubPageName = subPageName
+        }
+
+        if (pageID !== undefined) {
+            setObj.PageID = pageID
+        }
+
+        if (subPagePath !== undefined) {
+            setObj.SubPagePath = subPagePath
+        }
+
+        try {
+            const result = await mysql_conn.update("SubPages", setObj, stmtWhere, whereParams);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
     }
 
     /**
@@ -32,5 +95,5 @@ class SubPageModel {
 
 }
 
-
+Object.setPrototypeOf(SubPageModel, getterModel);
 module.exports = SubPageModel;
