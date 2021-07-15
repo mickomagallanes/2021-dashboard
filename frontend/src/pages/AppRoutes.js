@@ -26,6 +26,7 @@ import MenusForm from './Menus/MenusForm/MenusForm';
 import Pages from './Pages/Pages';
 import PagesForm from './Pages/PagesForm/PagesForm';
 import SubPages from './SubPages/SubPages';
+import SubPagesForm from './SubPages/SubPagesForm/SubPagesForm';
 
 const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/session`;
 const subPagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/by/session`;
@@ -158,6 +159,7 @@ function matchComponentName(name) {
     case "Pages": return Pages;
     case "PagesForm": return PagesForm;
     case "SubPages": return SubPages;
+    case "SubPagesForm": return SubPagesForm;
 
     default: return undefined;
   }

@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer } from 'react'
 import ReactDOM from "react-dom";
-import './MenusForm.css';
+import './SubPagesForm.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import useAlert from '../../../components/useAlert';
 import useFetch from '../../../components/useFetch';
@@ -15,60 +15,60 @@ import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
 import SelectFormField from '../../../components/FormFields/SelectFormField/SelectFormField';
 
-const menuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/by/`;
-const parentMenuAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/all`;
+const subPageByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/by/`;
 const pageAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all`;
-const addMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/insert`;
-const editMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/modify/`;
+const addSubPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/insert`;
+const editSubPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/modify/`;
 
 yup.addMethod(yup.string, 'equalTo', equalTo);
 
 const schema = yup.object().shape({
-  menuName: yup.string().max(30, 'Must be 30 characters or less').required('Required')
+  subPageName: yup.string().max(30, 'Must be 30 characters or less').required('Required'),
+  subPagePath: yup.string().max(30, 'Must be 30 characters or less').required('Required')
 });
 
-
-const menuReducer = (state, action) => {
+const subPageReducer = (state, action) => {
   switch (action.type) {
-    case 'changeMenuName':
-      return { ...state, menuName: action.payload };
+    case 'changeSubPageName':
+      return { ...state, subPageName: action.payload };
+    case 'changeSubPagePath':
+      return { ...state, subPagePath: action.payload };
     case 'changePageID':
-      return { ...state, pageID: action.payload || "" }; // cant be null, so return blank instead
-    case 'changeParentMenuID':
-      return { ...state, parentMenuID: action.payload || "" };
+      return { ...state, pageID: action.payload };
     default:
       return state;
   }
 }
 
 const mapDispatch = dispatch => ({
-  changeMenuName: (payload) => dispatch({ type: 'changeMenuName', payload: payload }),
-  changePageID: (payload) => dispatch({ type: 'changePageID', payload: payload }),
-  changeParentMenuID: (payload) => dispatch({ type: 'changeParentMenuID', payload: payload })
+  changeSubPageName: (payload) => dispatch({ type: 'changeSubPageName', payload: payload }),
+  changeSubPagePath: (payload) => dispatch({ type: 'changeSubPagePath', payload: payload }),
+  changePageID: (payload) => dispatch({ type: 'changePageID', payload: payload })
+
 })
 
-export const menuFormInitialState = {
-  menuName: "",
-  pageID: "",
-  parentMenuID: ""
+const subPageFormInitialState = {
+  subPageName: "",
+  subPagePath: "",
+  pageID: ""
+
 };
 
-function MenusForm({ priv, asChildObj }) {
+function SubPagesForm({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
 
-  const [menuFormData, dispatchMenu] = useReducer(menuReducer, menuFormInitialState);
-  const actionsMenuData = mapDispatch(dispatchMenu);
+  const [subPageFormData, dispatchSubPage] = useReducer(subPageReducer, subPageFormInitialState);
+  const actionsSubPageData = mapDispatch(dispatchSubPage);
 
   const urlParamObj = useParams();
   const urlParam = urlParamObj.id;
 
-  const [submitEdit, editData] = usePut(editMenuURL + urlParam);
-  const [submitAdd, addData] = usePost(addMenuURL);
+  const [submitEdit, editData] = usePut(editSubPageURL + urlParam);
+  const [submitAdd, addData] = usePost(addSubPageURL);
 
-  const [dataMenu, loadingMenu] = useFetch(menuByIdURL + urlParam);
-  const [dataParentMenus, loadingParentMenus] = useFetch(parentMenuAllURL);
+  const [dataSubPage, loadingSubPage] = useFetch(subPageByIdURL + urlParam);
   const [dataPages, loadingPages] = useFetch(pageAllURL);
 
 
@@ -77,13 +77,6 @@ function MenusForm({ priv, asChildObj }) {
   const history = useHistory();
 
   const isWriteable = priv !== PRIVILEGES.readWrite;
-
-  // if this component is used as child
-  const isRenderedAsChild = asChildObj !== undefined;
-
-  if (isRenderedAsChild) {
-    asChildObj.setMenu(menuFormData);
-  }
 
   const {
     passErrorMsg,
@@ -97,9 +90,9 @@ function MenusForm({ priv, asChildObj }) {
   const handleSubmitForm = async (fields) => {
 
     const param = {
-      "menuName": fields.menuName,
+      "subPageName": fields.subPageName,
       "pageID": fields.pageID,
-      "parentMenuID": fields.parentMenuID ? fields.parentMenuID : null
+      "subPagePath": fields.subPagePath
     }
 
     if (isAddMode) {
@@ -118,7 +111,7 @@ function MenusForm({ priv, asChildObj }) {
       successArr.push(respData.msg);
 
       history.push({
-        pathname: '/menus',
+        pathname: '/subpages',
         successMsg: [successArr],
         search: location.search
       });
@@ -131,7 +124,7 @@ function MenusForm({ priv, asChildObj }) {
   useEffect(() => {
     if (isAddMode && priv === PRIVILEGES.read) {
       history.push({
-        pathname: '/menus',
+        pathname: '/subpages',
         errorMsg: [ERRORMSG.noPrivilege],
         search: location.search
       });
@@ -142,8 +135,8 @@ function MenusForm({ priv, asChildObj }) {
     if (dataPages && dataPages.status === true) {
 
       // set first option as default value if it has no value
-      if (menuFormData.pageID === null || menuFormData.pageID === "") {
-        actionsMenuData.changePageID(dataPages.data[0].PageID);
+      if (subPageFormData.pageID === null || subPageFormData.pageID === "") {
+        actionsSubPageData.changePageID(dataPages.data[0].PageID);
       }
 
     } else {
@@ -152,32 +145,25 @@ function MenusForm({ priv, asChildObj }) {
   }, [dataPages])
 
   useDidUpdateEffect(() => {
-    if (!dataParentMenus.status) {
-      passErrorMsg(`${dataParentMenus.msg}`);
-    }
 
-  }, [dataParentMenus])
+    if (!isAddMode && dataSubPage.status) {
 
-  useDidUpdateEffect(() => {
-
-    if (!isAddMode && dataMenu.status) {
-
-      if (dataMenu.status) {
-        const { data } = dataMenu;
+      if (dataSubPage.status) {
+        const { data } = dataSubPage;
 
         ReactDOM.unstable_batchedUpdates(() => {
-          actionsMenuData.changeMenuName(data.MenuName);
-          actionsMenuData.changeParentMenuID(data.ParentMenuID);
-          actionsMenuData.changePageID(data.PageID);
+          actionsSubPageData.changeSubPageName(data.SubPageName);
+          actionsSubPageData.changeSubPagePath(data.SubPagePath);
+          actionsSubPageData.changePageID(data.PageID);
         });
 
 
-      } else if (!dataMenu.status) {
-        passErrorMsg(`${dataMenu.msg}`);
+      } else if (!dataSubPage.status) {
+        passErrorMsg(`${dataSubPage.msg}`);
       }
     }
 
-  }, [dataMenu]);
+  }, [dataSubPage]);
 
   useDidUpdateEffect(() => {
 
@@ -200,7 +186,7 @@ function MenusForm({ priv, asChildObj }) {
     <>
       <div>
         <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/menus${location.search}`}>
+          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/subPages${location.search}`}>
             <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
             <span className="d-inline-block text-left">
               Back
@@ -208,65 +194,59 @@ function MenusForm({ priv, asChildObj }) {
           </Link>
 
         </div>
-        <div className="row w-100 mx-0" data-testid="MenusForm">
+        <div className="row w-100 mx-0" data-testid="SubPagesForm">
           <div className="col-lg-8 col-xlg-9 col-md-12">
             <div className="card px-4 px-sm-5">
 
               <div className="card-body">
-                <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} Menu</h4>
+                <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} SubPage</h4>
                 <div className="row mb-4">
                   <div className="col mt-3">
                     <Formik
                       validationSchema={schema}
-                      initialValues={menuFormData}
+                      initialValues={subPageFormData}
                       onSubmit={handleSubmitForm}
                       enableReinitialize
                     >
                       {() => (
                         <Form>
                           <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
-                          {loadingMenu && loadingPages && loadingParentMenus ? <Spinner /> :
+                          {loadingSubPage && loadingPages ? <Spinner /> :
                             <>
                               <div>
                                 <Field
-                                  label="Menu Name"
+                                  label="SubPage Name"
                                   type="text"
-                                  name="menuName"
-                                  placeholder="Menu Name"
+                                  name="subPageName"
+                                  placeholder="SubPage Name"
                                   disabled={isWriteable}
                                   component={TextFormField}
                                 />
                               </div>
                               <div>
                                 <Field
-                                  label="Parent Menu ID"
-                                  options={(dataParentMenus && dataParentMenus.data) || []}
-                                  idKey="ParentMenuID"
-                                  valueKey="ParentMenuName"
-                                  name="parentMenuID"
+                                  label="Subpage Path"
+                                  type="text"
+                                  name="subPagePath"
+                                  placeholder="Subpage Path"
+                                  disabled={isWriteable}
+                                  component={TextFormField}
+                                />
+                              </div>
+                              <div>
+                                <Field
+                                  label="Page"
+                                  options={(dataPages && dataPages.data) || []}
+                                  idKey="PageID"
+                                  valueKey="PageName"
+                                  name="pageID"
                                   component={SelectFormField}
-                                  allowDefaultNull={true}
                                   disabled={isWriteable}
                                 />
                               </div>
-                              {!isRenderedAsChild &&
-                                <>
-                                  <div className="mt-3">
-                                    <Field
-                                      label="Page"
-                                      options={(dataPages && dataPages.data) || []}
-                                      idKey="PageID"
-                                      valueKey="PageName"
-                                      name="pageID"
-                                      component={SelectFormField}
-                                      disabled={isWriteable}
-                                    />
-                                  </div>
-                                  <div className="mt-3">
-                                    {priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
-                                  </div>
-                                </>
-                              }
+                              <div className="mt-3">
+                                {priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
+                              </div>
                             </>
                           }
                         </Form>
@@ -284,4 +264,4 @@ function MenusForm({ priv, asChildObj }) {
   );
 }
 
-export default MenusForm;
+export default SubPagesForm;

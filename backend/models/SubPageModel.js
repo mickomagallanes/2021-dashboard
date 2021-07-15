@@ -5,7 +5,7 @@ const GettersModel = require("./GettersModel.js");
 "use strict";
 
 const tableName = "SubPages";
-const primaryKey = "SubPagesID";
+const primaryKey = "SubPageID";
 const getterModel = new GettersModel(tableName, primaryKey);
 
 class SubPageModel {

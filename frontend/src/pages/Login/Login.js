@@ -8,7 +8,7 @@ import axios from 'axios';
 import { Formik, Form, Field } from "formik";
 import TextFormField from '../../components/FormFields/TextFormField/TextFormField';
 import * as yup from 'yup';
-import { retryRequest, axiosConfig } from "../../helpers/utils";
+import { axiosConfig } from "../../helpers/utils";
 import { withRouter } from 'react-router-dom';
 import { profileChange } from '../../actions';
 import { connect } from 'react-redux';

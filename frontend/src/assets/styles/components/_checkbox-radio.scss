@@ -1,5 +1,7 @@
 /* Checkboxes and Radios */
-
+input[type=radio], input[type="checkbox"] {
+  cursor: pointer;
+}
 .form-check {
   position: relative;
   display: block;

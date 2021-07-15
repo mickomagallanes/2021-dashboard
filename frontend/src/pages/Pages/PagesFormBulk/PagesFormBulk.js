@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect, useReducer, useState } from 'react'
 import ReactDOM from "react-dom";
 import './PagesForm.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
@@ -13,6 +13,7 @@ import { equalTo } from '../../../helpers/utils';
 import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
+import MenusForm, { menuFormInitialState } from '../../Menus/MenusForm/MenusForm';
 
 const pageByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/`;
 const addPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/insert`;
@@ -48,13 +49,14 @@ const pageFormInitialState = {
   pagePath: ""
 };
 
-function PagesForm({ priv }) {
+function PagesFormBulk({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
 
   const [pageFormData, dispatchPage] = useReducer(pageReducer, pageFormInitialState);
   const actionsPageData = mapDispatch(dispatchPage);
+  const [menuFormData, setMenuFormData] = useState(menuFormInitialState);
 
   const urlParamObj = useParams();
   const urlParam = urlParamObj.id;
@@ -70,6 +72,10 @@ function PagesForm({ priv }) {
 
   const isWriteable = priv !== PRIVILEGES.readWrite;
 
+  const menuPagePassedObj = {
+    setMenu: setMenuFormData
+  }
+
   const {
     passErrorMsg,
     AlertElements,
@@ -79,20 +85,20 @@ function PagesForm({ priv }) {
 
   // FUNCTIONS AND EVENT HANDLERS
 
-  const handleSubmitForm = async (fields) => {
-
+  const handlePageForm = async (fields) => {
+    console.log(menuFormData)
     const param = {
       "pageName": fields.pageName,
       "pagePath": fields.pagePath
     }
 
-    if (isAddMode) {
+    // if (isAddMode) {
 
-      submitAdd(param);
+    //   submitAdd(param);
 
-    } else {
-      submitEdit(param);
-    }
+    // } else {
+    //   submitEdit(param);
+    // }
 
   }
 
@@ -182,7 +188,7 @@ function PagesForm({ priv }) {
                     <Formik
                       validationSchema={schema}
                       initialValues={pageFormData}
-                      onSubmit={handleSubmitForm}
+                      onSubmit={handlePageForm}
                       enableReinitialize
                     >
                       {() => (
@@ -210,7 +216,9 @@ function PagesForm({ priv }) {
                                   component={TextFormField}
                                 />
                               </div>
-
+                              <div>
+                                <MenusForm asChildObj={menuPagePassedObj} />
+                              </div>
                               <div className="mt-3">
                                 {priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
                               </div>
@@ -231,4 +239,4 @@ function PagesForm({ priv }) {
   );
 }
 
-export default PagesForm;
+export default PagesFormBulk;

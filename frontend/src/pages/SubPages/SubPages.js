@@ -168,7 +168,7 @@ function SubPages({ priv }) {
   const actionButtons = (subPageID) => {
     return (
       <>
-        <Link to={`/subPages/form/${subPageID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+        <Link to={`/subpages/form/${subPageID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
           {isWriteable ? "Edit" : "Read"} SubPage
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
@@ -213,7 +213,7 @@ function SubPages({ priv }) {
                     </div>}
                   <div className="col mt-3">
                     {isWriteable &&
-                      <Link to={`/subPages/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
+                      <Link to={`/subpages/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
                         <i className="mdi mdi-account-plus"> </i>
                         Add SubPage
                       </Link>

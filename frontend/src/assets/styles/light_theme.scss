@@ -309,7 +309,7 @@ $btnlink-color-light: #000000;
       color: $body-color-light;
       border-color: $body-color-light;
       > * {
-        background: $wrapper-bg-light;
+        background: $table-bg-light;
         color: $body-color-light;
         border-color: $body-color-light;
       }
@@ -335,6 +335,7 @@ $btnlink-color-light: #000000;
       a, button:not(.btn-primary) {
         background: $btnlink-bg-light;
         color: $btnlink-color-light;
+  
         
         &:hover {
           color: $btnlink-color-light;
@@ -362,14 +363,30 @@ $btnlink-color-light: #000000;
         color: $table-text-color-light;
       }
       
-      h4, span {
+      h4, h6, span {
         color: $table-text-color-light;
       }
 
-      th, td, p {
+      th, td, p, label {
         color: $table-text-color-light;
       }
     }
+}
+
+// LOGIN
+$login-wrapper-bg-color: #fafafb;
+
+.light-theme {
+  .d-flex .row {
+    background-color: $login-wrapper-bg-color;
+  }
+
+  .brand-logo {
+    img {
+        
+      filter: brightness(0%);
+    }
+  }
 }
 
 // /* Dropdowns */
