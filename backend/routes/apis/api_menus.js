@@ -94,6 +94,22 @@ router.get('/get/all', [checkSession, menuGetAllSchema, authorizeReadRoute], asy
 
 });
 
+
+/**
+ * get menu row by page id
+ * @param {number} req.params.id id of page
+ */
+router.get('/get/by/page/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
+
+    let result = await MenusService.getMenuByPageId(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed getting row by page id" });
+    } else {
+        res.json({ "status": true, "msg": "Successful getting row by page id", "data": result.data });
+    }
+});
+
 /**
  * get menu row by menu id
  * @param {number} req.params.id id of menu
@@ -108,6 +124,8 @@ router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (re
         res.json({ "status": true, "msg": "Successful getting row by id", "data": result.data });
     }
 });
+
+
 /*************************** Parent Menu *************************************/
 // insert new parent menu
 // returns insertId of parent menu

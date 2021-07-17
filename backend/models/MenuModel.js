@@ -13,6 +13,26 @@ class MenusModel {
 
     }
 
+
+    /**
+    * get a row using by page id
+    * @param {Number} id id of page
+    * @return {Array} result, length = 1
+    */
+    static async getMenuByPageId(id) {
+        const stmt = `SELECT * from Menus
+            WHERE
+                CAST(PageID AS CHAR) = ?;`;
+
+        try {
+            const result = await mysql_conn.query(stmt, [id]);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
     /**
      * inserts new menu in the database
      * @param {Object} obj - An object.

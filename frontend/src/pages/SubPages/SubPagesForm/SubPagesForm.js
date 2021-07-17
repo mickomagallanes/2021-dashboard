@@ -76,7 +76,7 @@ function SubPagesForm({ priv }) {
 
   const history = useHistory();
 
-  const isWriteable = priv !== PRIVILEGES.readWrite;
+  const isWriteable = priv === PRIVILEGES.readWrite;
 
   const {
     passErrorMsg,
@@ -146,7 +146,7 @@ function SubPagesForm({ priv }) {
 
   useDidUpdateEffect(() => {
 
-    if (!isAddMode && dataSubPage.status) {
+    if (!isAddMode) {
 
       if (dataSubPage.status) {
         const { data } = dataSubPage;
@@ -219,7 +219,7 @@ function SubPagesForm({ priv }) {
                                   type="text"
                                   name="subPageName"
                                   placeholder="SubPage Name"
-                                  disabled={isWriteable}
+                                  disabled={!isWriteable}
                                   component={TextFormField}
                                 />
                               </div>
@@ -229,19 +229,19 @@ function SubPagesForm({ priv }) {
                                   type="text"
                                   name="subPagePath"
                                   placeholder="Subpage Path"
-                                  disabled={isWriteable}
+                                  disabled={!isWriteable}
                                   component={TextFormField}
                                 />
                               </div>
                               <div>
                                 <Field
                                   label="Page"
-                                  options={(dataPages && dataPages.data) || []}
+                                  options={(dataPages && dataPages.data) || []} // TODO: use the new feature of useFetch, extracted
                                   idKey="PageID"
                                   valueKey="PageName"
                                   name="pageID"
                                   component={SelectFormField}
-                                  disabled={isWriteable}
+                                  disabled={!isWriteable}
                                 />
                               </div>
                               <div className="mt-3">

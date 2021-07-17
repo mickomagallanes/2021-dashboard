@@ -134,6 +134,23 @@ class MenusService {
     }
 
     /**
+     * get menu info by page id
+     * @param {String} id page id
+     * @return one row of menu
+     */
+    static async getMenuByPageId(id) {
+        let ret = await MenuModel.getMenuByPageId(id);
+
+        if (ret.length) {
+            return { status: true, data: ret[0] }
+
+        } else {
+            return { status: false }
+        }
+
+    }
+
+    /**
      * get total count of menu rows
      * @return count of all rows
      */

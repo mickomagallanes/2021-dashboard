@@ -14,7 +14,7 @@ class PageRoleService {
      * @param {Number} userId id of the user
      * @param {Array} pagePath path of the page, eg: "/user"
      */
-    static async getPagePrivBySession(userId, pagePath) {
+    static async getPagePrivByUser(userId, pagePath) {
         let pageRoleObj = await PageRoleModel.getPagePrivByUser(userId, pagePath);
 
         if (pageRoleObj.length) {
@@ -29,6 +29,20 @@ class PageRoleService {
    */
     static async getAllPagesLeftRole(roleId) {
         let pagesArr = await PageRoleModel.getAllPagesLeftRole(roleId);
+
+        if (pagesArr.length) {
+            return { status: true, data: pagesArr }
+        }
+        return { status: false }
+    }
+
+    /**
+     * get a row using page id and user id
+     * @param {Number} pageId id of the page
+     * @param {Number} userId id of the user
+     */
+    static async getRowByUserAndPage(pageId, userId) {
+        let pagesArr = await PageRoleModel.getRowByUserAndPage(pageId, userId);
 
         if (pagesArr.length) {
             return { status: true, data: pagesArr }

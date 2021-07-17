@@ -53,8 +53,8 @@ function Menus({ priv }) {
 
   const fetchDeps = [currentEntries, currentPage];
 
-  const [dataCount, loadingCount] = useFetch(menuCountURL, fetchDeps);
-  const [dataMenus, loadingMenus] = useFetch(`${menuURL}?page=${currentPage}&limit=${currentEntries}`, fetchDeps);
+  const [dataCount, loadingCount] = useFetch(menuCountURL, { customDeps: fetchDeps });
+  const [dataMenus, loadingMenus] = useFetch(`${menuURL}?page=${currentPage}&limit=${currentEntries}`, { customDeps: fetchDeps });
 
   const {
     timerSuccessAlert,

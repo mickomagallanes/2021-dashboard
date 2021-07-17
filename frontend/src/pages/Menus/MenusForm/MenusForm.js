@@ -5,7 +5,7 @@ import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import useAlert from '../../../components/useAlert';
 import useFetch from '../../../components/useFetch';
 import useDidUpdateEffect from '../../../components/useDidUpdateEffect';
-import { Formik, Form, Field } from 'formik';
+import { Field } from 'formik';
 import * as yup from 'yup';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
@@ -14,6 +14,7 @@ import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
 import SelectFormField from '../../../components/FormFields/SelectFormField/SelectFormField';
+import FormikWithRef from '../../../components/FormikWithRef';
 
 const menuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/by/`;
 const parentMenuAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/all`;
@@ -26,7 +27,6 @@ yup.addMethod(yup.string, 'equalTo', equalTo);
 const schema = yup.object().shape({
   menuName: yup.string().max(30, 'Must be 30 characters or less').required('Required')
 });
-
 
 const menuReducer = (state, action) => {
   switch (action.type) {
@@ -53,7 +53,10 @@ export const menuFormInitialState = {
   parentMenuID: ""
 };
 
-function MenusForm({ priv, asChildObj }) {
+function MenusForm({ priv, customMenuURL, parentFormRef }) {
+  // if this component is used as child
+  const isRenderedAsChild = customMenuURL !== undefined;
+  const menuURL = isRenderedAsChild ? customMenuURL : menuByIdURL;
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
@@ -67,7 +70,7 @@ function MenusForm({ priv, asChildObj }) {
   const [submitEdit, editData] = usePut(editMenuURL + urlParam);
   const [submitAdd, addData] = usePost(addMenuURL);
 
-  const [dataMenu, loadingMenu] = useFetch(menuByIdURL + urlParam);
+  const [dataMenu, loadingMenu] = useFetch(menuURL + urlParam);
   const [dataParentMenus, loadingParentMenus] = useFetch(parentMenuAllURL);
   const [dataPages, loadingPages] = useFetch(pageAllURL);
 
@@ -76,14 +79,9 @@ function MenusForm({ priv, asChildObj }) {
 
   const history = useHistory();
 
-  const isWriteable = priv !== PRIVILEGES.readWrite;
+  const isWriteable = priv === PRIVILEGES.readWrite;
 
-  // if this component is used as child
-  const isRenderedAsChild = asChildObj !== undefined;
 
-  if (isRenderedAsChild) {
-    asChildObj.setMenu(menuFormData);
-  }
 
   const {
     passErrorMsg,
@@ -93,6 +91,35 @@ function MenusForm({ priv, asChildObj }) {
   } = useAlert();
 
   // FUNCTIONS AND EVENT HANDLERS
+
+  const WrapperTable = (props) => {
+
+    return (
+      <>
+        {isRenderedAsChild
+          ?
+          <>
+            <h5 className="card-title"> Menu </h5>
+            {props.children}
+          </>
+          :
+          <div className="row w-100 mx-0" data-testid="MenusForm">
+            <div className="col-lg-8 col-xlg-9 col-md-12">
+              <div className="card px-4 px-sm-5">
+
+                <div className="card-body">
+                  <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} Menu</h4>
+                  {props.children}
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+      </>
+
+    )
+  }
 
   const handleSubmitForm = async (fields) => {
 
@@ -128,6 +155,7 @@ function MenusForm({ priv, asChildObj }) {
   }
 
   // LIFECYCLES
+
   useEffect(() => {
     if (isAddMode && priv === PRIVILEGES.read) {
       history.push({
@@ -137,6 +165,7 @@ function MenusForm({ priv, asChildObj }) {
       });
     }
   }, [history, isAddMode, location.search, priv])
+
 
   useDidUpdateEffect(() => {
     if (dataPages && dataPages.status === true) {
@@ -151,6 +180,7 @@ function MenusForm({ priv, asChildObj }) {
     }
   }, [dataPages])
 
+
   useDidUpdateEffect(() => {
     if (!dataParentMenus.status) {
       passErrorMsg(`${dataParentMenus.msg}`);
@@ -158,9 +188,10 @@ function MenusForm({ priv, asChildObj }) {
 
   }, [dataParentMenus])
 
+
   useDidUpdateEffect(() => {
 
-    if (!isAddMode && dataMenu.status) {
+    if (!isAddMode) {
 
       if (dataMenu.status) {
         const { data } = dataMenu;
@@ -178,6 +209,7 @@ function MenusForm({ priv, asChildObj }) {
     }
 
   }, [dataMenu]);
+
 
   useDidUpdateEffect(() => {
 
@@ -199,87 +231,81 @@ function MenusForm({ priv, asChildObj }) {
 
     <>
       <div>
-        <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/menus${location.search}`}>
-            <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
-            <span className="d-inline-block text-left">
-              Back
-            </span>
-          </Link>
+        {!isRenderedAsChild &&
+          <div className="page-header">
+            <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/menus${location.search}`}>
+              <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
+              <span className="d-inline-block text-left">
+                Back
+              </span>
+            </Link>
 
-        </div>
-        <div className="row w-100 mx-0" data-testid="MenusForm">
-          <div className="col-lg-8 col-xlg-9 col-md-12">
-            <div className="card px-4 px-sm-5">
+          </div>
+        }
+        <WrapperTable>
 
-              <div className="card-body">
-                <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} Menu</h4>
-                <div className="row mb-4">
-                  <div className="col mt-3">
-                    <Formik
-                      validationSchema={schema}
-                      initialValues={menuFormData}
-                      onSubmit={handleSubmitForm}
-                      enableReinitialize
-                    >
-                      {() => (
-                        <Form>
-                          <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
-                          {loadingMenu && loadingPages && loadingParentMenus ? <Spinner /> :
-                            <>
-                              <div>
-                                <Field
-                                  label="Menu Name"
-                                  type="text"
-                                  name="menuName"
-                                  placeholder="Menu Name"
-                                  disabled={isWriteable}
-                                  component={TextFormField}
-                                />
-                              </div>
-                              <div>
-                                <Field
-                                  label="Parent Menu ID"
-                                  options={(dataParentMenus && dataParentMenus.data) || []}
-                                  idKey="ParentMenuID"
-                                  valueKey="ParentMenuName"
-                                  name="parentMenuID"
-                                  component={SelectFormField}
-                                  allowDefaultNull={true}
-                                  disabled={isWriteable}
-                                />
-                              </div>
-                              {!isRenderedAsChild &&
-                                <>
-                                  <div className="mt-3">
-                                    <Field
-                                      label="Page"
-                                      options={(dataPages && dataPages.data) || []}
-                                      idKey="PageID"
-                                      valueKey="PageName"
-                                      name="pageID"
-                                      component={SelectFormField}
-                                      disabled={isWriteable}
-                                    />
-                                  </div>
-                                  <div className="mt-3">
-                                    {priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
-                                  </div>
-                                </>
-                              }
-                            </>
-                          }
-                        </Form>
-                      )}
-                    </Formik>
+          <div className="row mb-4">
+            <div className="col mt-3">
+              <FormikWithRef
+                validationSchema={schema}
+                initialValues={menuFormData}
+                onSubmit={handleSubmitForm}
+                formRef={parentFormRef}
+                enableReinitialize
+              >
+                <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
+                {loadingMenu && loadingPages && loadingParentMenus ? <Spinner /> :
+                  <>
+                    <div>
+                      <Field
+                        label="Menu Name"
+                        type="text"
+                        name="menuName"
+                        placeholder="Menu Name"
+                        disabled={!isWriteable}
+                        component={TextFormField}
+                      />
+                    </div>
+                    <div>
+                      <Field
+                        label="Parent Menu ID"
+                        options={(dataParentMenus && dataParentMenus.data) || []}
+                        idKey="ParentMenuID"
+                        valueKey="ParentMenuName"
+                        name="parentMenuID"
+                        component={SelectFormField}
+                        allowDefaultNull={true}
+                        disabled={!isWriteable}
+                      />
+                    </div>
+                    {!isRenderedAsChild &&
+                      <>
+                        <div className="mt-3">
+                          <Field
+                            label="Page"
+                            options={(dataPages && dataPages.data) || []}
+                            idKey="PageID"
+                            valueKey="PageName"
+                            name="pageID"
+                            component={SelectFormField}
+                            disabled={!isWriteable}
+                          />
+                        </div>
+                        <div className="mt-3">
+                          {priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
+                        </div>
+                      </>
+                    }
+                  </>
+                }
 
-                  </div>
-                </div>
-              </div>
+              </FormikWithRef>
+
             </div>
           </div>
-        </div>
+        </WrapperTable>
       </div>
+
     </>
   );
 }

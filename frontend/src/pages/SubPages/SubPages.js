@@ -53,8 +53,8 @@ function SubPages({ priv }) {
 
   const fetchDeps = [currentEntries, currentPage];
 
-  const [dataCount, loadingCount] = useFetch(subPageCountURL, fetchDeps);
-  const [dataSubPages, loadingSubPages] = useFetch(`${subPageURL}?page=${currentPage}&limit=${currentEntries}`, fetchDeps);
+  const [dataCount, loadingCount] = useFetch(subPageCountURL, { customDeps: fetchDeps });
+  const [dataSubPages, loadingSubPages] = useFetch(`${subPageURL}?page=${currentPage}&limit=${currentEntries}`, { customDeps: fetchDeps });
 
   const {
     timerSuccessAlert,

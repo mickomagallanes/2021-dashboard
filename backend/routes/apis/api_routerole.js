@@ -25,6 +25,7 @@ router.get('/get/left/:roleId', [checkSession, authorizeReadRoute], async functi
 /**
  * post route role data
  */
+// TODO: validate these posts
 router.post('/post/data', [checkSession, authorizeWriteRoute], async function (req, res, next) {
 
     const routeRolesArr = req.body.routeRoles;

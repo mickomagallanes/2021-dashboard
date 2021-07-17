@@ -1,6 +1,6 @@
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useEffect, useReducer, useRef, useState } from 'react'
 import ReactDOM from "react-dom";
-import './PagesForm.css';
+import './PagesFormBulk.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import useAlert from '../../../components/useAlert';
 import useFetch from '../../../components/useFetch';
@@ -14,10 +14,13 @@ import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
 import MenusForm, { menuFormInitialState } from '../../Menus/MenusForm/MenusForm';
+import { List } from 'immutable';
 
 const pageByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/`;
 const addPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/insert`;
 const editPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/modify/`;
+const privUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/privilege/get/all`;
+const pagesRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/get/by/session/and/page/`;
 
 yup.addMethod(yup.string, 'equalTo', equalTo);
 
@@ -26,13 +29,14 @@ const schema = yup.object().shape({
   pagePath: yup.string().max(30, 'Must be 30 characters or less').required('Required')
 });
 
-
 const pageReducer = (state, action) => {
   switch (action.type) {
     case 'changePageName':
       return { ...state, pageName: action.payload };
     case 'changePagePath':
       return { ...state, pagePath: action.payload };
+    case 'changePageRole':
+      return { ...state, pageRole: action.payload };
     default:
       return state;
   }
@@ -40,14 +44,17 @@ const pageReducer = (state, action) => {
 
 const mapDispatch = dispatch => ({
   changePageName: (payload) => dispatch({ type: 'changePageName', payload: payload }),
-  changePagePath: (payload) => dispatch({ type: 'changePagePath', payload: payload })
-
+  changePagePath: (payload) => dispatch({ type: 'changePagePath', payload: payload }),
+  changePageRole: (payload) => dispatch({ type: 'changePageRole', payload: payload })
 })
 
 const pageFormInitialState = {
   pageName: "",
-  pagePath: ""
+  pagePath: "",
+  pageRole: "None"
 };
+
+const menuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/by/page/`;
 
 function PagesFormBulk({ priv }) {
 
@@ -65,16 +72,22 @@ function PagesFormBulk({ priv }) {
   const [submitAdd, addData] = usePost(addPageURL);
 
   const [dataPage, loadingPage] = useFetch(pageByIdURL + urlParam);
-
+  const [dataPageRole, loadingPageRole] = useFetch(pagesRoleUrl + urlParam);
+  const [dataPriv, loadingDataPriv, extractedDataPriv] = useFetch(privUrl, { initialData: List([]) });
+  console.log(extractedDataPriv)
   const isAddMode = urlParam === "add";
 
   const history = useHistory();
 
-  const isWriteable = priv !== PRIVILEGES.readWrite;
+  const isWriteable = priv === PRIVILEGES.readWrite;
 
   const menuPagePassedObj = {
     setMenu: setMenuFormData
   }
+
+  // Then inside the component body
+  const formRef = useRef();
+  const menuFormRef = useRef();
 
   const {
     passErrorMsg,
@@ -85,11 +98,10 @@ function PagesFormBulk({ priv }) {
 
   // FUNCTIONS AND EVENT HANDLERS
 
+
   const handlePageForm = async (fields) => {
-    console.log(menuFormData)
-    const param = {
-      "pageName": fields.pageName,
-      "pagePath": fields.pagePath
+    if (formRef.current) {
+      formRef.current.handleSubmit();
     }
 
     // if (isAddMode) {
@@ -99,6 +111,15 @@ function PagesFormBulk({ priv }) {
     // } else {
     //   submitEdit(param);
     // }
+
+  }
+
+  const handleSubmit = async (fields) => {
+    console.log(menuFormRef.current.values)
+    const param = {
+      "pageName": fields.pageName,
+      "pagePath": fields.pagePath
+    }
 
   }
 
@@ -130,7 +151,7 @@ function PagesFormBulk({ priv }) {
 
   useDidUpdateEffect(() => {
 
-    if (!isAddMode && dataPage.status) {
+    if (!isAddMode) {
 
       if (dataPage.status) {
         const { data } = dataPage;
@@ -147,6 +168,24 @@ function PagesFormBulk({ priv }) {
     }
 
   }, [dataPage]);
+
+  useDidUpdateEffect(() => {
+
+    if (!isAddMode) {
+
+      if (dataPageRole.status) {
+        const { data } = dataPageRole;
+
+        ReactDOM.unstable_batchedUpdates(() => {
+          actionsPageData.changePageRole(data.PrivilegeName);
+        });
+
+      } else if (!dataPageRole.status) {
+        passErrorMsg(`${dataPageRole.msg}`);
+      }
+    }
+
+  }, [dataPageRole]);
 
   useDidUpdateEffect(() => {
 
@@ -188,7 +227,8 @@ function PagesFormBulk({ priv }) {
                     <Formik
                       validationSchema={schema}
                       initialValues={pageFormData}
-                      onSubmit={handlePageForm}
+                      onSubmit={handleSubmit}
+                      innerRef={formRef}
                       enableReinitialize
                     >
                       {() => (
@@ -202,7 +242,7 @@ function PagesFormBulk({ priv }) {
                                   type="text"
                                   name="pageName"
                                   placeholder="Page Name"
-                                  disabled={isWriteable}
+                                  disabled={!isWriteable}
                                   component={TextFormField}
                                 />
                               </div>
@@ -212,22 +252,44 @@ function PagesFormBulk({ priv }) {
                                   type="text"
                                   name="pagePath"
                                   placeholder="Page Path"
-                                  disabled={isWriteable}
+                                  disabled={!isWriteable}
                                   component={TextFormField}
                                 />
                               </div>
+
                               <div>
-                                <MenusForm asChildObj={menuPagePassedObj} />
-                              </div>
-                              <div className="mt-3">
-                                {priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
+
+                                {extractedDataPriv.map(priv => {
+
+                                  return (
+                                    <>
+                                      <label key={`privLabel${priv.PrivilegeID}`} htmlFor={`priv${priv.PrivilegeID}`}> {priv.PrivilegeName} </label>
+                                      <Field
+                                        className="mr-5"
+                                        type="radio"
+                                        value={priv.PrivilegeID}
+                                        id={`priv${priv.PrivilegeID}`}
+                                        key={`priv${priv.PrivilegeID}`}
+                                        name="pageRole"
+                                        disabled={!isWriteable}
+                                      />
+                                    </>
+                                  )
+                                })}
+
                               </div>
                             </>
                           }
                         </Form>
                       )}
                     </Formik>
+                    <div className="mt-5">
+                      <MenusForm setMenuFormData={setMenuFormData} parentFormRef={menuFormRef} priv={priv} customMenuURL={menuByIdURL} />
+                    </div>
 
+                    <div className="mt-3">
+                      {priv === PRIVILEGES.readWrite && <button onClick={handlePageForm} type="button" className="btn btn-primary mr-2">Submit</button>}
+                    </div>
                   </div>
                 </div>
               </div>

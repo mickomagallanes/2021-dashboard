@@ -68,7 +68,7 @@ function PagesForm({ priv }) {
 
   const history = useHistory();
 
-  const isWriteable = priv !== PRIVILEGES.readWrite;
+  const isWriteable = priv === PRIVILEGES.readWrite;
 
   const {
     passErrorMsg,
@@ -124,7 +124,7 @@ function PagesForm({ priv }) {
 
   useDidUpdateEffect(() => {
 
-    if (!isAddMode && dataPage.status) {
+    if (!isAddMode) {
 
       if (dataPage.status) {
         const { data } = dataPage;
@@ -196,7 +196,7 @@ function PagesForm({ priv }) {
                                   type="text"
                                   name="pageName"
                                   placeholder="Page Name"
-                                  disabled={isWriteable}
+                                  disabled={!isWriteable}
                                   component={TextFormField}
                                 />
                               </div>
@@ -206,7 +206,7 @@ function PagesForm({ priv }) {
                                   type="text"
                                   name="pagePath"
                                   placeholder="Page Path"
-                                  disabled={isWriteable}
+                                  disabled={!isWriteable}
                                   component={TextFormField}
                                 />
                               </div>

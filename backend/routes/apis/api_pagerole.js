@@ -15,7 +15,7 @@ router.post('/authorize', [checkSession], async function (req, res, next) {
     let userId = req.session.userData.userid;
     let pagePath = req.body.pagepath;
 
-    let resp = await PageRoleService.getPagePrivBySession(userId, pagePath);
+    let resp = await PageRoleService.getPagePrivByUser(userId, pagePath);
 
     if (resp.status) {
 
@@ -46,8 +46,27 @@ router.get('/get/left/:roleId', [checkSession, authorizeReadRoute], async functi
 });
 
 /**
+ * get all roles
+ */
+router.get('/get/by/session/and/page/:pageId', [checkSession, authorizeReadRoute], async function (req, res, next) {
+
+    let userId = req.session.userData.userid;
+    const pageId = req.params.pageId;
+
+    let result = await PageRoleService.getRowByUserAndPage(pageId, userId);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed fetching all rows" });
+    } else {
+        res.json({ "status": true, "msg": "Successfully fetched all rows", "data": result.data });
+    }
+
+});
+
+/**
  * post page role data
  */
+// TODO: validate these posts
 router.post('/post/data', [checkSession, authorizeWriteRoute], async function (req, res, next) {
 
     const pageRolesArr = req.body.pageRoles;

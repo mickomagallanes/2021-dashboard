@@ -31,6 +31,39 @@ class PageRoleModel {
     }
 
     /**
+     * get row by page id and user id
+     * @param {Number} pageId id of the page
+     * @param {Number} userId id of the user
+     * @return {Array} result, length = 1
+     */
+    static async getRowByUserAndPage(pageId, userId) {
+        const stmt = `SELECT 
+        a.PageID,
+        c.RoleName,
+        c.RoleID,
+        d.PrivilegeName,
+        d.PrivilegeID
+    FROM
+        Pages AS a
+            LEFT JOIN
+        PageRoles AS b ON a.PageID = b.PageID
+            LEFT JOIN
+        Roles AS c ON b.RoleID = c.RoleID
+            LEFT JOIN
+        Users as e ON e.RoleID = c.RoleID 
+            LEFT JOIN
+        Privileges AS d ON b.PrivilegeID = d.PrivilegeID WHERE a.PageID = ? AND e.UserID = ?;`;
+
+        try {
+            const result = await mysql_conn.query(stmt, [pageId, userId]);
+            return result;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
     * insert if PageID + RoleID does not exist, update if it exists
     * @param {Array} valueArr format must be "[[page1, ...], [page2, ...]]"
     * @return {Number} result.insertId user id of last inserted

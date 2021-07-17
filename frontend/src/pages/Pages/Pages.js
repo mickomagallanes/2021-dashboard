@@ -53,8 +53,8 @@ function Pages({ priv }) {
 
   const fetchDeps = [currentEntries, currentPage];
 
-  const [dataCount, loadingCount] = useFetch(pageCountURL, fetchDeps);
-  const [dataPages, loadingPages] = useFetch(`${pageURL}?page=${currentPage}&limit=${currentEntries}`, fetchDeps);
+  const [dataCount, loadingCount] = useFetch(pageCountURL, { customDeps: fetchDeps });
+  const [dataPages, loadingPages] = useFetch(`${pageURL}?page=${currentPage}&limit=${currentEntries}`, { customDeps: fetchDeps });
 
   const {
     timerSuccessAlert,
@@ -173,6 +173,11 @@ function Pages({ priv }) {
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
 
+        <Link to={`/pages/bulk/form/${pageID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+          {isWriteable ? "Edit" : "Read"} Page (Bulk)
+          <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+        </Link>
+
       </>
     )
   };
@@ -213,10 +218,17 @@ function Pages({ priv }) {
                     </div>}
                   <div className="col mt-3">
                     {isWriteable &&
-                      <Link to={`/pages/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
-                        <i className="mdi mdi-account-plus"> </i>
-                        Add Page
-                      </Link>
+                      <>
+                        <Link to={`/pages/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
+                          <i className="mdi mdi-account-plus"> </i>
+                          Add Page
+                        </Link>
+
+                        <Link to={`/pages/bulk/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block mr-3">
+                          <i className="mdi mdi-account-plus"> </i>
+                          Add Page (Bulk)
+                        </Link>
+                      </>
                     }
 
                   </div>
