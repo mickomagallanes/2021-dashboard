@@ -178,6 +178,41 @@ function pageModifySchema(req, res, next) {
 
 }
 
+function pageInsertBulkSchema(req, res, next) {
+
+    const schema = Joi.object({
+        pageName: Joi.string().max(30).required(),
+        pagePath: Joi.string().max(30).required(),
+        privID: Joi.number().required(),
+        menuName: Joi.string().max(30).required(),
+        parentMenuID: Joi.alternatives().try(Joi.number().required(), Joi.string().allow(null).required())
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function pageModifyBulkSchema(req, res, next) {
+
+    const schemaBody = Joi.object({
+        pageName: Joi.string().max(30).required(),
+        pagePath: Joi.string().max(30).required(),
+        privID: Joi.number().required(),
+        menuName: Joi.string().max(30).required(),
+        parentMenuID: Joi.alternatives().try(Joi.number().required(), Joi.string().allow(null).required())
+    });
+
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+
+    validateRequest(req, res, next, wholeSchema);
+
+}
+
 function pageGetAllSchema(req, res, next) {
     const schema = Joi.object({
         page: Joi.number().integer(),
@@ -270,6 +305,8 @@ module.exports = {
     menuModifySchema,
     pageGetAllSchema,
     pageInsertSchema,
+    pageInsertBulkSchema,
+    pageModifyBulkSchema,
     pageModifySchema,
     subPageGetAllSchema,
     subPageInsertSchema,

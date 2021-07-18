@@ -169,7 +169,6 @@ function SubPagesForm({ priv }) {
 
     let successArr = [];
 
-    // simplify this, it breaks DRY
     if (isAddMode) {
       postSuccessCallback(addData, successArr);
 

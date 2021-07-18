@@ -5,7 +5,7 @@ import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import useAlert from '../../../components/useAlert';
 import useFetch from '../../../components/useFetch';
 import useDidUpdateEffect from '../../../components/useDidUpdateEffect';
-import { Formik, Form, Field } from 'formik';
+import { Field } from 'formik';
 import * as yup from 'yup';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
@@ -13,12 +13,14 @@ import { equalTo } from '../../../helpers/utils';
 import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
-import MenusForm, { menuFormInitialState } from '../../Menus/MenusForm/MenusForm';
+import MenusForm from '../../Menus/MenusForm/MenusForm';
 import { List } from 'immutable';
+import styled from 'styled-components';
+import FormikWithRef from '../../../components/FormikWithRef';
 
 const pageByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/`;
-const addPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/insert`;
-const editPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/modify/`;
+const addPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/insert/bulk/by/session`;
+const editPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/modify/bulk/by/session/`;
 const privUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/privilege/get/all`;
 const pagesRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/get/by/session/and/page/`;
 
@@ -35,8 +37,8 @@ const pageReducer = (state, action) => {
       return { ...state, pageName: action.payload };
     case 'changePagePath':
       return { ...state, pagePath: action.payload };
-    case 'changePageRole':
-      return { ...state, pageRole: action.payload };
+    case 'changePrivID':
+      return { ...state, privID: action.payload };
     default:
       return state;
   }
@@ -45,13 +47,13 @@ const pageReducer = (state, action) => {
 const mapDispatch = dispatch => ({
   changePageName: (payload) => dispatch({ type: 'changePageName', payload: payload }),
   changePagePath: (payload) => dispatch({ type: 'changePagePath', payload: payload }),
-  changePageRole: (payload) => dispatch({ type: 'changePageRole', payload: payload })
+  changePrivID: (payload) => dispatch({ type: 'changePrivID', payload: payload })
 })
 
 const pageFormInitialState = {
   pageName: "",
   pagePath: "",
-  pageRole: "None"
+  privID: ""
 };
 
 const menuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/by/page/`;
@@ -63,7 +65,6 @@ function PagesFormBulk({ priv }) {
 
   const [pageFormData, dispatchPage] = useReducer(pageReducer, pageFormInitialState);
   const actionsPageData = mapDispatch(dispatchPage);
-  const [menuFormData, setMenuFormData] = useState(menuFormInitialState);
 
   const urlParamObj = useParams();
   const urlParam = urlParamObj.id;
@@ -74,16 +75,14 @@ function PagesFormBulk({ priv }) {
   const [dataPage, loadingPage] = useFetch(pageByIdURL + urlParam);
   const [dataPageRole, loadingPageRole] = useFetch(pagesRoleUrl + urlParam);
   const [dataPriv, loadingDataPriv, extractedDataPriv] = useFetch(privUrl, { initialData: List([]) });
-  console.log(extractedDataPriv)
+
+  const [menuFetchedValue, setMenuFetchedValue] = useState(null);
+
   const isAddMode = urlParam === "add";
 
   const history = useHistory();
 
   const isWriteable = priv === PRIVILEGES.readWrite;
-
-  const menuPagePassedObj = {
-    setMenu: setMenuFormData
-  }
 
   // Then inside the component body
   const formRef = useRef();
@@ -99,26 +98,37 @@ function PagesFormBulk({ priv }) {
   // FUNCTIONS AND EVENT HANDLERS
 
 
-  const handlePageForm = async (fields) => {
+  const handlePageForm = async () => {
     if (formRef.current) {
       formRef.current.handleSubmit();
     }
-
-    // if (isAddMode) {
-
-    //   submitAdd(param);
-
-    // } else {
-    //   submitEdit(param);
-    // }
-
   }
 
+  // TODO: when error, menu name resets, prevent it 
   const handleSubmit = async (fields) => {
-    console.log(menuFormRef.current.values)
+    console.log(menuFetchedValue);
+
+    const menuObj = menuFormRef.current.values;
+
     const param = {
+      "menuName": menuObj.menuName,
+      "parentMenuID": fields.parentMenuID ? parseInt(fields.parentMenuID) : null,
       "pageName": fields.pageName,
-      "pagePath": fields.pagePath
+      "pagePath": fields.pagePath,
+      "privID": parseInt(fields.privID)
+    }
+
+    if (isAddMode) {
+
+      submitAdd(param);
+
+    } else {
+
+      if (menuFetchedValue && menuFetchedValue.data) {
+        param.menuID = menuFetchedValue.data.MenuID;
+      }
+
+      submitEdit(param);
     }
 
   }
@@ -175,9 +185,9 @@ function PagesFormBulk({ priv }) {
 
       if (dataPageRole.status) {
         const { data } = dataPageRole;
-
+        console.log(data)
         ReactDOM.unstable_batchedUpdates(() => {
-          actionsPageData.changePageRole(data.PrivilegeName);
+          actionsPageData.changePrivID(`${data[0].PrivilegeID}`);
         });
 
       } else if (!dataPageRole.status) {
@@ -189,9 +199,18 @@ function PagesFormBulk({ priv }) {
 
   useDidUpdateEffect(() => {
 
+    if (isAddMode) {
+      // set default value of page role from priv data if add mode, set first index of array
+      actionsPageData.changePrivID(`${dataPriv.data[0].PrivilegeID}`);
+    }
+
+  }, [dataPriv]);
+
+
+  useDidUpdateEffect(() => {
+
     let successArr = [];
 
-    // simplify this, it breaks DRY
     if (isAddMode) {
       postSuccessCallback(addData, successArr);
 
@@ -224,67 +243,66 @@ function PagesFormBulk({ priv }) {
                 <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} Page</h4>
                 <div className="row mb-4">
                   <div className="col mt-3">
-                    <Formik
+
+                    <FormikWithRef
                       validationSchema={schema}
                       initialValues={pageFormData}
                       onSubmit={handleSubmit}
-                      innerRef={formRef}
+                      formRef={formRef}
                       enableReinitialize
                     >
-                      {() => (
-                        <Form>
-                          <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
-                          {loadingPage ? <Spinner /> :
-                            <>
-                              <div>
-                                <Field
-                                  label="Page Name"
-                                  type="text"
-                                  name="pageName"
-                                  placeholder="Page Name"
-                                  disabled={!isWriteable}
-                                  component={TextFormField}
-                                />
-                              </div>
-                              <div>
-                                <Field
-                                  label="Page Path"
-                                  type="text"
-                                  name="pagePath"
-                                  placeholder="Page Path"
-                                  disabled={!isWriteable}
-                                  component={TextFormField}
-                                />
-                              </div>
+                      <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
+                      {loadingPage && loadingDataPriv && loadingPageRole ? <Spinner /> :
+                        <>
+                          <div>
+                            <Field
+                              label="Page Name"
+                              type="text"
+                              name="pageName"
+                              placeholder="Page Name"
+                              disabled={!isWriteable}
+                              component={TextFormField}
+                            />
+                          </div>
+                          <div>
+                            <Field
+                              label="Page Path"
+                              type="text"
+                              name="pagePath"
+                              placeholder="Page Path"
+                              disabled={!isWriteable}
+                              component={TextFormField}
+                            />
+                          </div>
 
-                              <div>
+                          <div className="mt-5">
+                            <h5 className="card-title"> Role of Logged-in User to Page</h5>
+                            {extractedDataPriv.map(priv => {
 
-                                {extractedDataPriv.map(priv => {
+                              return (
+                                <React.Fragment key={`privFrag${priv.PrivilegeID}`}>
+                                  <StyledLabel key={`privLabel${priv.PrivilegeID}`} htmlFor={`priv${priv.PrivilegeID}`}>
+                                    <Field
+                                      type="radio"
+                                      value={`${priv.PrivilegeID}`}
+                                      id={`priv${priv.PrivilegeID}`}
+                                      key={`priv${priv.PrivilegeID}`}
+                                      name="privID"
+                                      disabled={!isWriteable}
+                                    />
+                                    {priv.PrivilegeName}
+                                  </StyledLabel>
+                                </React.Fragment>
+                              )
+                            })}
 
-                                  return (
-                                    <>
-                                      <label key={`privLabel${priv.PrivilegeID}`} htmlFor={`priv${priv.PrivilegeID}`}> {priv.PrivilegeName} </label>
-                                      <Field
-                                        className="mr-5"
-                                        type="radio"
-                                        value={priv.PrivilegeID}
-                                        id={`priv${priv.PrivilegeID}`}
-                                        key={`priv${priv.PrivilegeID}`}
-                                        name="pageRole"
-                                        disabled={!isWriteable}
-                                      />
-                                    </>
-                                  )
-                                })}
+                          </div>
+                        </>
+                      }
 
-                              </div>
-                            </>
-                          }
-                        </Form>
-                      )}
-                    </Formik>
+                    </FormikWithRef>
                     <div className="mt-5">
-                      <MenusForm setMenuFormData={setMenuFormData} parentFormRef={menuFormRef} priv={priv} customMenuURL={menuByIdURL} />
+                      <MenusForm parentFormRef={menuFormRef} priv={priv} customMenuURL={menuByIdURL} parentSetDataMenu={setMenuFetchedValue} />
                     </div>
 
                     <div className="mt-3">
@@ -300,5 +318,10 @@ function PagesFormBulk({ priv }) {
     </>
   );
 }
+
+const StyledLabel = styled.label`
+    cursor: pointer;
+    margin: 0px 50px 0px 0px;
+`
 
 export default PagesFormBulk;

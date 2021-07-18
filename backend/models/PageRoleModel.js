@@ -65,7 +65,7 @@ class PageRoleModel {
 
     /**
     * insert if PageID + RoleID does not exist, update if it exists
-    * @param {Array} valueArr format must be "[[page1, ...], [page2, ...]]"
+    * @param {Array} valueArr format must be "[[page1, roleid1, privid1], [page2, , roleid2, privid2]]"
     * @return {Number} result.insertId user id of last inserted
     */
     static async postPageRoleData(valueArr) {

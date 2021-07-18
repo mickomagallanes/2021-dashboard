@@ -14,7 +14,7 @@ function useFetch(apiUrl, { customDeps = [], initialData = null } = {}) {
         // reset value if deps is changed
         isCancelled.current = false;
         (async function () {
-            console.log("rerender")
+
             try {
                 const respCount = await axios.get(
                     apiUrl,

@@ -169,7 +169,8 @@ class UserService {
                 let userData = {
                     "uname": userObj[0].Username,
                     "userid": userObj[0].UserID,
-                    "uimage": `/uploads/${userObj[0].Image}`
+                    "uimage": `/uploads/${userObj[0].Image}`,
+                    "roleid": userObj[0].RoleID
                 }
 
                 return { status: true, data: userData }

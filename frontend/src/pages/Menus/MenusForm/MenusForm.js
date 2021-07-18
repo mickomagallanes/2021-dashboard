@@ -53,7 +53,7 @@ export const menuFormInitialState = {
   parentMenuID: ""
 };
 
-function MenusForm({ priv, customMenuURL, parentFormRef }) {
+function MenusForm({ priv, customMenuURL, parentFormRef, parentSetDataMenu }) {
   // if this component is used as child
   const isRenderedAsChild = customMenuURL !== undefined;
   const menuURL = isRenderedAsChild ? customMenuURL : menuByIdURL;
@@ -126,7 +126,7 @@ function MenusForm({ priv, customMenuURL, parentFormRef }) {
     const param = {
       "menuName": fields.menuName,
       "pageID": fields.pageID,
-      "parentMenuID": fields.parentMenuID ? fields.parentMenuID : null
+      "parentMenuID": fields.parentMenuID ? parseInt(fields.parentMenuID) : null
     }
 
     if (isAddMode) {
@@ -190,6 +190,9 @@ function MenusForm({ priv, customMenuURL, parentFormRef }) {
 
 
   useDidUpdateEffect(() => {
+    if (isRenderedAsChild) {
+      parentSetDataMenu(dataMenu);
+    }
 
     if (!isAddMode) {
 
@@ -215,7 +218,6 @@ function MenusForm({ priv, customMenuURL, parentFormRef }) {
 
     let successArr = [];
 
-    // simplify this, it breaks DRY
     if (isAddMode) {
       postSuccessCallback(addData, successArr);
 

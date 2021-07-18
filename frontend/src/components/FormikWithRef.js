@@ -8,7 +8,8 @@ const FormikWithRef = ({
     children,
     initialValues,
     validationSchema,
-    onSubmit
+    onSubmit,
+    enableReinitialize
 }) => {
     return (
         <FormWithRef
@@ -16,6 +17,7 @@ const FormikWithRef = ({
             validationSchema={validationSchema}
             onSubmit={onSubmit}
             ref={formRef}
+            enableReinitialize={enableReinitialize}
         >
             {(props) => <Form onSubmit={props.handleSubmit}>{children}</Form>}
         </FormWithRef>
@@ -25,7 +27,7 @@ const FormikWithRef = ({
 function FormHelper(props, ref) {
 
     return (
-        <Formik {...props} enableReinitialize innerRef={ref}>
+        <Formik {...props} innerRef={ref}>
             {(formikProps) => {
 
                 if (typeof props.children === "function") {
