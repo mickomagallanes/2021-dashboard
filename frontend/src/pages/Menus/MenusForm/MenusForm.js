@@ -53,7 +53,8 @@ export const menuFormInitialState = {
   parentMenuID: ""
 };
 
-function MenusForm({ priv, customMenuURL, parentFormRef, parentSetDataMenu }) {
+function MenusForm({ priv, customMenuURL, parentFormRef }) {
+
   // if this component is used as child
   const isRenderedAsChild = customMenuURL !== undefined;
   const menuURL = isRenderedAsChild ? customMenuURL : menuByIdURL;
@@ -80,8 +81,6 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentSetDataMenu }) {
   const history = useHistory();
 
   const isWriteable = priv === PRIVILEGES.readWrite;
-
-
 
   const {
     passErrorMsg,
@@ -181,6 +180,8 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentSetDataMenu }) {
   }, [dataPages])
 
 
+
+
   useDidUpdateEffect(() => {
     if (!dataParentMenus.status) {
       passErrorMsg(`${dataParentMenus.msg}`);
@@ -190,9 +191,6 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentSetDataMenu }) {
 
 
   useDidUpdateEffect(() => {
-    if (isRenderedAsChild) {
-      parentSetDataMenu(dataMenu);
-    }
 
     if (!isAddMode) {
 
@@ -227,6 +225,7 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentSetDataMenu }) {
     }
 
   }, [addData, editData]);
+
 
   // UI
   return (

@@ -197,6 +197,7 @@ function pageModifyBulkSchema(req, res, next) {
         pagePath: Joi.string().max(30).required(),
         privID: Joi.number().required(),
         menuName: Joi.string().max(30).required(),
+        menuID: Joi.number().required(),
         parentMenuID: Joi.alternatives().try(Joi.number().required(), Joi.string().allow(null).required())
     });
 

@@ -19,7 +19,7 @@ const FormikWithRef = ({
             ref={formRef}
             enableReinitialize={enableReinitialize}
         >
-            {(props) => <Form onSubmit={props.handleSubmit}>{children}</Form>}
+            {(props) => <Form>{children}</Form>}
         </FormWithRef>
     );
 };

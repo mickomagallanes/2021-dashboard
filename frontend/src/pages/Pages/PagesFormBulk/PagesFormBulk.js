@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react'
+import React, { useEffect, useReducer, useRef, } from 'react'
 import ReactDOM from "react-dom";
 import './PagesFormBulk.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
@@ -17,6 +17,9 @@ import MenusForm from '../../Menus/MenusForm/MenusForm';
 import { List } from 'immutable';
 import styled from 'styled-components';
 import FormikWithRef from '../../../components/FormikWithRef';
+
+// TODO: still rerendering when THEME is changed, because PagesFormBulk is rerendering also
+const MemoMenusForm = React.memo(MenusForm);
 
 const pageByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/`;
 const addPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/insert/bulk/by/session`;
@@ -56,6 +59,7 @@ const pageFormInitialState = {
   privID: ""
 };
 
+
 const menuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/by/page/`;
 
 function PagesFormBulk({ priv }) {
@@ -76,7 +80,9 @@ function PagesFormBulk({ priv }) {
   const [dataPageRole, loadingPageRole] = useFetch(pagesRoleUrl + urlParam);
   const [dataPriv, loadingDataPriv, extractedDataPriv] = useFetch(privUrl, { initialData: List([]) });
 
-  const [menuFetchedValue, setMenuFetchedValue] = useState(null);
+  // TODO: prevent menusform reset when theme is changed
+  const [dataMenu, loadingDataMenu] = useFetch(menuByIdURL + urlParam);
+
 
   const isAddMode = urlParam === "add";
 
@@ -86,6 +92,7 @@ function PagesFormBulk({ priv }) {
 
   // Then inside the component body
   const formRef = useRef();
+
   const menuFormRef = useRef();
 
   const {
@@ -106,7 +113,6 @@ function PagesFormBulk({ priv }) {
 
   // TODO: when error, menu name resets, prevent it 
   const handleSubmit = async (fields) => {
-    console.log(menuFetchedValue);
 
     const menuObj = menuFormRef.current.values;
 
@@ -124,8 +130,8 @@ function PagesFormBulk({ priv }) {
 
     } else {
 
-      if (menuFetchedValue && menuFetchedValue.data) {
-        param.menuID = menuFetchedValue.data.MenuID;
+      if (dataMenu.status) {
+        param.menuID = dataMenu.data.MenuID;
       }
 
       submitEdit(param);
@@ -157,6 +163,7 @@ function PagesFormBulk({ priv }) {
         search: location.search
       });
     }
+
   }, [history, isAddMode, location.search, priv])
 
   useDidUpdateEffect(() => {
@@ -185,7 +192,7 @@ function PagesFormBulk({ priv }) {
 
       if (dataPageRole.status) {
         const { data } = dataPageRole;
-        console.log(data)
+
         ReactDOM.unstable_batchedUpdates(() => {
           actionsPageData.changePrivID(`${data[0].PrivilegeID}`);
         });
@@ -220,6 +227,7 @@ function PagesFormBulk({ priv }) {
     }
 
   }, [addData, editData]);
+
 
   // UI
   return (
@@ -302,7 +310,7 @@ function PagesFormBulk({ priv }) {
 
                     </FormikWithRef>
                     <div className="mt-5">
-                      <MenusForm parentFormRef={menuFormRef} priv={priv} customMenuURL={menuByIdURL} parentSetDataMenu={setMenuFetchedValue} />
+                      <MemoMenusForm parentFormRef={menuFormRef} priv={priv} customMenuURL={menuByIdURL} />
                     </div>
 
                     <div className="mt-3">

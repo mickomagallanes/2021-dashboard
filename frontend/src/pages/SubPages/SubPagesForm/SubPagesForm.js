@@ -14,6 +14,7 @@ import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
 import SelectFormField from '../../../components/FormFields/SelectFormField/SelectFormField';
+import { List } from 'immutable';
 
 const subPageByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/by/`;
 const pageAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all`;
@@ -69,7 +70,7 @@ function SubPagesForm({ priv }) {
   const [submitAdd, addData] = usePost(addSubPageURL);
 
   const [dataSubPage, loadingSubPage] = useFetch(subPageByIdURL + urlParam);
-  const [dataPages, loadingPages] = useFetch(pageAllURL);
+  const [dataPages, loadingPages, extractedDataPages] = useFetch(pageAllURL, { initialData: List([]) });
 
 
   const isAddMode = urlParam === "add";
@@ -235,7 +236,7 @@ function SubPagesForm({ priv }) {
                               <div>
                                 <Field
                                   label="Page"
-                                  options={(dataPages && dataPages.data) || []} // TODO: use the new feature of useFetch, extracted
+                                  options={extractedDataPages}
                                   idKey="PageID"
                                   valueKey="PageName"
                                   name="pageID"
