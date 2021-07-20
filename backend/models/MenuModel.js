@@ -83,7 +83,11 @@ class MenusModel {
 
         try {
             const result = await mysql_conn.update("Menus", setObj, stmtWhere, whereParams);
+            console.log(setObj);
+            console.log(stmtWhere);
+            console.log(menuID);
             return result;
+
 
         } catch (err) {
             console.log(err);

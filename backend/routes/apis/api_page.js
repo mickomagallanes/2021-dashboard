@@ -89,9 +89,9 @@ router.post('/insert/bulk/by/session', [checkSession, pageInsertBulkSchema, auth
     let result = await PageService.insertPageBulk(roleId, req.body);
 
     if (result.status === false) {
-        res.json({ "status": false, "msg": "Failed inserting" });
+        res.json({ "status": false, "msg": "Failed inserting page" });
     } else {
-        res.json({ "status": true, "msg": "Successful inserting", "id": result.data });
+        res.json({ "status": true, "msg": "Successful inserting page", "id": result.data });
     }
 });
 
@@ -129,12 +129,23 @@ router.put('/modify/:id', [checkSession, pageModifySchema, authorizeWriteRoute],
     let result = await PageService.modifyPage(req.params.id, req.body);
 
     if (result.status === false) {
-        res.json({ "status": false, "msg": "Failed modification" });
+        res.json({ "status": false, "msg": "Failed modification of page" });
     } else {
-        res.json({ "status": true, "msg": "Successful modification", "id": result.data });
+        res.json({ "status": true, "msg": "Successful modification of page", "id": result.data });
     }
 });
 
+
+// delete page, also deletes children data
+router.delete('/delete/:id', [checkSession, authorizeWriteRoute], async function (req, res, next) {
+    let result = await PageService.deletePage(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting page" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted page successfully" });
+    }
+});
 
 
 module.exports = router;

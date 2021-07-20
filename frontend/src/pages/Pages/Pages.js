@@ -9,9 +9,12 @@ import useAlert from '../../components/useAlert';
 import useFetch from '../../components/useFetch';
 import useDidUpdateEffect from '../../components/useDidUpdateEffect';
 import Spinner from '../../components/Spinner/Spinner';
+import useDelete from '../../components/useDelete';
 
 const pageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all`;
 const pageCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all/count`;
+
+const pageDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/delete/`;
 
 const colData = [
   { "id": "PageID", "name": "Page ID" },
@@ -55,6 +58,7 @@ function Pages({ priv }) {
 
   const [dataCount, loadingCount] = useFetch(pageCountURL, { customDeps: fetchDeps });
   const [dataPages, loadingPages] = useFetch(`${pageURL}?page=${currentPage}&limit=${currentEntries}`, { customDeps: fetchDeps });
+  const [deleteMenu, deleteMenuResult] = useDelete(pageDeleteURL);
 
   const {
     timerSuccessAlert,
@@ -63,9 +67,9 @@ function Pages({ priv }) {
     AlertElements,
     clearErrorMsg,
     errorMsg,
-    successMsg
+    successMsg,
+    errorTimerValue
   } = useAlert();
-
 
   const isWriteable = priv === PRIVILEGES.readWrite;
 
@@ -74,6 +78,11 @@ function Pages({ priv }) {
     setCurrentPage(pageNumber);
   }
 
+  const handleDelete = (pageId) => {
+    if (confirm("Delete this page?")) {
+      deleteMenu(pageId);
+    }
+  }
   const entryOnChange = async (e) => {
     setCurrentEntries(e.target.value);
   }
@@ -98,7 +107,11 @@ function Pages({ priv }) {
             setMaxPages(count);
             setMaxPage(newMaxPage);
             setPageData(dataPages.data);
-            clearErrorMsg();
+
+            if (!errorTimerValue) {
+              clearErrorMsg();
+            }
+
           });
 
         } else {
@@ -164,6 +177,12 @@ function Pages({ priv }) {
 
   }, [currentPage, currentEntries]);
 
+  useDidUpdateEffect(() => {
+
+    timerSuccessAlert([deleteMenuResult.msg]);
+
+  }, [deleteMenuResult]);
+
   // UI
   const actionButtons = (pageID) => {
     return (
@@ -177,6 +196,12 @@ function Pages({ priv }) {
           {isWriteable ? "Edit" : "Read"} Page (Bulk)
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
+
+        {isWriteable && <button onClick={() => handleDelete(pageID)} className="btn btn-icon-text btn-outline-secondary mr-3">
+          Delete
+          <i className={`mdi mdi-delete btn-icon-append `}></i>
+        </button>}
+
 
       </>
     )

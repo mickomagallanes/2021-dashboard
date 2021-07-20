@@ -77,7 +77,6 @@ class Login extends React.PureComponent {
     }
   }
 
-  // TODO: check if usage of immutable js here is right
   setErrorMsg(index, errorVal) {
     const errorArr = this.state.errorMsg.set(index, errorVal);
 

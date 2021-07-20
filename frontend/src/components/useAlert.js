@@ -15,12 +15,11 @@ function useAlert() {
     const timerSuccessAlert = (msgArr) => {
         setSuccessMsg(msgArr);
 
-        if (_successTimer.current !== null) {
-            clearTimeout(_successTimer.current);
-        }
+        clearSuccessTimer();
 
         _successTimer.current = setTimeout(() => {
-            clearSuccessMsg()
+            clearSuccessMsg();
+            clearSuccessTimer();
         }, 6000)
 
     }
@@ -28,22 +27,23 @@ function useAlert() {
     const timerErrorAlert = (msgArr) => {
         setErrorMsg(msgArr);
 
-        if (_errorTimer.current !== null) {
-            clearTimeout(_errorTimer.current);
-        }
+        clearErrorTimer();
 
         // make timeout reset when error alert is continuous
         _errorTimer.current = setTimeout(() => {
             clearErrorMsg();
+            clearErrorTimer();
         }, 6000)
 
     }
 
     const passErrorMsg = (msgValue) => {
+        clearErrorTimer();
         setErrorMsg([msgValue]);
     }
 
     const passSuccessMsg = (msgValue) => {
+        clearSuccessTimer();
         setSuccessMsg([msgValue]);
     }
 
@@ -55,6 +55,20 @@ function useAlert() {
         setSuccessMsg([]);
     }
 
+    const clearErrorTimer = () => {
+        if (_errorTimer.current !== null) {
+            clearTimeout(_errorTimer.current);
+            _errorTimer.current = null;
+        }
+    };
+
+    const clearSuccessTimer = () => {
+        if (_successTimer.current !== null) {
+            clearTimeout(_successTimer.current);
+            _successTimer.current = null;
+        }
+    }
+
     return {
         timerSuccessAlert,
         timerErrorAlert,
@@ -64,7 +78,9 @@ function useAlert() {
         clearErrorMsg,
         clearSuccessMsg,
         errorMsg,
-        successMsg
+        successMsg,
+        errorTimerValue: _errorTimer.current,
+        successTimerValue: _successTimer.current
     }
 }
 

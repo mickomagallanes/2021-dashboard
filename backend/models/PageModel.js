@@ -15,6 +15,22 @@ class PageModel {
     }
 
     /**
+      * deleted page rows in the database
+      * @param {String} pageID id of the page
+      */
+    static async deletePage(pageID) {
+
+        try {
+            const result = await mysql_conn.delete("Pages", "where PageID=?", [pageID]);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
        * inserts new page in the database
        * @param {Object} obj - An object.
        * @param {String} obj.pageName name of the page

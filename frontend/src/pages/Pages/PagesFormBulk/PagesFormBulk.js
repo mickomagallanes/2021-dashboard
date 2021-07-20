@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, } from 'react'
+import React, { useCallback, useEffect, useReducer, useRef } from 'react'
 import ReactDOM from "react-dom";
 import './PagesFormBulk.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
@@ -18,7 +18,6 @@ import { List } from 'immutable';
 import styled from 'styled-components';
 import FormikWithRef from '../../../components/FormikWithRef';
 
-// TODO: still rerendering when THEME is changed, because PagesFormBulk is rerendering also
 const MemoMenusForm = React.memo(MenusForm);
 
 const pageByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/`;
@@ -80,9 +79,9 @@ function PagesFormBulk({ priv }) {
   const [dataPageRole, loadingPageRole] = useFetch(pagesRoleUrl + urlParam);
   const [dataPriv, loadingDataPriv, extractedDataPriv] = useFetch(privUrl, { initialData: List([]) });
 
-  // TODO: prevent menusform reset when theme is changed
   const [dataMenu, loadingDataMenu] = useFetch(menuByIdURL + urlParam);
 
+  const menuFormInitState = useRef(null);
 
   const isAddMode = urlParam === "add";
 
@@ -93,7 +92,24 @@ function PagesFormBulk({ priv }) {
   // Then inside the component body
   const formRef = useRef();
 
-  const menuFormRef = useRef();
+  // const menuFormRef = useRef();
+  const menuFormRef = useCallback(node => {
+
+    if (node === null) {
+      // DOM node referenced by ref has been unmounted
+
+    } else {
+      const { values } = node;
+
+      menuFormInitState.current = {
+        menuName: values.menuName,
+        pageID: values.pageID,
+        parentMenuID: values.parentMenuID
+      };
+
+      // DOM node referenced by ref has changed and exists
+    }
+  }, []); // adjust deps();
 
   const {
     passErrorMsg,
@@ -111,14 +127,13 @@ function PagesFormBulk({ priv }) {
     }
   }
 
-  // TODO: when error, menu name resets, prevent it 
   const handleSubmit = async (fields) => {
 
-    const menuObj = menuFormRef.current.values;
+    const menuObj = menuFormInitState.current;
 
     const param = {
       "menuName": menuObj.menuName,
-      "parentMenuID": fields.parentMenuID ? parseInt(fields.parentMenuID) : null,
+      "parentMenuID": menuObj.parentMenuID ? parseInt(menuObj.parentMenuID) : null,
       "pageName": fields.pageName,
       "pagePath": fields.pagePath,
       "privID": parseInt(fields.privID)
@@ -309,9 +324,10 @@ function PagesFormBulk({ priv }) {
                       }
 
                     </FormikWithRef>
-                    <div className="mt-5">
-                      <MemoMenusForm parentFormRef={menuFormRef} priv={priv} customMenuURL={menuByIdURL} />
-                    </div>
+                    {!isAddMode && loadingDataMenu ? <Spinner /> : <div className="mt-5">
+                      <MemoMenusForm parentFormRef={menuFormRef} priv={priv} customMenuURL={menuByIdURL} parentMemoData={menuFormInitState.current} />
+                    </div>}
+
 
                     <div className="mt-3">
                       {priv === PRIVILEGES.readWrite && <button onClick={handlePageForm} type="button" className="btn btn-primary mr-2">Submit</button>}

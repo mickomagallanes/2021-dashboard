@@ -63,7 +63,8 @@ function Menus({ priv }) {
     AlertElements,
     clearErrorMsg,
     errorMsg,
-    successMsg
+    successMsg,
+    errorTimerValue
   } = useAlert();
 
 
@@ -98,7 +99,9 @@ function Menus({ priv }) {
             setMaxMenus(count);
             setMaxPage(newMaxPage);
             setMenuData(dataMenus.data);
-            clearErrorMsg();
+            if (!errorTimerValue) {
+              clearErrorMsg();
+            }
           });
 
         } else {

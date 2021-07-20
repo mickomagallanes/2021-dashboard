@@ -44,7 +44,7 @@ if (process.env.NODE_ENV == "production") {
 
 app.use(cors({
   origin: `${process.env.FRONTEND_HOST}`,
-  methods: 'GET,HEAD,POST,PUT',
+  methods: 'GET,HEAD,POST,PUT,DELETE',
   preflightContinue: false,
   credentials: true
 }));

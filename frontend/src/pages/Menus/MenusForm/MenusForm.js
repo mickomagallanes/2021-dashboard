@@ -53,7 +53,15 @@ export const menuFormInitialState = {
   parentMenuID: ""
 };
 
-function MenusForm({ priv, customMenuURL, parentFormRef }) {
+/**
+ * MenusForm Component
+ * @param {Object} obj
+ * @param {String} priv Privilege of logged-in user to MenusForm
+ * @param {String} [customMenuURL] replaces url of menu get by id, added if component is rendered as child from other form
+ * @param {React useRef} [parentFormRef] add ref for formik, so parent component can fetch the form value
+ * @param {Object} [parentMemoData] saved form value in parent, passed when parent component rerenders so menu form value persists
+ */
+function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
 
   // if this component is used as child
   const isRenderedAsChild = customMenuURL !== undefined;
@@ -165,6 +173,17 @@ function MenusForm({ priv, customMenuURL, parentFormRef }) {
     }
   }, [history, isAddMode, location.search, priv])
 
+  useDidUpdateEffect(() => {
+    if (parentMemoData) {
+      ReactDOM.unstable_batchedUpdates(() => {
+        actionsMenuData.changeMenuName(parentMemoData.menuName);
+        actionsMenuData.changeParentMenuID(parentMemoData.parentMenuID);
+        actionsMenuData.changePageID(parentMemoData.pageID);
+      });
+
+    }
+
+  }, [parentMemoData])
 
   useDidUpdateEffect(() => {
     if (dataPages && dataPages.status === true) {
@@ -178,8 +197,6 @@ function MenusForm({ priv, customMenuURL, parentFormRef }) {
       passErrorMsg(`${dataPages.msg}`);
     }
   }, [dataPages])
-
-
 
 
   useDidUpdateEffect(() => {

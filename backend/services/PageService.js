@@ -11,18 +11,34 @@ class PageService {
     }
 
     /**
-   * inserts new page in the database
-   * @param {String} roleID role id
-   * @param {Object} obj - An object.
-   * @param {String} obj.pageName name of the  page
-   * @param {String} obj.pagePath path of page
-   * @param {String} obj.privID privilege ID
-   * @param {String} obj.menuName name of the menu
-   * @param {Number} obj.pageMenuId id of parent menu
-   * @return {Object} result
-   * @return {Number} result.insertId role id of last inserted
-   */
-    static async insertPageBulk(roleID, { pageName, pagePath, privID, menuName, parentMenuId }) {
+  * deleted page rows in the database
+  * @param {String} pageID id of the page
+  */
+    static async deletePage(pageID) {
+
+        let ret = await PageModel.deletePage(pageID);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
+     * inserts new page in the database
+     * @param {String} roleID role id
+     * @param {Object} obj - An object.
+     * @param {String} obj.pageName name of the  page
+     * @param {String} obj.pagePath path of page
+     * @param {String} obj.privID privilege ID
+     * @param {String} obj.menuName name of the menu
+     * @param {Number} obj.pageMenuId id of parent menu
+     * @return {Object} result
+     * @return {Number} result.insertId role id of last inserted
+     */
+    static async insertPageBulk(roleID, { pageName, pagePath, privID, menuName, parentMenuID }) {
         let objPage = {
             pageName: pageName,
             pagePath: pagePath
@@ -34,7 +50,7 @@ class PageService {
         if (resultPage !== false) {
             let objMenu = {
                 menuName: menuName,
-                parentMenuID: parentMenuId,
+                parentMenuID: parentMenuID,
                 pageID: pageID
             };
 
@@ -66,11 +82,11 @@ class PageService {
     * @param {String} obj.pagePath path of page
     * @param {String} obj.privID privilege ID
     * @param {String} obj.menuName name of the menu
-    * @param {Number} obj.pageMenuId id of parent menu
+    * @param {Number} obj.parentMenuID id of parent menu
     * @return {Object} result
     * @return {Number} result.insertId page id of last inserted
     */
-    static async modifyPageBulk(pageID, roleID, { menuID, pageName, pagePath, privID, menuName, parentMenuId }) {
+    static async modifyPageBulk(pageID, roleID, { menuID, pageName, pagePath, privID, menuName, parentMenuID }) {
 
         let obj = {
             pageID: pageID,
@@ -83,7 +99,7 @@ class PageService {
         if (resultPage !== false) {
             let objMenu = {
                 menuName: menuName,
-                parentMenuID: parentMenuId,
+                parentMenuID: parentMenuID,
                 pageID: pageID
             };
 
@@ -94,8 +110,9 @@ class PageService {
                 resultFromMenu = await MenusModel.insertMenu(objMenu);
 
             } else {
-                objMenu.MenuID = menuID;
+                objMenu.menuID = menuID;
                 resultFromMenu = await MenusModel.modifyMenu(objMenu);
+
             }
 
             if (resultFromMenu !== false) {

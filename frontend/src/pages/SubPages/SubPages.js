@@ -63,7 +63,8 @@ function SubPages({ priv }) {
     AlertElements,
     clearErrorMsg,
     errorMsg,
-    successMsg
+    successMsg,
+    errorTimerValue
   } = useAlert();
 
 
@@ -98,7 +99,9 @@ function SubPages({ priv }) {
             setMaxSubPages(count);
             setMaxPage(newMaxPage);
             setSubPageData(dataSubPages.data);
-            clearErrorMsg();
+            if (!errorTimerValue) {
+              clearErrorMsg();
+            }
           });
 
         } else {
