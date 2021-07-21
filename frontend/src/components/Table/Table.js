@@ -13,6 +13,7 @@ import { act } from "react-dom/test-utils";
   */
 class Table extends React.Component {
 
+  // TODO: use react-table and use sorting
   render() {
 
     const idKey = this.props.idKey;

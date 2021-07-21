@@ -1,7 +1,8 @@
 
 
-import React, { useState, useRef } from 'react';
-import { Alert, Button, Modal } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 
 // TODO: use react bootstrap dialog for delete, etc
 function useDialog() {
@@ -11,43 +12,43 @@ function useDialog() {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+
     return {
-        timerSuccessAlert,
-        timerErrorAlert,
-        passErrorMsg,
-        DialogElements,
-        passSuccessMsg,
-        clearErrorMsg,
-        clearSuccessMsg,
-        errorMsg,
-        successMsg,
-        errorTimerValue: _errorTimer.current,
-        successTimerValue: _successTimer.current
+        handleShow,
+        handleClose,
+        show,
+        DialogElements
     }
 }
 
 
 function DialogElements({
     show,
-    handleClose
+    handleClose,
+    handleDelete,
+    modalTitle,
+    modalBody
 }) {
+    const themeState = useSelector((state) => state.themeReducer.theme);
 
     return (
         <>
-            <Modal.Dialog show={show} onHide={handleClose}>
+
+            <Modal show={show} onHide={handleClose} dialogClassName={themeState}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Modal title</Modal.Title>
+                    <Modal.Title>{modalTitle}</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
-                    <p>Modal body text goes here.</p>
+                    <p>{modalBody}</p>
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="secondary">Close</Button>
-                    <Button variant="primary">Delete</Button>
+                    <Button variant="secondary" onClick={handleClose}>Close</Button>
+                    <Button variant="primary" onClick={handleDelete}>Delete</Button>
                 </Modal.Footer>
-            </Modal.Dialog>
+
+            </Modal>
         </>
     );
 }

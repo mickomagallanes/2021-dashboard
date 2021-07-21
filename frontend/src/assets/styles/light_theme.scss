@@ -303,7 +303,7 @@ $btnlink-color-light: #000000;
     .page-title {
       color: $body-color-light;
     }
-   
+    
     .page-header {
       background: $wrapper-bg-light;
       color: $body-color-light;
@@ -505,3 +505,35 @@ $preview-bg-color-light: rgb(223, 223, 223);
     color: #000000;
   }
 }
+
+/* MODALS */
+$modals-bg-color: #fff;
+$modals-section-border-color: #dee2e6;
+$modals-btn-secondary-bg-color: #6c757d;
+$modals-btn-primary-bg-color: #0d6efd;
+$modals-text-color: #212529;
+.light-theme {
+  .modal-content {
+    color: $modals-text-color;
+    background-color:$modals-bg-color;
+    border: 1px solid rgba(0,0,0,.2);
+    .modal-header{
+      border-bottom: 1px solid $modals-section-border-color;
+    }
+    .modal-footer {
+      border-top: 1px solid $modals-section-border-color;
+    }
+    .btn-secondary {
+      color: $modals-bg-color;
+      background-color: $modals-btn-secondary-bg-color;
+      border-color: $modals-btn-secondary-bg-color;
+    }
+
+    .btn-primary {
+      color: $modals-bg-color;
+      background-color: $modals-btn-primary-bg-color;
+      border-color: $modals-btn-primary-bg-color;
+    }
+  }
+}
+

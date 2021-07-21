@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ReactDOM from "react-dom";
 import './Pages.css';
 import Table from '../../components/Table/Table.lazy';
@@ -10,6 +10,7 @@ import useFetch from '../../components/useFetch';
 import useDidUpdateEffect from '../../components/useDidUpdateEffect';
 import Spinner from '../../components/Spinner/Spinner';
 import useDelete from '../../components/useDelete';
+import useDialog from '../../components/useDialog';
 
 const pageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all`;
 const pageCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all/count`;
@@ -30,6 +31,9 @@ const style = {
     'display': 'inline-block'
   }
 }
+
+const modalTitle = "Do you want to delete this page?";
+const modalBody = "This row will be deleted in the database, do you want to proceed?";
 
 function Pages({ priv }) {
 
@@ -52,13 +56,22 @@ function Pages({ priv }) {
 
   const history = useHistory();
 
+  const shouldRefetch = useRef(true);
+
   // to determine if initial fetch of data is done
 
-  const fetchDeps = [currentEntries, currentPage];
+  const fetchDeps = [currentEntries, currentPage, shouldRefetch.current];
 
   const [dataCount, loadingCount] = useFetch(pageCountURL, { customDeps: fetchDeps });
   const [dataPages, loadingPages] = useFetch(`${pageURL}?page=${currentPage}&limit=${currentEntries}`, { customDeps: fetchDeps });
   const [deleteMenu, deleteMenuResult] = useDelete(pageDeleteURL);
+
+  const {
+    handleShow,
+    handleClose,
+    show,
+    DialogElements
+  } = useDialog();
 
   const {
     timerSuccessAlert,
@@ -78,11 +91,17 @@ function Pages({ priv }) {
     setCurrentPage(pageNumber);
   }
 
+  const confirmDelete = useRef();
+
   const handleDelete = (pageId) => {
-    if (confirm("Delete this page?")) {
+    handleShow();
+    confirmDelete.current = () => {
       deleteMenu(pageId);
+      handleClose();
     }
+
   }
+
   const entryOnChange = async (e) => {
     setCurrentEntries(e.target.value);
   }
@@ -180,7 +199,7 @@ function Pages({ priv }) {
   useDidUpdateEffect(() => {
 
     timerSuccessAlert([deleteMenuResult.msg]);
-
+    shouldRefetch.current = !shouldRefetch.current;
   }, [deleteMenuResult]);
 
   // UI
@@ -272,7 +291,7 @@ function Pages({ priv }) {
           </div>
         </div>
       </div>
-
+      <DialogElements show={show} handleClose={handleClose} handleDelete={confirmDelete.current} modalTitle={modalTitle} modalBody={modalBody} />
     </>
   );
 }

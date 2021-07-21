@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Collapse, Dropdown } from 'react-bootstrap';
-import { Trans } from 'react-i18next';
 import logo from "../../assets/images/logo.svg";
 import logoMini from '../../assets/images/logo-mini.svg';
 import { connect } from 'react-redux';
@@ -179,8 +178,8 @@ class Sidebar extends React.Component {
                   <span className="count bg-success"></span>
                 </div>
                 <div className="profile-name">
-                  <h5 className="mb-0 font-weight-normal"><Trans>{this.props.username}</Trans></h5>
-                  <span><Trans>Gold Member</Trans></span>
+                  <h5 className="mb-0 font-weight-normal"> {this.props.username} </h5>
+                  <span> Gold Member </span>
                 </div>
               </div>
               <Dropdown alignRight>
@@ -195,7 +194,7 @@ class Sidebar extends React.Component {
                       </div>
                     </div>
                     <div className="preview-item-content">
-                      <p className="preview-subject ellipsis mb-1 text-small"><Trans>Account settings</Trans></p>
+                      <p className="preview-subject ellipsis mb-1 text-small"> Account settings </p>
                     </div>
                   </a>
                   <div className="dropdown-divider"></div>
@@ -206,7 +205,7 @@ class Sidebar extends React.Component {
                       </div>
                     </div>
                     <div className="preview-item-content">
-                      <p className="preview-subject ellipsis mb-1 text-small"><Trans>Change Password</Trans></p>
+                      <p className="preview-subject ellipsis mb-1 text-small"> Change Password </p>
                     </div>
                   </a>
                   <div className="dropdown-divider"></div>
@@ -217,7 +216,7 @@ class Sidebar extends React.Component {
                       </div>
                     </div>
                     <div className="preview-item-content">
-                      <p className="preview-subject ellipsis mb-1 text-small"><Trans>To-do list</Trans></p>
+                      <p className="preview-subject ellipsis mb-1 text-small"> To-do list </p>
                     </div>
                   </a>
                 </Dropdown.Menu>
@@ -226,7 +225,7 @@ class Sidebar extends React.Component {
           </li>
 
           <li className="nav-item nav-category">
-            <span className="nav-link"><Trans>Navigation</Trans></span>
+            <span className="nav-link"> Navigation </span>
           </li>
 
           {(this.state.sidebarData.length) && this.state.sidebarData.map(item =>
@@ -237,7 +236,7 @@ class Sidebar extends React.Component {
                   <span className="menu-icon">
                     <i className="mdi mdi-dashboard"></i>
                   </span>
-                  <span className="menu-title text-wrap"><Trans>{item.ParentMenuName}</Trans></span>
+                  <span className="menu-title text-wrap"> {item.ParentMenuName} </span>
                   <i className="menu-arrow"></i>
                 </div>
                 <Collapse in={!!this.state[`${item.ParentMenuID}Open`]}>
@@ -249,7 +248,7 @@ class Sidebar extends React.Component {
                         // match child menu to the current page location
                         return <li key={`menu${item.PagePath[key2]}`} className="nav-item">
                           <Link className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-link active' : 'nav-link'} to={`${item.PagePath[key2]}`}>
-                            <Trans>{item2}</Trans></Link></li>
+                            {item2} </Link></li>
                       })}
 
                     </ul>
@@ -261,7 +260,7 @@ class Sidebar extends React.Component {
                 return <li key={`menu${item.PagePath[key2]}`} className={this.isPathActive(`${item.PagePath[key2]}`) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
                   <Link className="nav-link" key={`link${item.PagePath[key2]}`} to={`${item.PagePath[key2]}`}>
                     <span className="menu-icon"><i className="mdi mdi-speedometer"></i></span>
-                    <span className="menu-title"><Trans>{item2}</Trans></span>
+                    <span className="menu-title"> {item2} </span>
                   </Link>
                 </li>
               })
@@ -275,15 +274,15 @@ class Sidebar extends React.Component {
               <span className="menu-icon">
                 <i className="mdi mdi-laptop"></i>
               </span>
-              <span className="menu-title"><Trans>Basic UI Elements</Trans></span>
+              <span className="menu-title"> Basic UI Elements </span>
               <i className="menu-arrow"></i>
             </div>
             <Collapse in={this.state.basicUiMenuOpen}>
               <div>
                 <ul className="nav flex-column sub-menu">
-                  <li className="nav-item"> <Link className={this.isPathActive('/basic-ui/buttons') ? 'nav-link active' : 'nav-link'} to="/basic-ui/buttons"><Trans>Buttons</Trans></Link></li>
-                  <li className="nav-item"> <Link className={this.isPathActive('/basic-ui/dropdowns') ? 'nav-link active' : 'nav-link'} to="/basic-ui/dropdowns"><Trans>Dropdowns</Trans></Link></li>
-                  <li className="nav-item"> <Link className={this.isPathActive('/basic-ui/typography') ? 'nav-link active' : 'nav-link'} to="/basic-ui/typography"><Trans>Typography</Trans></Link></li>
+                  <li className="nav-item"> <Link className={this.isPathActive('/basic-ui/buttons') ? 'nav-link active' : 'nav-link'} to="/basic-ui/buttons"> Buttons </Link></li>
+                  <li className="nav-item"> <Link className={this.isPathActive('/basic-ui/dropdowns') ? 'nav-link active' : 'nav-link'} to="/basic-ui/dropdowns"> Dropdowns </Link></li>
+                  <li className="nav-item"> <Link className={this.isPathActive('/basic-ui/typography') ? 'nav-link active' : 'nav-link'} to="/basic-ui/typography"> Typography </Link></li>
                 </ul>
               </div>
             </Collapse>
@@ -293,13 +292,13 @@ class Sidebar extends React.Component {
               <span className="menu-icon">
                 <i className="mdi mdi-playlist-play"></i>
               </span>
-              <span className="menu-title"><Trans>Form Elements</Trans></span>
+              <span className="menu-title"> Form Elements </span>
               <i className="menu-arrow"></i>
             </div>
             <Collapse in={this.state.formElementsMenuOpen}>
               <div>
                 <ul className="nav flex-column sub-menu">
-                  <li className="nav-item"> <Link className={this.isPathActive('/form-elements/basic-elements') ? 'nav-link active' : 'nav-link'} to="/form-elements/basic-elements"><Trans>Basic Elements</Trans></Link></li>
+                  <li className="nav-item"> <Link className={this.isPathActive('/form-elements/basic-elements') ? 'nav-link active' : 'nav-link'} to="/form-elements/basic-elements"> Basic Elements </Link></li>
                 </ul>
               </div>
             </Collapse>
@@ -309,13 +308,13 @@ class Sidebar extends React.Component {
               <span className="menu-icon">
                 <i className="mdi mdi-table-large"></i>
               </span>
-              <span className="menu-title"><Trans>Tables</Trans></span>
+              <span className="menu-title"> Tables </span>
               <i className="menu-arrow"></i>
             </div>
             <Collapse in={this.state.tablesMenuOpen}>
               <div>
                 <ul className="nav flex-column sub-menu">
-                  <li className="nav-item"> <Link className={this.isPathActive('/tables/basic-table') ? 'nav-link active' : 'nav-link'} to="/tables/basic-table"><Trans>Basic Table</Trans></Link></li>
+                  <li className="nav-item"> <Link className={this.isPathActive('/tables/basic-table') ? 'nav-link active' : 'nav-link'} to="/tables/basic-table"> Basic Table </Link></li>
                 </ul>
               </div>
             </Collapse>
@@ -325,13 +324,13 @@ class Sidebar extends React.Component {
               <span className="menu-icon">
                 <i className="mdi mdi-chart-bar"></i>
               </span>
-              <span className="menu-title"><Trans>Charts</Trans></span>
+              <span className="menu-title"> Charts </span>
               <i className="menu-arrow"></i>
             </div>
             <Collapse in={this.state.chartsMenuOpen}>
               <div>
                 <ul className="nav flex-column sub-menu">
-                  <li className="nav-item"> <Link className={this.isPathActive('/charts/chart-js') ? 'nav-link active' : 'nav-link'} to="/charts/chart-js"><Trans>Chart Js</Trans></Link></li>
+                  <li className="nav-item"> <Link className={this.isPathActive('/charts/chart-js') ? 'nav-link active' : 'nav-link'} to="/charts/chart-js"> Chart Js </Link></li>
                 </ul>
               </div>
             </Collapse>
@@ -341,13 +340,13 @@ class Sidebar extends React.Component {
               <span className="menu-icon">
                 <i className="mdi mdi-contacts"></i>
               </span>
-              <span className="menu-title"><Trans>Icons</Trans></span>
+              <span className="menu-title"> Icons </span>
               <i className="menu-arrow"></i>
             </div>
             <Collapse in={this.state.iconsMenuOpen}>
               <div>
                 <ul className="nav flex-column sub-menu">
-                  <li className="nav-item"> <Link className={this.isPathActive('/icons/mdi') ? 'nav-link active' : 'nav-link'} to="/icons/mdi"><Trans>Material</Trans></Link></li>
+                  <li className="nav-item"> <Link className={this.isPathActive('/icons/mdi') ? 'nav-link active' : 'nav-link'} to="/icons/mdi"> Material </Link></li>
                 </ul>
               </div>
             </Collapse>
@@ -357,27 +356,27 @@ class Sidebar extends React.Component {
               <span className="menu-icon">
                 <i className="mdi mdi-security"></i>
               </span>
-              <span className="menu-title"><Trans>User Pages</Trans></span>
+              <span className="menu-title"> User Pages </span>
               <i className="menu-arrow"></i>
             </div>
             <Collapse in={this.state.userPagesMenuOpen}>
               <div>
                 <ul className="nav flex-column sub-menu">
-                  <li className="nav-item"> <Link className={this.isPathActive('/user-pages/login-1') ? 'nav-link active' : 'nav-link'} to="/user-pages/login-1"><Trans>Login</Trans></Link></li>
-                  <li className="nav-item"> <Link className={this.isPathActive('/user-pages/register-1') ? 'nav-link active' : 'nav-link'} to="/user-pages/register-1"><Trans>Register</Trans></Link></li>
+                  <li className="nav-item"> <Link className={this.isPathActive('/user-pages/login-1') ? 'nav-link active' : 'nav-link'} to="/user-pages/login-1"> Login </Link></li>
+                  <li className="nav-item"> <Link className={this.isPathActive('/user-pages/register-1') ? 'nav-link active' : 'nav-link'} to="/user-pages/register-1"> Register </Link></li>
                 </ul>
               </div>
             </Collapse>
           </li>
           <li className="nav-item nav-category">
-            <span className="nav-link"><Trans>More</Trans></span>
+            <span className="nav-link"> More </span>
           </li>
           <li className={this.isPathActive('/error-pages') ? 'nav-item menu-items active' : 'nav-item menu-items'}>
             <div className={this.state.errorPagesMenuOpen ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState('errorPagesMenuOpen')} data-toggle="collapse">
               <span className="menu-icon">
                 <i className="mdi mdi-lock"></i>
               </span>
-              <span className="menu-title"><Trans>Error Pages</Trans></span>
+              <span className="menu-title"> Error Pages </span>
               <i className="menu-arrow"></i>
             </div>
             <Collapse in={this.state.errorPagesMenuOpen}>
@@ -394,7 +393,7 @@ class Sidebar extends React.Component {
               <span className="menu-icon">
                 <i className="mdi mdi-file-document-box"></i>
               </span>
-              <span className="menu-title"><Trans>Documentation</Trans></span>
+              <span className="menu-title"> Documentation </span>
             </a>
           </li> */}
         </ul>
