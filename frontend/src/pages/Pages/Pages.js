@@ -44,14 +44,22 @@ function Pages({ priv }) {
   const [pageData, setPageData] = useState([]);
 
   const searchParams = new URLSearchParams(location.search);
+
+  // TODO: try to minimize these states, like bundling it with custom hooks
   const pageParams = searchParams.get('page');
   const entryParams = searchParams.get('entry');
   const pageInitOptional = parseInt(pageParams);
   const entryInitOptional = parseInt(entryParams);
-
   const [currentPage, setCurrentPage] = useState(pageParams ? pageInitOptional : 1);
   const [currentEntries, setCurrentEntries] = useState(entryParams ? entryInitOptional : 5);
-  const [maxPage, setMaxPage] = useState(null);
+
+  const sortByParams = searchParams.get('sortBy');
+  const orderParams = searchParams.get('order');
+  const [currentSortCol, setCurrentSortCol] = useState(sortByParams ? sortByParams : null);
+  const [currentSortOrder, setCurrentSortOrder] = useState(orderParams ? orderParams : null);
+
+  const [maxPage, setMaxPage] = useState(null); // TODO: change naming
+
   const [maxPages, setMaxPages] = useState(null);
 
   const history = useHistory();
@@ -60,11 +68,17 @@ function Pages({ priv }) {
 
   // to determine if initial fetch of data is done
 
-  const fetchDeps = [currentEntries, currentPage, shouldRefetch.current];
+  const fetchDepsCount = [currentEntries, currentPage, shouldRefetch.current];
+  const fetchDepsPages = [shouldRefetch.current];
 
-  const [dataCount, loadingCount] = useFetch(pageCountURL, { customDeps: fetchDeps });
-  const [dataPages, loadingPages] = useFetch(`${pageURL}?page=${currentPage}&limit=${currentEntries}`, { customDeps: fetchDeps });
+  const [dataCount, loadingCount] = useFetch(pageCountURL, { customDeps: fetchDepsCount });
+
+  const [dataPages, loadingPages] = useFetch(`${pageURL}?page=${currentPage}&limit=${currentEntries}
+  &sortBy=${currentSortCol}&order=${currentSortOrder}`, { customDeps: fetchDepsPages });
+
   const [deleteMenu, deleteMenuResult] = useDelete(pageDeleteURL);
+
+  const confirmDelete = useRef();
 
   const {
     handleShow,
@@ -91,7 +105,13 @@ function Pages({ priv }) {
     setCurrentPage(pageNumber);
   }
 
-  const confirmDelete = useRef();
+  const handleSort = (colId, order) => {
+    ReactDOM.unstable_batchedUpdates(() => {
+      setCurrentSortCol(colId);
+      setCurrentSortOrder(order);
+    });
+
+  }
 
   const handleDelete = (pageId) => {
     handleShow();
@@ -186,7 +206,8 @@ function Pages({ priv }) {
 
   // update url search params when currentPage or currentEntries changes
   useDidUpdateEffect(() => {
-    const currSearch = `?page=${currentPage}&entry=${currentEntries}`;
+    const sortParam = currentSortCol ? `&sortBy=${currentSortCol}&order=${currentSortOrder}` : "";
+    const currSearch = `?page=${currentPage}&limit=${currentEntries}${sortParam}`;
 
     if (location.search !== currSearch) {
       history.push({
@@ -194,7 +215,7 @@ function Pages({ priv }) {
       })
     }
 
-  }, [currentPage, currentEntries]);
+  }, [currentPage, currentEntries, currentSortCol, currentSortOrder]);
 
   useDidUpdateEffect(() => {
 
@@ -280,10 +301,12 @@ function Pages({ priv }) {
                 {loadingPages && loadingCount ? <Spinner /> :
                   <Table
                     data={pageData}
-                    tblClass=""
                     colData={colData}
                     idKey={idKey}
                     actionButtons={actionButtons}
+                    sortFunc={(colId, order) => { handleSort(colId, order) }}
+                    currentOrder={currentSortOrder}
+                    currentSortCol={currentSortCol}
                   />
                 }
               </div>
@@ -295,10 +318,5 @@ function Pages({ priv }) {
     </>
   );
 }
-
-
-
-
-
 
 export default Pages;

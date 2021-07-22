@@ -1,7 +1,6 @@
 import React from 'react';
 import './Pagination.css';
 import styled from "styled-components";
-import Spinner from '../Spinner/Spinner';
 
 function getPagingRange(current, { min = 1, total = 20, length = 5 } = {}) {
   if (length > total) length = total;
@@ -22,6 +21,7 @@ class Pagination extends React.Component {
   }
 
   render() {
+
     const { currentPage, maxPage } = this.props;
 
     const pageConditionals = [

@@ -5,10 +5,9 @@ const mysql_conn = require("./db.js");
 // class extension for page with Pagination, returns all getter functions needed
 class GettersModel {
 
-    constructor(tableName, primaryKey, sortCol = undefined) {
+    constructor(tableName, primaryKey) {
         this.tableName = tableName;
         this.primaryKey = primaryKey;
-        this.sortCol = sortCol;
     }
 
     /**
@@ -33,8 +32,23 @@ class GettersModel {
      * get all menu rows
      * @return {Array} result
      */
-    async getAll() {
-        const sortStmt = this.sortCol ? ` ORDER BY ${this.sortCol} ASC` : ""
+    async getAll(sortBy = undefined, order = undefined) {
+        let sortStmt = "";
+
+        // check if column exists, then proceed
+        if (sortBy) {
+            try {
+                const resultSort = await mysql_conn.query(`SHOW COLUMNS FROM ${this.tableName} LIKE ?`, sortBy);
+                if (resultSort.length) {
+                    sortStmt = ` ORDER BY ${sortBy} ${order}`;
+                }
+
+            } catch (err) {
+                console.log(err);
+                return false;
+            }
+        }
+
         const stmt = `SELECT * from ${this.tableName} ${sortStmt}`;
 
         try {
@@ -72,10 +86,24 @@ class GettersModel {
         * @param {Number} obj.limit limit count
         * @return {Array} result
         */
-    async getAllPaged({ startIndex, limit }) {
+    async getAllPaged({ startIndex, limit, sortBy, order }) {
+        let sortStmt = "";
+
+        // check if column exists, then proceed
+        if (sortBy) {
+            try {
+                const resultSort = await mysql_conn.query(`SHOW COLUMNS FROM ${this.tableName} LIKE ?`, sortBy);
+                if (resultSort.length) {
+                    sortStmt = ` ORDER BY ${sortBy} ${order}`;
+                }
+
+            } catch (err) {
+                console.log(err);
+                return false;
+            }
+        }
 
         const limitClause = ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`;
-        const sortStmt = this.sortCol ? ` ORDER BY ${this.sortCol} ASC` : ""
 
         const stmt = `SELECT * from ${this.tableName} ${sortStmt} ${limitClause}`;
         try {
