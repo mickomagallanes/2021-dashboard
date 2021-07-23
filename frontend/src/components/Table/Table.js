@@ -16,6 +16,7 @@ function Table({
   currentSortCol,
   sortFunc,
 }) {
+
   const [order, setOrder] = useState(currentOrder ? currentOrder : defaultOrder);
   const [sortedCol, setSortedCol] = useState(currentSortCol ? currentSortCol : null);
 
@@ -56,15 +57,13 @@ function Table({
     {order === "ASC" ? <i className="mdi mdi-arrow-up-bold"> </i> : <i className="mdi mdi-arrow-down-bold"> </i>}
   </>)
 
-
-
   return (
 
     <div className="table-responsive">
       <table data-testid="Table" className={`table ${tblClass}`}>
         <thead>
           <tr>
-            {sortFunc !== undefined
+            {sortFunc
               ? colData.map(x => (
 
                 <SortedTH key={`th${x.id}`} onClick={() => handleSortClick(x.id)}>
@@ -95,14 +94,12 @@ function Table({
             // data from database used for tr key
             // td key used combination of data from db and hardcoded data
             // e.g: "rname2" where "rname" is hardcoded id and "2" is the row id from db
-            data.length && data.map(x =>
+            !!data.length && data.map(x =>
               <tr key={`tr${x[idKey]}`}>
                 {colData.map(y => <td key={`td${x[y.id]}${x[x[idKey]]}`}>{x[y.id]}</td>)}
 
                 {!actionDisabled &&
-                  <td>
-                    {actionButtons(x[idKey])}
-                  </td>
+                  <td>{actionButtons(x[idKey])}</td>
                 }
               </tr>
             )

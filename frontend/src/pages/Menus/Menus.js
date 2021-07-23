@@ -28,6 +28,7 @@ const style = {
   }
 }
 
+// TODO: use useBundledTable
 function Menus({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES

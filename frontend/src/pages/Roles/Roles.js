@@ -1,12 +1,15 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './Roles.css';
 import axios from 'axios';
-import Table from '../../components/Table/Table.lazy';
 import { axiosConfig } from "../../helpers/utils";
-import { Alert } from 'react-bootstrap';
-import * as currentModule from './Roles'; // use currentmodule to call func outside class, for testing
 import { PRIVILEGES } from "../../helpers/constants"
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import useBundledTable from '../../components/useBundledTable';
+import useFetch from '../../components/useFetch';
+import useAlert from '../../components/useAlert';
+import Spinner from '../../components/Spinner/Spinner';
+import useDidUpdateEffect from '../../components/useDidUpdateEffect';
+import ReactDOM from "react-dom";
 
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
 
@@ -27,203 +30,171 @@ export async function fetchRolesData() {
   }
 }
 
-class Roles extends React.Component {
+const colData = [
+  { "id": "id", "name": "Role ID" },
+  { "id": "rname", "name": "Role name" }
+];
 
-  constructor() {
-    super();
-    this.state = {
-      data: [],
-      errorMsg: [],
-      successMsg: []
-    }
+const idKey = "id";
 
-    this.colData = [
-      { "id": "id", "name": "Role ID" },
-      { "id": "rname", "name": "Role name" }
-    ];
+function Roles({ priv }) {
 
-    this.idKey = "id";
+  // HOOKS DECLARATIONS AND VARIABLES
 
-    this.successTimer = null;
-    this.errorTimer = null;
-  }
+  const location = useLocation();
 
-  async componentDidMount() {
+  const [rolesData, setRolesData] = useState([]);
 
-    // import current module and call fetchRolesData for testing benefits
-    let data = await currentModule.fetchRolesData();
+  const {
+    searchParamQuery,
+    entryProps,
+    paginationProps,
+    tableProps,
+    BundledTable
+  } = useBundledTable({ data: rolesData, isPaginated: false, isSorted: false });
 
-    await this.saveData(data);
+  const [dataFetchedRoles, loadingFetchedRoles] = useFetch(roleURL + searchParamQuery);
 
-    this.loadSuccessProp();
+  const {
+    timerSuccessAlert,
+    timerErrorAlert,
+    passErrorMsg,
+    AlertElements,
+    clearErrorMsg,
+    errorMsg,
+    successMsg,
+    errorTimerValue
+  } = useAlert();
 
-    this.loadErrorProp();
-  }
+  const isWriteable = priv === PRIVILEGES.readWrite;
 
-  componentWillUnmount() {
-    // fix Warning: Can't perform a React state update on an unmounted component
-    this.setState = () => {
-      return;
-    };
-  }
+  // FUNCTIONS AND EVENT HANDLERS
 
-  clearErrorMsg() {
-    if (this.state.errorMsg.length) {
-      this.setState({ errorMsg: [] });
-    }
-  }
+  const checkFetchedData = async () => {
+    if (dataFetchedRoles) {
+      if (dataFetchedRoles.status === true) {
+        ReactDOM.unstable_batchedUpdates(() => {
+          setRolesData(dataFetchedRoles.data);
+        });
 
-  setErrorMsg(errorArr) {
-    this.setState({ errorMsg: [errorArr] });
-  }
+        if (!errorTimerValue) {
+          clearErrorMsg();
+        }
 
-  pushErrorMsg(errorArr) {
-    this.setState({ errorMsg: [...this.state.errorMsg, errorArr] });
-  }
+      } else {
+        passErrorMsg(`${dataFetchedRoles.msg}`);
+      }
 
-  clearSuccessMsg() {
-    this.setState({ successMsg: [] });
-  }
-
-  setSuccessMsg(successArr) {
-    this.setState({ successMsg: [successArr] });
-  }
-
-  pushSuccessMsg(successArr) {
-    this.setState({ successMsg: [...this.state.successMsg, successArr] });
-  }
-
-  loadSuccessProp() {
-    if (this.props.location.successMsg) {
-      this.showSuccessAlert(this.props.location.successMsg)
     }
   }
 
-  loadErrorProp() {
-    if (this.props.location.errorMsg) {
-      this.showErrorAlert(this.props.location.errorMsg);
+  // LIFECYCLES
+
+  // show passed errorMsg or successMsg only once
+  useEffect(() => {
+
+    if (location.errorMsg) {
+
+      const loadErrorProp = () => {
+
+        timerErrorAlert(location.errorMsg);
+      }
+
+      loadErrorProp();
+
+      return () => {
+        location.errorMsg = null;
+      }
     }
-  }
 
-  showSuccessAlert(msgArr) {
-    this.setState({ successMsg: msgArr });
+    if (location.successMsg) {
 
-    clearTimeout(this.successTimer);
+      const loadSuccessProp = () => {
+        timerSuccessAlert(location.successMsg);
+      }
 
-    this.successTimer = setTimeout(() => {
-      this.clearSuccessMsg()
-    }, 6000)
-
-  }
-
-  showErrorAlert(msgArr) {
-    this.setState({ errorMsg: msgArr });
-
-    clearTimeout(this.errorTimer);
-
-    // make timeout reset when error alert is continuous
-    this.errorTimer = setTimeout(() => {
-      this.clearErrorMsg()
-    }, 6000)
-
-  }
-
-  saveData = async (data) => {
-
-    if (data.status === true) {
-      this.setState({
-        data: data.data
-      });
-      this.clearErrorMsg();
-    } else {
-      this.setErrorMsg(data.msg);
+      loadSuccessProp();
+      return () => {
+        location.successMsg = null;
+      }
     }
-  }
 
-  render() {
-    let isWriteable = this.props.priv === PRIVILEGES.readWrite;
-    const actionButtons = (roleId) => {
-      return (
-        <>
-          <Link to={`/roles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
-            {isWriteable ? "Edit" : "Read"} Role
-            <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
-          </Link>
+  }, [location, timerErrorAlert, timerSuccessAlert])
 
-          <Link to={`/routeroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
-            {isWriteable ? "Edit" : "Read"} Role-Routes Privileges
-            <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
-          </Link>
 
-          <Link to={`/pageroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
-            {isWriteable ? "Edit" : "Read"} Role-Pages Privileges
-            <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
-          </Link>
+  useDidUpdateEffect(() => {
 
-        </>
-      )
-    };
+    checkFetchedData();
+  }, [dataFetchedRoles]);
 
+  // UI
+  const actionButtons = (roleId) => {
     return (
       <>
-        <div>
-          <div className="page-header">
-            <h3 className="page-title">Roles Page</h3>
-          </div>
-          {this.state.errorMsg.map((err) =>
-            <Alert
-              className="p-1"
-              variant="danger"
-              show={err}
-              transition={false}
-              key={err}
-            >
-              {err}
-            </Alert>
-          )}
+        <Link to={`/roles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+          {isWriteable ? "Edit" : "Read"} Role
+          <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+        </Link>
 
-          {this.state.successMsg.map((succ) =>
-            <Alert
-              className="p-1"
-              variant="success"
-              show={succ}
-              transition={false}
-              key={succ}
-            >
-              {succ}
-            </Alert>
-          )}
+        <Link to={`/routeroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+          {isWriteable ? "Edit" : "Read"} Role-Routes Privileges
+          <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+        </Link>
 
-          <div className="row" data-testid="Roles">
-            <div className="col-lg-12 grid-margin stretch-card">
-              <div className="card">
-                <div className="card-body">
-                  <h4 className="card-title">Roles Table</h4>
+        <Link to={`/pageroles/form/${roleId}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+          {isWriteable ? "Edit" : "Read"} Role-Pages Privileges
+          <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+        </Link>
 
-                  {this.props.priv === PRIVILEGES.readWrite &&
-                    <Link to="/roles/form/add" className="btn btn-outline-secondary float-sm-right d-block">
-                      <i className="mdi mdi-account-plus"> </i>
-                      Add Role
-                    </Link>
-                  }
+      </>
+    )
+  };
 
-                  <Table
-                    data={this.state.data}
-                    tblClass=""
-                    colData={this.colData}
+  const addButtons = () => {
+    return (
+      <>
+        {isWriteable &&
+          <Link to="/roles/form/add" className="btn btn-outline-secondary float-sm-right d-block">
+            <i className="mdi mdi-account-plus"> </i>
+            Add Role
+          </Link>
+        }
+
+      </>
+    )
+  }
+  return (
+    <>
+      <div>
+        <div className="page-header">
+          <h3 className="page-title">Roles Page</h3>
+        </div>
+
+        <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
+        <div className="row" data-testid="Roles" >
+          <div className="col-lg-12 grid-margin stretch-card">
+            <div className="card">
+              <div className="card-body">
+                <h4 className="card-title"> Roles Table </h4>
+                {loadingFetchedRoles ? <Spinner /> :
+                  <BundledTable
+                    tableProps={tableProps}
+                    entryProps={entryProps}
+                    paginationProps={paginationProps}
+                    colData={colData}
+                    idKey={idKey}
                     actionButtons={actionButtons}
-                    idKey={this.idKey}
+                    addButtons={addButtons}
                   />
-                </div>
+                }
+
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-      </>
-    );
-  }
-
+    </>
+  );
 }
-
 export default Roles;

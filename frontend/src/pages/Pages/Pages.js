@@ -1,16 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ReactDOM from "react-dom";
 import './Pages.css';
-import Table from '../../components/Table/Table.lazy';
 import { PRIVILEGES } from "../../helpers/constants"
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import Pagination from '../../components/Pagination/Pagination';
+import { Link, useLocation } from 'react-router-dom';
 import useAlert from '../../components/useAlert';
 import useFetch from '../../components/useFetch';
 import useDidUpdateEffect from '../../components/useDidUpdateEffect';
 import Spinner from '../../components/Spinner/Spinner';
 import useDelete from '../../components/useDelete';
 import useDialog from '../../components/useDialog';
+import useBundledTable from '../../components/useBundledTable';
 
 const pageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all`;
 const pageCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all/count`;
@@ -24,14 +23,6 @@ const colData = [
 
 const idKey = "PageID";
 
-const style = {
-  inputEntry: {
-    'maxWidth': '4rem',
-    'width': 'auto',
-    'display': 'inline-block'
-  }
-}
-
 const modalTitle = "Do you want to delete this page?";
 const modalBody = "This row will be deleted in the database, do you want to proceed?";
 
@@ -42,29 +33,23 @@ function Pages({ priv }) {
   const location = useLocation();
 
   const [pageData, setPageData] = useState([]);
-
-  const searchParams = new URLSearchParams(location.search);
-
-  // TODO: try to minimize these states, like bundling it with custom hooks
-  const pageParams = searchParams.get('page');
-  const entryParams = searchParams.get('entry');
-  const pageInitOptional = parseInt(pageParams);
-  const entryInitOptional = parseInt(entryParams);
-  const [currentPage, setCurrentPage] = useState(pageParams ? pageInitOptional : 1);
-  const [currentEntries, setCurrentEntries] = useState(entryParams ? entryInitOptional : 5);
-
-  const sortByParams = searchParams.get('sortBy');
-  const orderParams = searchParams.get('order');
-  const [currentSortCol, setCurrentSortCol] = useState(sortByParams ? sortByParams : null);
-  const [currentSortOrder, setCurrentSortOrder] = useState(orderParams ? orderParams : null);
-
-  const [maxPage, setMaxPage] = useState(null); // TODO: change naming
-
   const [maxPages, setMaxPages] = useState(null);
 
-  const history = useHistory();
-
   const shouldRefetch = useRef(true);
+
+  const {
+    searchParamQuery,
+    entryProps,
+    entryProps: {
+      currentEntries
+    },
+    paginationProps,
+    paginationProps: {
+      currentPage
+    },
+    tableProps,
+    BundledTable
+  } = useBundledTable({ data: pageData, dataCount: maxPages });
 
   // to determine if initial fetch of data is done
 
@@ -73,8 +58,7 @@ function Pages({ priv }) {
 
   const [dataCount, loadingCount] = useFetch(pageCountURL, { customDeps: fetchDepsCount });
 
-  const [dataPages, loadingPages] = useFetch(`${pageURL}?page=${currentPage}&limit=${currentEntries}
-  &sortBy=${currentSortCol}&order=${currentSortOrder}`, { customDeps: fetchDepsPages });
+  const [dataPages, loadingPages] = useFetch(pageURL + searchParamQuery, { customDeps: fetchDepsPages });
 
   const [deleteMenu, deleteMenuResult] = useDelete(pageDeleteURL);
 
@@ -101,17 +85,7 @@ function Pages({ priv }) {
   const isWriteable = priv === PRIVILEGES.readWrite;
 
   // FUNCTIONS AND EVENT HANDLERS
-  const paginationClick = async (pageNumber) => {
-    setCurrentPage(pageNumber);
-  }
 
-  const handleSort = (colId, order) => {
-    ReactDOM.unstable_batchedUpdates(() => {
-      setCurrentSortCol(colId);
-      setCurrentSortOrder(order);
-    });
-
-  }
 
   const handleDelete = (pageId) => {
     handleShow();
@@ -122,36 +96,21 @@ function Pages({ priv }) {
 
   }
 
-  const entryOnChange = async (e) => {
-    setCurrentEntries(e.target.value);
-  }
 
   const checkFetchedData = async () => {
     if (dataPages && dataCount) {
       if (dataCount.status === true) {
         let count = dataCount.data.count;
 
-        const newMaxPage = Math.ceil(count / currentEntries);
-
-        // if state.currentPage is higher than the maxPage, for instance when
-        // state.currentEntries is changed with higher state.currentPage
-        if (currentPage > newMaxPage) {
-          setCurrentPage(1); // triggers fetch again
-
-          return;
-        }
-
         if (dataPages.status === true) {
           ReactDOM.unstable_batchedUpdates(() => {
             setMaxPages(count);
-            setMaxPage(newMaxPage);
             setPageData(dataPages.data);
-
-            if (!errorTimerValue) {
-              clearErrorMsg();
-            }
-
           });
+
+          if (!errorTimerValue) {
+            clearErrorMsg();
+          }
 
         } else {
           passErrorMsg(`${dataPages.msg}`);
@@ -204,24 +163,12 @@ function Pages({ priv }) {
   }, [dataPages, dataCount]);
 
 
-  // update url search params when currentPage or currentEntries changes
-  useDidUpdateEffect(() => {
-    const sortParam = currentSortCol ? `&sortBy=${currentSortCol}&order=${currentSortOrder}` : "";
-    const currSearch = `?page=${currentPage}&limit=${currentEntries}${sortParam}`;
-
-    if (location.search !== currSearch) {
-      history.push({
-        search: currSearch
-      })
-    }
-
-  }, [currentPage, currentEntries, currentSortCol, currentSortOrder]);
-
   useDidUpdateEffect(() => {
 
     timerSuccessAlert([deleteMenuResult.msg]);
     shouldRefetch.current = !shouldRefetch.current;
   }, [deleteMenuResult]);
+
 
   // UI
   const actionButtons = (pageID) => {
@@ -247,12 +194,32 @@ function Pages({ priv }) {
     )
   };
 
+  const addButtons = () => {
+    return (
+      <>
+        {isWriteable &&
+          <>
+            <Link to={`/pages/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
+              <i className="mdi mdi-account-plus"> </i>
+              Add Page
+            </Link>
+
+            <Link to={`/pages/bulk/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block mr-3">
+              <i className="mdi mdi-account-plus"> </i>
+              Add Page (Bulk)
+            </Link>
+          </>
+        }
+
+      </>
+    )
+  }
   return (
 
     <>
       <div>
         <div className="page-header">
-          <h3 className="page-title"> Page Page</h3>
+          <h3 className="page-title"> Pages</h3>
         </div>
 
         <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
@@ -261,54 +228,18 @@ function Pages({ priv }) {
             <div className="card">
               <div className="card-body">
                 <h4 className="card-title"> Page Table </h4>
-
-                <div className="row mb-4">
-                  <div className="col mt-3">
-                    <span className="float-sm-left d-block mt-1 mt-sm-0 text-center">
-                      Show
-                      <input
-                        id="inputEntry"
-                        className="form-control ml-2 mr-2"
-                        value={currentEntries}
-                        onChange={(e) => { entryOnChange(e) }}
-                        type="text" style={style.inputEntry}
-                      />
-                      of {maxPages} entries
-                    </span>
-                  </div>
-
-                  {loadingPages && loadingCount ? <Spinner /> :
-                    <div className="col-lg-6 mt-3">
-                      <Pagination currentPage={currentPage} maxPage={maxPage} onClick={paginationClick} />
-                    </div>}
-                  <div className="col mt-3">
-                    {isWriteable &&
-                      <>
-                        <Link to={`/pages/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
-                          <i className="mdi mdi-account-plus"> </i>
-                          Add Page
-                        </Link>
-
-                        <Link to={`/pages/bulk/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block mr-3">
-                          <i className="mdi mdi-account-plus"> </i>
-                          Add Page (Bulk)
-                        </Link>
-                      </>
-                    }
-
-                  </div>
-                </div>
                 {loadingPages && loadingCount ? <Spinner /> :
-                  <Table
-                    data={pageData}
+                  <BundledTable
+                    tableProps={tableProps}
+                    entryProps={entryProps}
+                    paginationProps={paginationProps}
                     colData={colData}
                     idKey={idKey}
                     actionButtons={actionButtons}
-                    sortFunc={(colId, order) => { handleSort(colId, order) }}
-                    currentOrder={currentSortOrder}
-                    currentSortCol={currentSortCol}
+                    addButtons={addButtons}
                   />
                 }
+
               </div>
             </div>
           </div>

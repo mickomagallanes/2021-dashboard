@@ -56,10 +56,10 @@ export const menuFormInitialState = {
 /**
  * MenusForm Component
  * @param {Object} obj
- * @param {String} priv Privilege of logged-in user to MenusForm
- * @param {String} [customMenuURL] replaces url of menu get by id, added if component is rendered as child from other form
- * @param {React useRef} [parentFormRef] add ref for formik, so parent component can fetch the form value
- * @param {Object} [parentMemoData] saved form value in parent, passed when parent component rerenders so menu form value persists
+ * @param {String} obj.priv Privilege of logged-in user to MenusForm
+ * @param {String} [obj.customMenuURL] replaces url of menu get by id, added if component is rendered as child from other form
+ * @param {React useRef} [obj.parentFormRef] add ref for formik, so parent component can fetch the form value
+ * @param {Object} [obj.parentMemoData] saved form value in parent, passed when parent component rerenders so menu form value persists
  */
 function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
 
@@ -287,7 +287,7 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
                     <div>
                       <Field
                         label="Parent Menu ID"
-                        options={(dataParentMenus && dataParentMenus.data) || []}
+                        options={(dataParentMenus && dataParentMenus.data) || []} // TODO: use immutable instead, the new useFetch feature
                         idKey="ParentMenuID"
                         valueKey="ParentMenuName"
                         name="parentMenuID"
@@ -301,7 +301,7 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
                         <div className="mt-3">
                           <Field
                             label="Page"
-                            options={(dataPages && dataPages.data) || []}
+                            options={(dataPages && dataPages.data) || []} // TODO: use immutable instead, the new useFetch feature
                             idKey="PageID"
                             valueKey="PageName"
                             name="pageID"

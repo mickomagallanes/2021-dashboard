@@ -49,6 +49,7 @@ function useFetch(apiUrl, { customDeps = [], initialData = null } = {}) {
                 extractedData.current = initialData;
             });
         }
+
     }, [apiUrl, initialData, ...customDeps]);
 
     return [

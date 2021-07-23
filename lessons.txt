@@ -4,7 +4,6 @@ Class Components vs Functional Components.
 
  - Users
  - UsersForm
- - Roles
  - RolesForm (depends on itself when inserting bulk data)
  - RouteRolesForm
  - PageRolesForm
@@ -33,7 +32,8 @@ Class Components vs Functional Components.
  - PagesFormBulk (depends on the api when inserting bulk data)
  - SubPages
  - SubPagesForm
-
+ - Roles
+ 
 Note: try to use hooks everytime, so starting on July 2021, all of my components are written with Functional Components
 
 FILE STRUCTURE
