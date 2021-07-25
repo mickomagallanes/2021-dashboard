@@ -1,17 +1,22 @@
-import React, { useEffect, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import ReactDOM from "react-dom";
 import './SubPages.css';
-import Table from '../../components/Table/Table.lazy';
 import { PRIVILEGES } from "../../helpers/constants"
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import Pagination from '../../components/Pagination/Pagination';
+import { Link, useLocation } from 'react-router-dom';
 import useAlert from '../../components/useAlert';
 import useFetch from '../../components/useFetch';
 import useDidUpdateEffect from '../../components/useDidUpdateEffect';
 import Spinner from '../../components/Spinner/Spinner';
+import useBundledTable from '../../components/useBundledTable';
+import useDelete from '../../components/useDelete';
+import useDialog from '../../components/useDialog';
+
+const modalTitle = "Do you want to delete this page?";
+const modalBody = "This row will be deleted in the database, do you want to proceed?";
 
 const subPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/all`;
 const subPageCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/all/count`;
+const subPageDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/delete/`;
 
 const colData = [
   { "id": "SubPageID", "name": "SubPage ID" },
@@ -20,14 +25,6 @@ const colData = [
 
 const idKey = "SubPageID";
 
-const style = {
-  inputEntry: {
-    'maxWidth': '4rem',
-    'width': 'auto',
-    'display': 'inline-block'
-  }
-}
-
 function SubPages({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
@@ -35,48 +32,68 @@ function SubPages({ priv }) {
   const location = useLocation();
 
   const [subPageData, setSubPageData] = useState([]);
+  const [totalSubPages, setTotalSubPages] = useState(null);
 
-  const searchParams = new URLSearchParams(location.search);
-  const pageParams = searchParams.get('page');
-  const entryParams = searchParams.get('entry');
-  const pageInitOptional = parseInt(pageParams);
-  const entryInitOptional = parseInt(entryParams);
+  const shouldRefetch = useRef(true);
 
-  const [currentPage, setCurrentPage] = useState(pageParams ? pageInitOptional : 1);
-  const [currentEntries, setCurrentEntries] = useState(entryParams ? entryInitOptional : 5);
-  const [maxPage, setMaxPage] = useState(null);
-  const [maxSubPages, setMaxSubPages] = useState(null);
-
-  const history = useHistory();
+  const {
+    searchParamQuery,
+    entryProps,
+    entryProps: {
+      currentEntries
+    },
+    paginationProps,
+    paginationProps: {
+      currentPage
+    },
+    tableProps,
+    BundledTable
+  } = useBundledTable({ data: subPageData, dataCount: totalSubPages });
 
   // to determine if initial fetch of data is done
 
-  const fetchDeps = [currentEntries, currentPage];
+  const fetchDepsCount = [currentEntries, currentPage, shouldRefetch.current];
+  const fetchDepsSubPages = [shouldRefetch.current];
 
-  const [dataCount, loadingCount] = useFetch(subPageCountURL, { customDeps: fetchDeps });
-  const [dataSubPages, loadingSubPages] = useFetch(`${subPageURL}?page=${currentPage}&limit=${currentEntries}`, { customDeps: fetchDeps });
+  // also only loads by page and not sort since url is static
+  const [dataCount, loadingCount] = useFetch(subPageCountURL, { customDeps: fetchDepsCount });
+
+  const [dataSubPages, loadingSubPages] = useFetch(subPageURL + searchParamQuery, { customDeps: fetchDepsSubPages });
+
+  const [deleteSubPage, deleteSubPageResult] = useDelete(subPageDeleteURL);
+
+  const confirmDelete = useRef();
+
+  const {
+    handleShow,
+    handleClose,
+    show,
+    DialogElements
+  } = useDialog();
+
 
   const {
     timerSuccessAlert,
-    timerErrorAlert,
     passErrorMsg,
     AlertElements,
     clearErrorMsg,
     errorMsg,
     successMsg,
     errorTimerValue
-  } = useAlert();
+  } = useAlert({ showLocationMsg: true });
 
 
   const isWriteable = priv === PRIVILEGES.readWrite;
 
   // FUNCTIONS AND EVENT HANDLERS
-  const paginationClick = async (pageNumber) => {
-    setCurrentPage(pageNumber);
-  }
 
-  const entryOnChange = async (e) => {
-    setCurrentEntries(e.target.value);
+  const handleDelete = (pageId) => {
+    handleShow();
+    confirmDelete.current = () => {
+      deleteSubPage(pageId);
+      handleClose();
+    }
+
   }
 
   const checkFetchedData = async () => {
@@ -84,25 +101,15 @@ function SubPages({ priv }) {
       if (dataCount.status === true) {
         let count = dataCount.data.count;
 
-        const newMaxPage = Math.ceil(count / currentEntries);
-
-        // if state.currentPage is higher than the maxPage, for instance when
-        // state.currentEntries is changed with higher state.currentPage
-        if (currentPage > newMaxPage) {
-          setCurrentPage(1); // triggers fetch again
-
-          return;
-        }
-
         if (dataSubPages.status === true) {
           ReactDOM.unstable_batchedUpdates(() => {
-            setMaxSubPages(count);
-            setMaxPage(newMaxPage);
+            setTotalSubPages(count);
             setSubPageData(dataSubPages.data);
-            if (!errorTimerValue) {
-              clearErrorMsg();
-            }
           });
+
+          if (!errorTimerValue) {
+            clearErrorMsg();
+          }
 
         } else {
           passErrorMsg(`${dataSubPages.msg}`);
@@ -117,55 +124,17 @@ function SubPages({ priv }) {
 
   // LIFECYCLES
 
-  // show passed errorMsg or successMsg only once
-  useEffect(() => {
-
-    if (location.errorMsg) {
-
-      const loadErrorProp = () => {
-
-        timerErrorAlert(location.errorMsg);
-      }
-
-      loadErrorProp();
-
-      return () => {
-        location.errorMsg = null;
-      }
-    }
-
-    if (location.successMsg) {
-
-      const loadSuccessProp = () => {
-        timerSuccessAlert(location.successMsg);
-      }
-
-      loadSuccessProp();
-      return () => {
-        location.successMsg = null;
-      }
-    }
-
-  }, [location, timerErrorAlert, timerSuccessAlert])
-
-
   useDidUpdateEffect(() => {
 
     checkFetchedData();
   }, [dataSubPages, dataCount]);
 
-
-  // update url search params when currentPage or currentEntries changes
   useDidUpdateEffect(() => {
-    const currSearch = `?page=${currentPage}&entry=${currentEntries}`;
 
-    if (location.search !== currSearch) {
-      history.push({
-        search: currSearch
-      })
-    }
+    timerSuccessAlert([deleteSubPageResult.msg]);
+    shouldRefetch.current = !shouldRefetch.current;
+  }, [deleteSubPageResult]);
 
-  }, [currentPage, currentEntries]);
 
   // UI
   const actionButtons = (subPageID) => {
@@ -176,9 +145,29 @@ function SubPages({ priv }) {
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
 
+        {isWriteable && <button onClick={() => handleDelete(subPageID)} className="btn btn-icon-text btn-outline-secondary mr-3">
+          Delete
+          <i className={`mdi mdi-delete btn-icon-append `}></i>
+        </button>}
       </>
     )
   };
+
+  const addButtons = () => {
+    return (
+      <>
+        {isWriteable &&
+          <>
+            <Link to={`/subpages/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
+              <i className="mdi mdi-account-plus"> </i>
+              Add SubPage
+            </Link>
+          </>
+        }
+
+      </>
+    )
+  }
 
   return (
 
@@ -194,51 +183,24 @@ function SubPages({ priv }) {
             <div className="card">
               <div className="card-body">
                 <h4 className="card-title"> SubPage Table </h4>
-
-                <div className="row mb-4">
-                  <div className="col mt-3">
-                    <span className="float-sm-left d-block mt-1 mt-sm-0 text-center">
-                      Show
-                      <input
-                        id="inputEntry"
-                        className="form-control ml-2 mr-2"
-                        value={currentEntries}
-                        onChange={(e) => { entryOnChange(e) }}
-                        type="text" style={style.inputEntry}
-                      />
-                      of {maxSubPages} entries
-                    </span>
-                  </div>
-
-                  {loadingSubPages && loadingCount ? <Spinner /> :
-                    <div className="col-lg-6 mt-3">
-                      <Pagination currentPage={currentPage} maxPage={maxPage} onClick={paginationClick} />
-                    </div>}
-                  <div className="col mt-3">
-                    {isWriteable &&
-                      <Link to={`/subpages/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
-                        <i className="mdi mdi-account-plus"> </i>
-                        Add SubPage
-                      </Link>
-                    }
-
-                  </div>
-                </div>
                 {loadingSubPages && loadingCount ? <Spinner /> :
-                  <Table
-                    data={subPageData}
-                    tblClass=""
+                  <BundledTable
+                    tableProps={tableProps}
+                    entryProps={entryProps}
+                    paginationProps={paginationProps}
                     colData={colData}
                     idKey={idKey}
                     actionButtons={actionButtons}
+                    addButtons={addButtons}
                   />
                 }
+
               </div>
             </div>
           </div>
         </div>
       </div>
-
+      <DialogElements show={show} handleClose={handleClose} handleDelete={confirmDelete.current} modalTitle={modalTitle} modalBody={modalBody} />
     </>
   );
 }

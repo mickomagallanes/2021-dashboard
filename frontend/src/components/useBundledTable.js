@@ -40,8 +40,10 @@ function useBundledTable({ data, dataCount, isPaginated = true, isSorted = true 
 
     const [maxPage, setMaxPage] = useState(null);
 
-    const sortParam = currentSortCol ? `&sortBy=${currentSortCol}&order=${currentSortOrder}` : "";
-    const currSearch = `?page=${currentPage}&limit=${currentEntries}${sortParam}`;
+    const sortParam = isSorted ? `&sortBy=${currentSortCol}&order=${currentSortOrder}` : "";
+    const pageAndEntryParam = isPaginated ? `page=${currentPage}&limit=${currentEntries}` : "";
+
+    const currSearch = `?${pageAndEntryParam}${sortParam}`;
 
     const tableProps = isSorted
         ? {

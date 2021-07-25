@@ -26,7 +26,12 @@ function useFetch(apiUrl, { customDeps = [], initialData = null } = {}) {
                     ReactDOM.unstable_batchedUpdates(() => {
                         setData(data);
                         setLoading(false);
-                        extractedData.current = data.data;
+
+                        if (data.data) {
+                            extractedData.current = data.data;
+                        } else {
+                            extractedData.current = initialData;
+                        }
                     });
                 }
 

@@ -9,6 +9,23 @@ class SubPageService {
     }
 
     /**
+     * deleted sub page rows in the database
+     * @param {String} subPageID id of the sub page
+     */
+    static async deleteSubPage(subPageID) {
+
+        let ret = await SubPageModel.deleteMenu(subPageID);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+
+    /**
      *  get pages based on logged-in user role
      * @param {Number} userId id of the current user logged in
      */
@@ -82,9 +99,11 @@ class SubPageService {
      * @param {Object} obj - An object.
      * @param {String} [obj.page] current page, must be greater than 0
      * @param {String} [obj.limit] limit count of rows, greater than 0
+     * @param {String} [obj.sortBy] column used for sort
+     * @param {String} [obj.order] ASC or DESC
      * @return subPageArr all rows of subPage
      */
-    static async getAllSubPages({ page, limit }) {
+    static async getAllSubPages({ page, limit, sortBy, order }) {
 
         if ((!!page && page > 0) && (!limit || !(limit > 0))) {
             return { status: false }
@@ -96,11 +115,19 @@ class SubPageService {
 
         const startIndex = isPaged ? (page - 1) * limit : false;
 
+        if (sortBy) {
+            if (order === "DESC") {
+                order = "DESC";
+            } else {
+                order = "ASC";
+            }
+        }
+
         let subPageArr;
         if (startIndex === false) {
-            subPageArr = await SubPageModel.getAll();
+            subPageArr = await SubPageModel.getAll(sortBy, order);
         } else {
-            subPageArr = await SubPageModel.getAllPaged({ startIndex: startIndex, limit: limit });
+            subPageArr = await SubPageModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
         }
 
         if (subPageArr.length) {

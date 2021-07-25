@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import './Roles.css';
-import axios from 'axios';
-import { axiosConfig } from "../../helpers/utils";
 import { PRIVILEGES } from "../../helpers/constants"
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import useBundledTable from '../../components/useBundledTable';
 import useFetch from '../../components/useFetch';
 import useAlert from '../../components/useAlert';
@@ -12,23 +10,6 @@ import useDidUpdateEffect from '../../components/useDidUpdateEffect';
 import ReactDOM from "react-dom";
 
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
-
-export async function fetchRolesData() {
-
-  try {
-    const resp = await axios.get(
-      roleURL,
-      axiosConfig
-    );
-
-    const { data } = resp;
-
-    return data;
-
-  } catch (error) {
-    return { status: false, msg: error };
-  }
-}
 
 const colData = [
   { "id": "id", "name": "Role ID" },
@@ -40,8 +21,6 @@ const idKey = "id";
 function Roles({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
-
-  const location = useLocation();
 
   const [rolesData, setRolesData] = useState([]);
 
@@ -56,8 +35,6 @@ function Roles({ priv }) {
   const [dataFetchedRoles, loadingFetchedRoles] = useFetch(roleURL + searchParamQuery);
 
   const {
-    timerSuccessAlert,
-    timerErrorAlert,
     passErrorMsg,
     AlertElements,
     clearErrorMsg,
@@ -89,38 +66,6 @@ function Roles({ priv }) {
   }
 
   // LIFECYCLES
-
-  // show passed errorMsg or successMsg only once
-  useEffect(() => {
-
-    if (location.errorMsg) {
-
-      const loadErrorProp = () => {
-
-        timerErrorAlert(location.errorMsg);
-      }
-
-      loadErrorProp();
-
-      return () => {
-        location.errorMsg = null;
-      }
-    }
-
-    if (location.successMsg) {
-
-      const loadSuccessProp = () => {
-        timerSuccessAlert(location.successMsg);
-      }
-
-      loadSuccessProp();
-      return () => {
-        location.successMsg = null;
-      }
-    }
-
-  }, [location, timerErrorAlert, timerSuccessAlert])
-
 
   useDidUpdateEffect(() => {
 

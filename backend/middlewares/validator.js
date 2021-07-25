@@ -144,6 +144,8 @@ function menuGetAllSchema(req, res, next) {
     const schema = Joi.object({
         page: Joi.number().integer(),
         limit: Joi.number().integer().min(5).max(100),
+        sortBy: Joi.string().max(30),
+        order: Joi.string().min(3).max(4),
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -260,6 +262,8 @@ function subPageGetAllSchema(req, res, next) {
     const schema = Joi.object({
         page: Joi.number().integer(),
         limit: Joi.number().integer().min(5).max(100),
+        sortBy: Joi.string().max(30),
+        order: Joi.string().min(3).max(4),
     });
     validateRequestQuery(req, res, next, schema);
 }

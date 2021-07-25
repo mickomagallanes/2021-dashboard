@@ -15,6 +15,7 @@ import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
 import SelectFormField from '../../../components/FormFields/SelectFormField/SelectFormField';
 import FormikWithRef from '../../../components/FormikWithRef';
+import { List } from 'immutable';
 
 const menuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/by/`;
 const parentMenuAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/all`;
@@ -80,8 +81,8 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
   const [submitAdd, addData] = usePost(addMenuURL);
 
   const [dataMenu, loadingMenu] = useFetch(menuURL + urlParam);
-  const [dataParentMenus, loadingParentMenus] = useFetch(parentMenuAllURL);
-  const [dataPages, loadingPages] = useFetch(pageAllURL);
+  const [dataParentMenus, loadingParentMenus, extractedDataParentMenus] = useFetch(parentMenuAllURL, { initialData: List([]) });
+  const [dataPages, loadingPages, extractedDataPages] = useFetch(pageAllURL, { initialData: List([]) });
 
 
   const isAddMode = urlParam === "add";
@@ -287,7 +288,7 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
                     <div>
                       <Field
                         label="Parent Menu ID"
-                        options={(dataParentMenus && dataParentMenus.data) || []} // TODO: use immutable instead, the new useFetch feature
+                        options={extractedDataParentMenus}
                         idKey="ParentMenuID"
                         valueKey="ParentMenuName"
                         name="parentMenuID"
@@ -301,7 +302,7 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
                         <div className="mt-3">
                           <Field
                             label="Page"
-                            options={(dataPages && dataPages.data) || []} // TODO: use immutable instead, the new useFetch feature
+                            options={extractedDataPages}
                             idKey="PageID"
                             valueKey="PageName"
                             name="pageID"

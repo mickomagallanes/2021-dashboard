@@ -1,9 +1,11 @@
 
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Alert } from 'react-bootstrap';
+import { useLocation } from 'react-router-dom';
 
-function useAlert() {
+
+function useAlert({ showLocationMsg = false } = {}) {
 
     const [errorMsg, setErrorMsg] = useState([]);
     const [successMsg, setSuccessMsg] = useState([]);
@@ -11,8 +13,9 @@ function useAlert() {
     const _errorTimer = useRef(null);
     const _successTimer = useRef(null);
 
+    const location = useLocation();
 
-    const timerSuccessAlert = (msgArr) => {
+    const timerSuccessAlert = useCallback((msgArr) => {
         setSuccessMsg(msgArr);
 
         clearSuccessTimer();
@@ -22,9 +25,9 @@ function useAlert() {
             clearSuccessTimer();
         }, 6000)
 
-    }
+    }, [])
 
-    const timerErrorAlert = (msgArr) => {
+    const timerErrorAlert = useCallback((msgArr) => {
         setErrorMsg(msgArr);
 
         clearErrorTimer();
@@ -35,7 +38,7 @@ function useAlert() {
             clearErrorTimer();
         }, 6000)
 
-    }
+    }, [])
 
     const passErrorMsg = (msgValue) => {
         clearErrorTimer();
@@ -68,6 +71,28 @@ function useAlert() {
             _successTimer.current = null;
         }
     }
+
+    // show passed errorMsg or successMsg only once
+    useEffect(() => {
+
+        if (showLocationMsg) {
+            if (location.errorMsg) {
+                timerErrorAlert(location.errorMsg);
+                return () => {
+                    location.errorMsg = null;
+                }
+            }
+
+            if (location.successMsg) {
+                timerSuccessAlert(location.successMsg);
+                return () => {
+                    location.successMsg = null;
+                }
+            }
+        }
+
+
+    }, [location, showLocationMsg, timerErrorAlert, timerSuccessAlert])
 
     return {
         timerSuccessAlert,

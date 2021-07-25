@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import ReactDOM from "react-dom";
 import './Pages.css';
 import { PRIVILEGES } from "../../helpers/constants"
@@ -33,7 +33,7 @@ function Pages({ priv }) {
   const location = useLocation();
 
   const [pageData, setPageData] = useState([]);
-  const [maxPages, setMaxPages] = useState(null);
+  const [totalPages, setTotalPages] = useState(null);
 
   const shouldRefetch = useRef(true);
 
@@ -49,18 +49,19 @@ function Pages({ priv }) {
     },
     tableProps,
     BundledTable
-  } = useBundledTable({ data: pageData, dataCount: maxPages });
+  } = useBundledTable({ data: pageData, dataCount: totalPages });
 
   // to determine if initial fetch of data is done
 
   const fetchDepsCount = [currentEntries, currentPage, shouldRefetch.current];
   const fetchDepsPages = [shouldRefetch.current];
 
+  // also only loads by page and not sort since url is static
   const [dataCount, loadingCount] = useFetch(pageCountURL, { customDeps: fetchDepsCount });
 
   const [dataPages, loadingPages] = useFetch(pageURL + searchParamQuery, { customDeps: fetchDepsPages });
 
-  const [deleteMenu, deleteMenuResult] = useDelete(pageDeleteURL);
+  const [deletePage, deletePageResult] = useDelete(pageDeleteURL);
 
   const confirmDelete = useRef();
 
@@ -73,14 +74,13 @@ function Pages({ priv }) {
 
   const {
     timerSuccessAlert,
-    timerErrorAlert,
     passErrorMsg,
     AlertElements,
     clearErrorMsg,
     errorMsg,
     successMsg,
     errorTimerValue
-  } = useAlert();
+  } = useAlert({ showLocationMsg: true });
 
   const isWriteable = priv === PRIVILEGES.readWrite;
 
@@ -90,12 +90,10 @@ function Pages({ priv }) {
   const handleDelete = (pageId) => {
     handleShow();
     confirmDelete.current = () => {
-      deleteMenu(pageId);
+      deletePage(pageId);
       handleClose();
     }
-
   }
-
 
   const checkFetchedData = async () => {
     if (dataPages && dataCount) {
@@ -104,7 +102,7 @@ function Pages({ priv }) {
 
         if (dataPages.status === true) {
           ReactDOM.unstable_batchedUpdates(() => {
-            setMaxPages(count);
+            setTotalPages(count);
             setPageData(dataPages.data);
           });
 
@@ -125,38 +123,6 @@ function Pages({ priv }) {
 
   // LIFECYCLES
 
-  // show passed errorMsg or successMsg only once
-  useEffect(() => {
-
-    if (location.errorMsg) {
-
-      const loadErrorProp = () => {
-
-        timerErrorAlert(location.errorMsg);
-      }
-
-      loadErrorProp();
-
-      return () => {
-        location.errorMsg = null;
-      }
-    }
-
-    if (location.successMsg) {
-
-      const loadSuccessProp = () => {
-        timerSuccessAlert(location.successMsg);
-      }
-
-      loadSuccessProp();
-      return () => {
-        location.successMsg = null;
-      }
-    }
-
-  }, [location, timerErrorAlert, timerSuccessAlert])
-
-
   useDidUpdateEffect(() => {
 
     checkFetchedData();
@@ -165,9 +131,9 @@ function Pages({ priv }) {
 
   useDidUpdateEffect(() => {
 
-    timerSuccessAlert([deleteMenuResult.msg]);
+    timerSuccessAlert([deletePageResult.msg]);
     shouldRefetch.current = !shouldRefetch.current;
-  }, [deleteMenuResult]);
+  }, [deletePageResult]);
 
 
   // UI
@@ -214,6 +180,7 @@ function Pages({ priv }) {
       </>
     )
   }
+
   return (
 
     <>
@@ -228,6 +195,7 @@ function Pages({ priv }) {
             <div className="card">
               <div className="card-body">
                 <h4 className="card-title"> Page Table </h4>
+
                 {loadingPages && loadingCount ? <Spinner /> :
                   <BundledTable
                     tableProps={tableProps}

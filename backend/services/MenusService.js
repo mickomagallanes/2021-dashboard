@@ -12,6 +12,22 @@ class MenusService {
     /******************************** Menu ***************************************/
 
     /**
+     * deleted menu rows in the database
+     * @param {String} menuID id of the menu
+     */
+    static async deleteMenu(menuID) {
+
+        let ret = await MenuModel.deleteMenu(menuID);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
      * inserts new menu in the database
      * @param {Object} obj - An object.
      * @param {String} obj.menuName name of the  menu
@@ -85,9 +101,11 @@ class MenusService {
      * @param {Object} obj - An object.
      * @param {String} [obj.page] current page, must be greater than 0
      * @param {String} [obj.limit] limit count of rows, greater than 0
+     * @param {String} [obj.sortBy] column used for sort
+     * @param {String} [obj.order] ASC or DESC
      * @return menuArr all rows of menu
      */
-    static async getAllMenus({ page, limit }) {
+    static async getAllMenus({ page, limit, sortBy, order }) {
 
         if ((!!page && page > 0) && (!limit || !(limit > 0))) {
             return { status: false }
@@ -99,11 +117,19 @@ class MenusService {
 
         const startIndex = isPaged ? (page - 1) * limit : false;
 
+        if (sortBy) {
+            if (order === "DESC") {
+                order = "DESC";
+            } else {
+                order = "ASC";
+            }
+        }
+
         let menuArr;
         if (startIndex === false) {
-            menuArr = await MenuModel.getAll();
+            menuArr = await MenuModel.getAll(sortBy, order);
         } else {
-            menuArr = await MenuModel.getAllPaged({ startIndex: startIndex, limit: limit });
+            menuArr = await MenuModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
         }
 
         if (menuArr.length) {

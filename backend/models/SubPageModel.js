@@ -15,14 +15,30 @@ class SubPageModel {
     }
 
     /**
-   * inserts new subPage in the database
-   * @param {Object} obj - An object.
-   * @param {String} obj.subPageName name of the subPage
-   * @param {String} obj.subPagePath path of subpage
-   * @param {String} obj.pageID id of page, foreign key
-   * @return {Object} result
-   * @return {Number} result.insertId subPage id of last inserted
-   */
+     * deleted sub page rows in the database
+     * @param {String} subPageID id of the sub page
+     */
+    static async deleteMenu(subPageID) {
+
+        try {
+            const result = await mysql_conn.delete("SubPages", "where SubPageID=?", [subPageID]);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+     * inserts new subPage in the database
+     * @param {Object} obj - An object.
+     * @param {String} obj.subPageName name of the subPage
+     * @param {String} obj.subPagePath path of subpage
+     * @param {String} obj.pageID id of page, foreign key
+     * @return {Object} result
+     * @return {Number} result.insertId subPage id of last inserted
+     */
     static async insertSubPage({ subPageName, subPagePath, pageID }) {
         const stmt = `INSERT INTO SubPages (SubPageName, SubPagePath, PageID) VALUES (?, ?, ?)`;
         try {

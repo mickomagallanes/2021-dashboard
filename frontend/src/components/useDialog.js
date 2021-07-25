@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 
-// TODO: use react bootstrap dialog for delete, etc
+// react bootstrap dialog for delete, etc
 function useDialog() {
 
     const [show, setShow] = useState(false);

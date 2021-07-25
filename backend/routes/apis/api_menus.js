@@ -125,6 +125,16 @@ router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (re
     }
 });
 
+// delete menu, also deletes children data
+router.delete('/delete/:id', [checkSession, authorizeWriteRoute], async function (req, res, next) {
+    let result = await MenusService.deleteMenu(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting menu" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted menu successfully" });
+    }
+});
 
 /*************************** Parent Menu *************************************/
 // insert new parent menu

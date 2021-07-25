@@ -102,4 +102,15 @@ router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (re
     }
 });
 
+// delete menu, also deletes children data
+router.delete('/delete/:id', [checkSession, authorizeWriteRoute], async function (req, res, next) {
+    let result = await SubPageService.deleteSubPage(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting sub page" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted sub page successfully" });
+    }
+});
+
 module.exports = router;

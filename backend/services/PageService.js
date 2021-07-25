@@ -11,9 +11,9 @@ class PageService {
     }
 
     /**
-  * deleted page rows in the database
-  * @param {String} pageID id of the page
-  */
+     * deleted page rows in the database
+     * @param {String} pageID id of the page
+     */
     static async deletePage(pageID) {
 
         let ret = await PageModel.deletePage(pageID);
@@ -201,6 +201,8 @@ class PageService {
      * @param {Object} obj - An object.
      * @param {String} [obj.page] current page, must be greater than 0
      * @param {String} [obj.limit] limit count of rows, greater than 0
+     * @param {String} [obj.sortBy] column used for sort
+     * @param {String} [obj.order] ASC or DESC
      * @return pageArr all rows of page
      */
     static async getAllPages({ page, limit, sortBy, order }) {

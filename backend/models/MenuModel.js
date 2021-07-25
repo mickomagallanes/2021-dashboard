@@ -13,6 +13,21 @@ class MenusModel {
 
     }
 
+    /**
+     * deleted menu rows in the database
+     * @param {String} menuID id of the menu
+     */
+    static async deleteMenu(menuID) {
+
+        try {
+            const result = await mysql_conn.delete("Menus", "where MenuID=?", [menuID]);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
 
     /**
     * get a row using by page id
