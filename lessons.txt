@@ -7,8 +7,6 @@ Class Components vs Functional Components.
  - RolesForm (depends on itself when inserting bulk data)
  - RouteRolesForm
  - PageRolesForm
- - ParentMenus
- - ParentMenusForm
  - Login
  - Table
  - Spinner
@@ -27,6 +25,8 @@ Class Components vs Functional Components.
  - SelectFormField
  - Menus
  - MenusForm
+ - ParentMenus
+ - ParentMenusForm
  - Pages
  - PagesForm
  - PagesFormBulk (depends on the api when inserting bulk data)

@@ -10,7 +10,10 @@ const {
     parentMenuGetAllSchema,
     menuGetAllSchema,
     menuInsertSchema,
-    menuModifySchema
+    menuModifySchema,
+    menuDeleteSchema,
+    parentMenuDeleteSchema,
+    parentMenuSortSchema
 } = require('../../middlewares/validator.js');
 
 /******************************** Menu ***************************************/
@@ -126,7 +129,7 @@ router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (re
 });
 
 // delete menu, also deletes children data
-router.delete('/delete/:id', [checkSession, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/delete/:id', [checkSession, menuDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await MenusService.deleteMenu(req.params.id);
 
     if (result.status === false) {
@@ -137,6 +140,17 @@ router.delete('/delete/:id', [checkSession, authorizeWriteRoute], async function
 });
 
 /*************************** Parent Menu *************************************/
+// delete menu, also deletes children data
+router.delete('/parent/delete/:id', [checkSession, parentMenuDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await MenusService.deleteParentMenu(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting menu" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted menu successfully" });
+    }
+});
+
 // insert new parent menu
 // returns insertId of parent menu
 router.post('/parent/insert', [checkSession, parentMenuInsertSchema, authorizeWriteRoute], async function (req, res, next) {
@@ -210,7 +224,7 @@ router.get('/parent/get/by/:id', [checkSession, authorizeReadRoute], async funct
  * sort up parent menu
  *
  */
-router.post('/parent/sort/up', [checkSession, authorizeWriteRoute], async function (req, res, next) {
+router.post('/parent/sort/up', [checkSession, parentMenuSortSchema, authorizeWriteRoute], async function (req, res, next) {
     let parentMenuID = req.body.parentMenuID;
 
     let resp = await MenusService.sortUpParentMenu(parentMenuID);
@@ -229,7 +243,7 @@ router.post('/parent/sort/up', [checkSession, authorizeWriteRoute], async functi
  * sort down parent menu
  *
  */
-router.post('/parent/sort/down', [checkSession, authorizeWriteRoute], async function (req, res, next) {
+router.post('/parent/sort/down', [checkSession, parentMenuSortSchema, authorizeWriteRoute], async function (req, res, next) {
 
     let parentMenuID = req.body.parentMenuID;
 
@@ -244,4 +258,5 @@ router.post('/parent/sort/down', [checkSession, authorizeWriteRoute], async func
     }
 
 });
+
 module.exports = router;

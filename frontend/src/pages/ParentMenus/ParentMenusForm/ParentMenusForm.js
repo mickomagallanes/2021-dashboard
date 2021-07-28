@@ -1,33 +1,22 @@
-import React from 'react';
+import React, { useEffect, useReducer } from 'react';
 import './ParentMenusForm.css';
-import axios from 'axios';
-import { Alert } from 'react-bootstrap';
 import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
-import { Link } from 'react-router-dom';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
-import * as currentModule from './ParentMenusForm'; // use currentmodule to call func outside class, for testing
-import { axiosConfig, equalTo } from '../../../helpers/utils';
+import { equalTo } from '../../../helpers/utils';
+import useDidUpdateEffect from '../../../components/useDidUpdateEffect';
+import ReactDOM from "react-dom";
+import usePost from '../../../components/usePost';
+import usePut from '../../../components/usePut';
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
+import useAlert from '../../../components/useAlert';
+import useFetch from '../../../components/useFetch';
 
 const parentMenuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/by/`;
 const addParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/insert`;
 const editParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/modify/`;
-
-export async function fetchParentMenuData(urlParam) {
-  try {
-    const resp = await axios.get(
-      parentMenuByIdURL + urlParam,
-      axiosConfig
-    );
-    const { data } = resp;
-
-    return data;
-  } catch (error) {
-    return { status: false, msg: error }
-  }
-}
 
 yup.addMethod(yup.string, 'equalTo', equalTo);
 
@@ -35,240 +24,192 @@ const schema = yup.object().shape({
   parentMenuName: yup.string().max(30, 'Must be 30 characters or less').required('Required')
 });
 
-export default class ParentMenuForm extends React.Component {
-
-  constructor(props) {
-    super();
-    this.state = {
-      errorMsg: [],
-      formData: {
-        parentMenuName: ""
-      },
-      isLoading: true
-    }
-
-    this.urlParam = props.match.params.id;
-
-    // send back to parentmenus page when Privilege is Read and accessing add mode
-    if (this.isAddMode() && props.priv === PRIVILEGES.read) {
-      props.history.push({
-        pathname: '/parentmenus',
-        errorMsg: [ERRORMSG.noPrivilege]
-      });
-    }
-
-    this.handleSubmitForm = this.handleSubmitForm.bind(this);
+const parentMenuReducer = (state, action) => {
+  switch (action.type) {
+    case 'changeParentMenuName':
+      return { ...state, parentMenuName: action.payload };
+    default:
+      return state;
   }
+}
 
-  componentWillUnmount() {
-    // fix Warning: Can't perform a React state update on an unmounted component
-    this.setState = () => {
-      return;
-    };
-  }
+const mapDispatch = dispatch => ({
+  changeParentMenuName: (payload) => dispatch({ type: 'changeParentMenuName', payload: payload })
+})
 
-  async componentDidMount() {
-    // check if is on add mode
-    if (!this.isAddMode()) {
-      const parentMenuData = await currentModule.fetchParentMenuData(this.urlParam);
+const parentMenuFormInitialState = {
+  parentMenuName: ""
+};
 
-      this.saveParentMenuData(parentMenuData);
-    } else {
-      this.setState({ isLoading: false });
-    }
+function ParentMenuForm({ priv }) {
 
-  }
+  // HOOKS DECLARATIONS AND VARIABLES
+  const location = useLocation();
 
-  isAddMode() {
-    return this.urlParam === "add";
-  }
+  const [parentMenuFormData, dispatchParentMenu] = useReducer(parentMenuReducer, parentMenuFormInitialState);
+  const actionsParentMenuData = mapDispatch(dispatchParentMenu);
 
-  clearErrorMsg() {
-    if (this.state.errorMsg.length) {
-      this.setState({ errorMsg: [] });
-    }
-  }
+  const urlParamObj = useParams();
+  const urlParam = urlParamObj.id;
 
-  setErrorMsg(errorArr) {
-    this.setState({ errorMsg: [errorArr] });
-  }
+  const [submitEdit, editData] = usePut(editParentMenuURL + urlParam);
+  const [submitAdd, addData] = usePost(addParentMenuURL);
 
-  pushErrorMsg(errorArr) {
-    this.setState({ errorMsg: [...this.state.errorMsg, errorArr] });
-  }
+  const [dataParentMenu, loadingParentMenu] = useFetch(parentMenuByIdURL + urlParam);
 
-  saveParentMenuData = async (parentMenuData) => {
-    if (parentMenuData.status === true) {
+  const isAddMode = urlParam === "add";
 
-      this.setState({
-        formData: {
-          parentMenuName: parentMenuData.data.ParentMenuName
-        },
-        isLoading: false
-      });
-    } else {
+  const history = useHistory();
 
-      this.setErrorMsg(`${parentMenuData.msg}`);
-      this.setState({ isLoading: false });
-    }
-  }
+  const isWriteable = priv === PRIVILEGES.readWrite;
 
-  // submits form using add then returns insertId of parent menu for submit image to use
-  submitFormAdd = async (fields) => {
+  const {
+    passErrorMsg,
+    AlertElements,
+    errorMsg,
+    successMsg
+  } = useAlert();
+
+  // FUNCTIONS AND EVENT HANDLERS
+
+  const handleSubmitForm = async (fields) => {
+
     const param = {
       "parentMenuName": fields.parentMenuName
     }
 
-    try {
-      const resp = await axios.post(
-        addParentMenuURL,
-        param,
-        axiosConfig
-      );
+    if (isAddMode) {
 
-      if (resp.data.status === true) {
-        return resp;
+      submitAdd(param);
 
-      } else {
-        this.setErrorMsg(resp.data.msg);
-
-        return false;
-
-      }
-
-    } catch (error) {
-      this.setErrorMsg(`${error}`);
-      return false;
-    }
-
-  }
-
-  // submits form using edit then returns insertId of parent menu for submit image to use
-  submitFormEdit = async (fields) => {
-    const param = {
-      "parentMenuName": fields.parentMenuName
-    }
-
-    try {
-      const resp = await axios.put(
-        editParentMenuURL + this.urlParam,
-        param,
-        axiosConfig
-      );
-
-      if (resp.data.status === true) {
-        return resp;
-
-      } else {
-        this.setErrorMsg(resp.data.msg);
-        return false;
-      }
-
-    } catch (error) {
-      this.setErrorMsg(`${error}`);
-      return false;
-    }
-
-  }
-
-  async handleSubmitForm(fields) {
-    let submitResp;
-
-    if (this.isAddMode()) {
-      // save new parent menu id
-      submitResp = await this.submitFormAdd(fields);
     } else {
-      submitResp = await this.submitFormEdit(fields);
+      submitEdit(param);
     }
+
+  }
+
+  const postSuccessCallback = (respData) => {
     let successArr = [];
 
-    if (submitResp !== false) {
+    if (respData.status === true) {
+      successArr.push(respData.msg);
 
-      successArr.push(submitResp.data.msg);
-
-      this.props.history.push({
-        pathname: '/parentmenus',
-        successMsg: successArr
+      history.push({
+        pathname: '/parentMenus',
+        successMsg: [successArr],
+        search: location.search
       });
-
+    } else {
+      passErrorMsg(`${respData.msg}`);
     }
   }
 
-  // TODO: make animation transition on routing using Framer Motion
-  // TODO: and use Unit Testing with Jest
-  render() {
+  // LIFECYCLES
+  useEffect(() => {
+    if (isAddMode && priv === PRIVILEGES.read) {
+      history.push({
+        pathname: '/parentMenus',
+        errorMsg: [ERRORMSG.noPrivilege],
+        search: location.search
+      });
+    }
+  }, [history, isAddMode, location.search, priv])
 
-    if (!this.isAddMode() && this.state.isLoading) {
-      return (<Spinner />)
+  useDidUpdateEffect(() => {
+
+    if (!isAddMode) {
+
+      if (dataParentMenu.status) {
+        const { data } = dataParentMenu;
+
+        ReactDOM.unstable_batchedUpdates(() => {
+          actionsParentMenuData.changeParentMenuName(data.ParentMenuName);
+        });
+
+
+      } else if (!dataParentMenu.status) {
+        passErrorMsg(`${dataParentMenu.msg}`);
+      }
+    }
+
+  }, [dataParentMenu]);
+
+  useDidUpdateEffect(() => {
+
+    let successArr = [];
+
+    if (isAddMode) {
+      postSuccessCallback(addData, successArr);
+
     } else {
-      return (
-        <div>
-          <div className="page-header">
-            <Link className="btn btn-outline-light btn-icon-text btn-md" to="/parentmenus">
-              <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
-              <span className="d-inline-block text-left">
-                Back
-              </span>
-            </Link>
 
-          </div>
-          <div className="row w-100 mx-0" data-testid="ParentMenusForm">
-            <div className="col-lg-8 col-xlg-9 col-md-12">
-              <div className="card px-4 px-sm-5">
+      postSuccessCallback(editData, successArr);
+    }
 
-                <div className="card-body">
+  }, [addData, editData]);
 
-                  <h4 className="card-title">{this.isAddMode() ? 'Add' : 'Edit'} Parent Menu</h4>
-                  <div className="row mb-4">
-                    <div className="col mt-3">
-                      <Formik
-                        validationSchema={schema}
-                        initialValues={this.state.formData}
-                        onSubmit={this.handleSubmitForm}
-                      >
-                        {() => (
-                          <Form>
-                            {this.state.errorMsg.map((err) =>
-                              <Alert
-                                className="p-1"
-                                variant="danger"
-                                show={err}
-                                transition={false}
-                                key={err}
-                              >
-                                {err}
-                              </Alert>
-                            )}
-                            <div>
-                              <Field
-                                label="Parent Menu Name"
-                                type="text"
-                                name="parentMenuName"
-                                placeholder="Parent Menu Name"
-                                disabled={this.props.priv !== PRIVILEGES.readWrite}
-                                component={TextFormField}
-                              />
-                            </div>
+  // UI
+  return (
 
-                            <div className="mt-3">
-                              {this.props.priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
-                            </div>
+    <>
+      <div>
+        <div className="page-header">
+          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/parentMenus${location.search}`}>
+            <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
+            <span className="d-inline-block text-left">
+              Back
+            </span>
+          </Link>
 
-                          </Form>
-                        )}
-                      </Formik>
+        </div>
+        <div className="row w-100 mx-0" data-testid="ParentMenusForm">
+          <div className="col-lg-8 col-xlg-9 col-md-12">
+            <div className="card px-4 px-sm-5">
 
-                    </div>
+              <div className="card-body">
+                <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} ParentMenu</h4>
+                <div className="row mb-4">
+                  <div className="col mt-3">
+                    <Formik
+                      validationSchema={schema}
+                      initialValues={parentMenuFormData}
+                      onSubmit={handleSubmitForm}
+                      enableReinitialize
+                    >
+                      {() => (
+                        <Form>
+                          <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
+                          {loadingParentMenu ? <Spinner /> :
+                            <>
+                              <div>
+                                <Field
+                                  label="ParentMenu Name"
+                                  type="text"
+                                  name="parentMenuName"
+                                  placeholder="ParentMenu Name"
+                                  disabled={!isWriteable}
+                                  component={TextFormField}
+                                />
+                              </div>
+
+                              <div className="mt-3">
+                                {priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
+                              </div>
+                            </>
+                          }
+                        </Form>
+                      )}
+                    </Formik>
+
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-      );
-    }
-  }
-
+      </div>
+    </>
+  );
 }
 
+export default ParentMenuForm;

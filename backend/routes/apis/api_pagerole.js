@@ -5,6 +5,7 @@ const utils = require('../../utils/session.js');
 const express = require('express');
 const router = express.Router();
 const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../../middlewares/routesauth.js');
+const { pageRolePostSchema } = require('../../middlewares/validator.js');
 
 /**
  * check if user is authorized to access frontend page
@@ -66,8 +67,7 @@ router.get('/get/by/session/and/page/:pageId', [checkSession, authorizeReadRoute
 /**
  * post page role data
  */
-// TODO: validate these posts
-router.post('/post/data', [checkSession, authorizeWriteRoute], async function (req, res, next) {
+router.post('/post/data', [checkSession, pageRolePostSchema, authorizeWriteRoute], async function (req, res, next) {
 
     const pageRolesArr = req.body.pageRoles;
 

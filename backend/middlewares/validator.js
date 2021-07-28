@@ -46,6 +46,38 @@ function userGetAllSchema(req, res, next) {
     validateRequestQuery(req, res, next, schema);
 }
 
+/**************** PAGE-ROLE ****************/
+function pageRolePostSchema(req, res, next) {
+    const pageRolesArr = Joi.object({
+        pageRoles: Joi.array().items(
+            Joi.object({
+                PageID: Joi.number().required(),
+                RoleID: Joi.number().required(),
+                PrivilegeID: Joi.number().required()
+            })
+        )
+    });
+
+    validateRequestBody(req, res, next, pageRolesArr);
+}
+
+/**************** ROUTE-ROLE ****************/
+function routeRolePostSchema(req, res, next) {
+
+    const routeRolesArr = Joi.object({
+        routeRoles: Joi.array().items(
+            Joi.object({
+                RouteID: Joi.number().required(),
+                RoleID: Joi.number().required(),
+                PrivilegeID: Joi.number().required()
+            })
+        )
+    });
+
+    validateRequestBody(req, res, next, routeRolesArr);
+}
+
+
 /**************** ROLE ****************/
 
 function roleInsertSchema(req, res, next) {
@@ -76,6 +108,22 @@ function roleModifySchema(req, res, next) {
 /**************** MENUS ****************/
 
 /*********** 1. PARENT MENU ************/
+function parentMenuSortSchema(req, res, next) {
+
+    const schema = Joi.object({
+        parentMenuID: Joi.number().required()
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function parentMenuDeleteSchema(req, res, next) {
+
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequestParams(req, res, next, schema);
+}
+
 function parentMenuInsertSchema(req, res, next) {
 
     const schema = Joi.object({
@@ -105,11 +153,21 @@ function parentMenuGetAllSchema(req, res, next) {
     const schema = Joi.object({
         page: Joi.number().integer(),
         limit: Joi.number().integer().min(5).max(100),
+        sortBy: Joi.string().max(30),
+        order: Joi.string().min(3).max(4),
     });
     validateRequestQuery(req, res, next, schema);
 }
 
 /*********** 2. MENU ************/
+
+function menuDeleteSchema(req, res, next) {
+
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequestParams(req, res, next, schema);
+}
 
 function menuInsertSchema(req, res, next) {
 
@@ -151,6 +209,14 @@ function menuGetAllSchema(req, res, next) {
 }
 
 /**************** PAGE ****************/
+function pageDeleteSchema(req, res, next) {
+
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequestParams(req, res, next, schema);
+}
+
 function pageInsertSchema(req, res, next) {
 
     const schema = Joi.object({
@@ -226,7 +292,15 @@ function pageGetAllSchema(req, res, next) {
     validateRequestQuery(req, res, next, schema);
 }
 
-/**************** PAGE ****************/
+/**************** SUB PAGE ****************/
+function subPageDeleteSchema(req, res, next) {
+
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequestParams(req, res, next, schema);
+}
+
 function subPageInsertSchema(req, res, next) {
 
     const schema = Joi.object({
@@ -302,20 +376,27 @@ module.exports = {
     userLoginSchema,
     userGetAllSchema,
     userModifySchema,
+    routeRolePostSchema,
+    pageRolePostSchema,
     roleInsertSchema,
     roleModifySchema,
     parentMenuInsertSchema,
     parentMenuModifySchema,
     parentMenuGetAllSchema,
+    parentMenuDeleteSchema,
+    parentMenuSortSchema,
     menuGetAllSchema,
     menuInsertSchema,
     menuModifySchema,
+    menuDeleteSchema,
     pageGetAllSchema,
     pageInsertSchema,
     pageInsertBulkSchema,
     pageModifyBulkSchema,
     pageModifySchema,
+    pageDeleteSchema,
     subPageGetAllSchema,
     subPageInsertSchema,
-    subPageModifySchema
+    subPageModifySchema,
+    subPageDeleteSchema
 }

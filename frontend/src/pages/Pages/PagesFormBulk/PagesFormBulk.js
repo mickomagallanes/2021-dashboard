@@ -154,7 +154,8 @@ function PagesFormBulk({ priv }) {
 
   }
 
-  const postSuccessCallback = (respData, successArr) => {
+  const postSuccessCallback = (respData) => {
+    let successArr = [];
 
     if (respData.status === true) {
       successArr.push(respData.msg);

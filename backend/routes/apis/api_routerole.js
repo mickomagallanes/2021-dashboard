@@ -3,6 +3,7 @@ const RouteRoleService = require('../../services/RouteRoleService.js');
 
 const { checkSession, authorizeReadRoute, authorizeWriteRoute } = require('../../middlewares/routesauth.js');
 const express = require('express');
+const { routeRolePostSchema } = require('../../middlewares/validator.js');
 const router = express.Router();
 
 /**
@@ -25,8 +26,7 @@ router.get('/get/left/:roleId', [checkSession, authorizeReadRoute], async functi
 /**
  * post route role data
  */
-// TODO: validate these posts
-router.post('/post/data', [checkSession, authorizeWriteRoute], async function (req, res, next) {
+router.post('/post/data', [checkSession, routeRolePostSchema, authorizeWriteRoute], async function (req, res, next) {
 
     const routeRolesArr = req.body.routeRoles;
 

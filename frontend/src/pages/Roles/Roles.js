@@ -59,6 +59,10 @@ function Roles({ priv }) {
         }
 
       } else {
+        // resets everything when fetched is error
+        ReactDOM.unstable_batchedUpdates(() => {
+          setRolesData([]);
+        });
         passErrorMsg(`${dataFetchedRoles.msg}`);
       }
 

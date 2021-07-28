@@ -74,6 +74,7 @@ function SubPages({ priv }) {
 
   const {
     timerSuccessAlert,
+    timerErrorAlert,
     passErrorMsg,
     AlertElements,
     clearErrorMsg,
@@ -87,10 +88,10 @@ function SubPages({ priv }) {
 
   // FUNCTIONS AND EVENT HANDLERS
 
-  const handleDelete = (pageId) => {
+  const handleDelete = (subPageId) => {
     handleShow();
     confirmDelete.current = () => {
-      deleteSubPage(pageId);
+      deleteSubPage(subPageId);
       handleClose();
     }
 
@@ -112,6 +113,11 @@ function SubPages({ priv }) {
           }
 
         } else {
+          // resets everything when fetched is error
+          ReactDOM.unstable_batchedUpdates(() => {
+            setTotalSubPages(null);
+            setSubPageData([]);
+          });
           passErrorMsg(`${dataSubPages.msg}`);
         }
 
@@ -131,7 +137,12 @@ function SubPages({ priv }) {
 
   useDidUpdateEffect(() => {
 
-    timerSuccessAlert([deleteSubPageResult.msg]);
+    if (deleteSubPageResult.status) {
+      timerSuccessAlert([deleteSubPageResult.msg]);
+    } else {
+      timerErrorAlert([deleteSubPageResult.msg]);
+    }
+
     shouldRefetch.current = !shouldRefetch.current;
   }, [deleteSubPageResult]);
 

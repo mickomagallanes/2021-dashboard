@@ -14,7 +14,7 @@ import useDelete from '../../components/useDelete';
 const menuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all`;
 const menuCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all/count`;
 
-const menuDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menu/delete/`;
+const menuDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/delete/`;
 
 const modalTitle = "Do you want to delete this menu?";
 const modalBody = "This row will be deleted in the database, do you want to proceed?";
@@ -75,6 +75,7 @@ function Menus({ priv }) {
 
   const {
     timerSuccessAlert,
+    timerErrorAlert,
     passErrorMsg,
     AlertElements,
     clearErrorMsg,
@@ -88,15 +89,14 @@ function Menus({ priv }) {
 
   // FUNCTIONS AND EVENT HANDLERS
 
-  const handleDelete = (pageId) => {
+  const handleDelete = (menuId) => {
     handleShow();
     confirmDelete.current = () => {
-      deleteMenu(pageId);
+      deleteMenu(menuId);
       handleClose();
     }
 
   }
-
 
   const checkFetchedData = async () => {
     if (dataMenus && dataCount) {
@@ -114,6 +114,11 @@ function Menus({ priv }) {
           }
 
         } else {
+          // resets everything when fetched is error
+          ReactDOM.unstable_batchedUpdates(() => {
+            setTotalMenus(null);
+            setMenuData([]);
+          });
           passErrorMsg(`${dataMenus.msg}`);
         }
 
@@ -134,7 +139,12 @@ function Menus({ priv }) {
 
   useDidUpdateEffect(() => {
 
-    timerSuccessAlert([deleteMenuResult.msg]);
+    if (deleteMenuResult.status) {
+      timerSuccessAlert([deleteMenuResult.msg]);
+    } else {
+      timerErrorAlert([deleteMenuResult.msg]);
+    }
+
     shouldRefetch.current = !shouldRefetch.current;
   }, [deleteMenuResult]);
 
@@ -207,10 +217,5 @@ function Menus({ priv }) {
     </>
   );
 }
-
-
-
-
-
 
 export default Menus;

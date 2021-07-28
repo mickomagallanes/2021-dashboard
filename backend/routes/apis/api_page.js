@@ -10,7 +10,8 @@ const {
     pageInsertSchema,
     pageModifySchema,
     pageInsertBulkSchema,
-    pageModifyBulkSchema
+    pageModifyBulkSchema,
+    pageDeleteSchema
 } = require('../../middlewares/validator.js');
 
 /**
@@ -137,7 +138,7 @@ router.put('/modify/:id', [checkSession, pageModifySchema, authorizeWriteRoute],
 
 
 // delete page, also deletes children data
-router.delete('/delete/:id', [checkSession, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/delete/:id', [checkSession, pageDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await PageService.deletePage(req.params.id);
 
     if (result.status === false) {

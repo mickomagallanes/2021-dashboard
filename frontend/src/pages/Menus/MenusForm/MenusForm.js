@@ -147,7 +147,8 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
 
   }
 
-  const postSuccessCallback = (respData, successArr) => {
+  const postSuccessCallback = (respData) => {
+    let successArr = [];
 
     if (respData.status === true) {
       successArr.push(respData.msg);
@@ -187,15 +188,18 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
   }, [parentMemoData])
 
   useDidUpdateEffect(() => {
-    if (dataPages && dataPages.status === true) {
+    if (dataPages) {
 
       // set first option as default value if it has no value
-      if (menuFormData.pageID === null || menuFormData.pageID === "") {
-        actionsMenuData.changePageID(dataPages.data[0].PageID);
+      if (dataPages.status === true) {
+        if (menuFormData.pageID === null || menuFormData.pageID === "") {
+          actionsMenuData.changePageID(dataPages.data[0].PageID);
+        }
+
+      } else {
+        passErrorMsg(`${dataPages.msg}`);
       }
 
-    } else {
-      passErrorMsg(`${dataPages.msg}`);
     }
   }, [dataPages])
 

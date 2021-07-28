@@ -16,12 +16,29 @@ class ParentMenuModel {
     }
 
     /**
-   * inserts new parent menu in the database
-   * @param {Object} obj - An object.
-   * @param {String} obj.parentMenuName name of the parent menu
-   * @return {Object} result
-   * @return {Number} result.insertId parent menu id of last inserted
-   */
+     * deleted parent menu rows in the database
+     * @param {String} parentMenuID id of the menu
+     */
+    static async deleteParentMenu(parentMenuID) {
+
+        try {
+            const result = await mysql_conn.delete("ParentMenus", "where ParentMenuID=?", [parentMenuID]);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+
+    /**
+     * inserts new parent menu in the database
+     * @param {Object} obj - An object.
+     * @param {String} obj.parentMenuName name of the parent menu
+     * @return {Object} result
+     * @return {Number} result.insertId parent menu id of last inserted
+     */
     static async insertParentMenu({ parentMenuName }) {
         const stmt = `INSERT INTO ParentMenus (ParentMenuName) VALUES (?)`;
         try {

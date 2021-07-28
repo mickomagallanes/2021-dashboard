@@ -194,6 +194,21 @@ class MenusService {
     }
 
     /*************************** Parent Menu *************************************/
+    /**
+     * deleted parent menu rows in the database
+     * @param {String} parentMenuID id of the menu
+     */
+    static async deleteParentMenu(parentMenuID) {
+
+        let ret = await ParentMenuModel.deleteParentMenu(parentMenuID);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
 
     /**
      * inserts new parentmenu in the database
@@ -259,14 +274,24 @@ class MenusService {
      * @param {Object} obj - An object.
      * @param {String} [obj.page] current page, must be greater than 0
      * @param {String} [obj.limit] limit count of rows, greater than 0
+     * @param {String} [obj.sortBy] column used for sort
+     * @param {String} [obj.order] ASC or DESC
      * @return parentMenuArr all rows of parent menu
      */
-    static async getAllParentMenus({ page, limit }) {
+    static async getAllParentMenus({ page, limit, sortBy, order }) {
 
         if ((!!page && page > 0) && (!limit || !(limit > 0))) {
             return { status: false }
         } else if ((!!limit && limit > 0) && (!page || !(page > 0))) {
             return { status: false }
+        }
+
+        if (sortBy) {
+            if (order === "DESC") {
+                order = "DESC";
+            } else {
+                order = "ASC";
+            }
         }
 
         let isPaged = (!!page && page > 0) && (!!limit && limit > 0); // for pagination
@@ -275,9 +300,9 @@ class MenusService {
 
         let parentMenuArr;
         if (startIndex === false) {
-            parentMenuArr = await ParentMenuModel.getAll();
+            parentMenuArr = await ParentMenuModel.getAll(sortBy, order);
         } else {
-            parentMenuArr = await ParentMenuModel.getAllPaged({ startIndex: startIndex, limit: limit });
+            parentMenuArr = await ParentMenuModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
         }
 
         if (parentMenuArr.length) {

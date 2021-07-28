@@ -106,7 +106,8 @@ function SubPagesForm({ priv }) {
 
   }
 
-  const postSuccessCallback = (respData, successArr) => {
+  const postSuccessCallback = (respData) => {
+    let successArr = [];
 
     if (respData.status === true) {
       successArr.push(respData.msg);
@@ -133,15 +134,18 @@ function SubPagesForm({ priv }) {
   }, [history, isAddMode, location.search, priv])
 
   useDidUpdateEffect(() => {
-    if (dataPages && dataPages.status === true) {
+    if (dataPages) {
 
-      // set first option as default value if it has no value
-      if (subPageFormData.pageID === null || subPageFormData.pageID === "") {
-        actionsSubPageData.changePageID(dataPages.data[0].PageID);
+      if (dataPages.status === true) {
+        // set first option as default value if it has no value
+        if (subPageFormData.pageID === null || subPageFormData.pageID === "") {
+          actionsSubPageData.changePageID(dataPages.data[0].PageID);
+        }
+      } else {
+        passErrorMsg(`${dataPages.msg}`);
       }
 
-    } else {
-      passErrorMsg(`${dataPages.msg}`);
+
     }
   }, [dataPages])
 

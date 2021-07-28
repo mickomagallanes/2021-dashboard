@@ -90,13 +90,15 @@ function Table({
               </td>
             </tr>
           }
+
           {
             // data from database used for tr key
             // td key used combination of data from db and hardcoded data
             // e.g: "rname2" where "rname" is hardcoded id and "2" is the row id from db
             !!data.length && data.map(x =>
               <tr key={`tr${x[idKey]}`}>
-                {colData.map(y => <td key={`td${x[y.id]}${x[x[idKey]]}`}>{x[y.id]}</td>)}
+
+                {colData.map(y => <td key={`td${x[idKey]}-${y.id}`}>{x[y.id]}</td>)}
 
                 {!actionDisabled &&
                   <td>{actionButtons(x[idKey])}</td>

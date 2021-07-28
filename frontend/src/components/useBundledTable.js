@@ -7,12 +7,16 @@ import { useHistory, useLocation } from 'react-router-dom';
 import ReactDOM from "react-dom";
 import useDidUpdateEffect from './useDidUpdateEffect';
 
+const initPageValue = 1;
+const initEntryValue = 5;
+
 /**
  * Custom Hook to make Table + or Pagination + or Entry + or Sort functionality
  * @param {Array} data
  * @param {Number} [dataCount] total count row of data, determines if table will have entry
  * @param {Boolean} [isPaginated] default: true, determines if table will have pagination
  * @param {Boolean} [isSorted] default: true, determines if table will have sorting functionality
+ * @param {Boolean} [enabledSearchParam] default: true. If true, pushes all parameters of table to history url
  * @returns obj
  * @returns obj.searchparamQuery added to the fetch url, contains page, entry, sortBy and order parameter
  * @returns obj.BundledTable the mixed Components of table and pagination
@@ -20,7 +24,7 @@ import useDidUpdateEffect from './useDidUpdateEffect';
  * @returns obj.tableProps props for table, returns differently by the isSorted value
  * @returns obj.paginationProps props for pagination, returns differently by the isPaginated value
  */
-function useBundledTable({ data, dataCount, isPaginated = true, isSorted = true }) {
+function useBundledTable({ data, dataCount, isPaginated = true, isSorted = true, enabledSearchParam = true }) {
 
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
@@ -30,8 +34,8 @@ function useBundledTable({ data, dataCount, isPaginated = true, isSorted = true 
     const pageInitOptional = parseInt(pageParams);
     const entryInitOptional = parseInt(entryParams);
 
-    const [currentPage, setCurrentPage] = useState(pageParams ? pageInitOptional : 1);
-    const [currentEntries, setCurrentEntries] = useState(entryParams ? entryInitOptional : 5);
+    const [currentPage, setCurrentPage] = useState(pageParams ? pageInitOptional : initPageValue);
+    const [currentEntries, setCurrentEntries] = useState(entryParams ? entryInitOptional : initEntryValue);
 
     const sortByParams = searchParams.get('sortBy');
     const orderParams = searchParams.get('order');
@@ -40,7 +44,7 @@ function useBundledTable({ data, dataCount, isPaginated = true, isSorted = true 
 
     const [maxPage, setMaxPage] = useState(null);
 
-    const sortParam = isSorted ? `&sortBy=${currentSortCol}&order=${currentSortOrder}` : "";
+    const sortParam = (isSorted && currentSortCol && currentSortOrder) ? `&sortBy=${currentSortCol}&order=${currentSortOrder}` : "";
     const pageAndEntryParam = isPaginated ? `page=${currentPage}&limit=${currentEntries}` : "";
 
     const currSearch = `?${pageAndEntryParam}${sortParam}`;
@@ -65,7 +69,13 @@ function useBundledTable({ data, dataCount, isPaginated = true, isSorted = true 
         ? {
             totalDataRows: dataCount,
             currentEntries,
-            entryOnChange: (e) => setCurrentEntries(e)
+            entryOnChange: (e) => {
+                ReactDOM.unstable_batchedUpdates(() => {
+                    setCurrentEntries(e);
+                    setCurrentPage(initPageValue);
+                });
+
+            }
         }
         : null;
 
@@ -98,12 +108,10 @@ function useBundledTable({ data, dataCount, isPaginated = true, isSorted = true 
             });
         }
 
-
     }, [data, dataCount]);
 
     useDidUpdateEffect(() => {
-
-        if (location.search !== currSearch) {
+        if (enabledSearchParam && location.search !== currSearch) {
             history.push({
                 search: currSearch
             })
@@ -131,10 +139,11 @@ function BundledTable({
     addButtons
 }) {
 
-    const sortFunc = tableProps.handleSort ? (colId, order) => { tableProps.handleSort(colId, order) } : null
+    const sortFunc = tableProps.handleSort ? tableProps.handleSort : null;
+
     return (
         <>
-            <div className="row mb-4">
+            <div className="row">
                 {!!entryProps && <div className="col mt-3">
                     <span className="float-sm-left d-block mt-1 mt-sm-0 text-center">
                         Show

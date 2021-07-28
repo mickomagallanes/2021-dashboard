@@ -74,6 +74,7 @@ function Pages({ priv }) {
 
   const {
     timerSuccessAlert,
+    timerErrorAlert,
     passErrorMsg,
     AlertElements,
     clearErrorMsg,
@@ -111,6 +112,11 @@ function Pages({ priv }) {
           }
 
         } else {
+          // resets everything when fetched is error
+          ReactDOM.unstable_batchedUpdates(() => {
+            setTotalPages(null);
+            setPageData([]);
+          });
           passErrorMsg(`${dataPages.msg}`);
         }
 
@@ -131,7 +137,12 @@ function Pages({ priv }) {
 
   useDidUpdateEffect(() => {
 
-    timerSuccessAlert([deletePageResult.msg]);
+    if (deletePageResult.status) {
+      timerSuccessAlert([deletePageResult.msg]);
+    } else {
+      timerErrorAlert([deletePageResult.msg]);
+    }
+
     shouldRefetch.current = !shouldRefetch.current;
   }, [deletePageResult]);
 
