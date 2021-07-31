@@ -1,11 +1,33 @@
 const mysql_conn = require("./db.js");
+const GettersModel = require("./GettersModel.js");
 
 "use strict";
+
+const tableName = "Users";
+const primaryKey = "UserID";
+const secondaryTables = [{ id: "RoleID", name: "Roles" }];
+const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
 
 class UserModel {
 
     constructor() {
 
+    }
+
+    /**
+     * deleted user rows in the database
+     * @param {String} userID id of the user
+     */
+    static async deleteUser(userID) {
+
+        try {
+            const result = await mysql_conn.delete("Users", "where UserID=?", [userID]);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
     }
 
     /**
@@ -92,55 +114,6 @@ class UserModel {
     }
 
     /**
-     * get all user data from database
-     * @param {Object} obj - An object.
-     * @return {Array} result
-     */
-
-    static async getAllUser() {
-
-        const stmt = `SELECT 
-               a.UserID as id,
-               b.RoleName as rname,
-               a.Username as uname
-            FROM
-                Users as a INNER JOIN Roles as b ON a.RoleID = b.RoleID ORDER BY id `;
-        try {
-            const result = await mysql_conn.query(stmt);
-            return result;
-        } catch (err) {
-            console.log(err);
-            return false;
-        }
-    }
-
-    /**
-    * get all user data from database
-    * @param {Object} obj - An object.
-    * @param {Number} obj.startIndex start of limit
-    * @param {Number} obj.limit limit count
-    * @return {Array} result
-    */
-    static async getAllUserPaged({ startIndex, limit }) {
-
-        const limitClause = ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`;
-
-        const stmt = `SELECT 
-               a.UserID as id,
-               b.RoleName as rname,
-               a.Username as uname
-            FROM
-                Users as a INNER JOIN Roles as b ON a.RoleID = b.RoleID ORDER BY id ${limitClause}`;
-        try {
-            const result = await mysql_conn.query(stmt);
-            return result;
-        } catch (err) {
-            console.log(err);
-            return false;
-        }
-    }
-
-    /**
     * get a row using by user id
     * @param {Number} id id of the user
     * @return {Array} result, length = 1
@@ -195,5 +168,5 @@ class UserModel {
 
 }
 
-
+Object.setPrototypeOf(UserModel, getterModel);
 module.exports = UserModel;

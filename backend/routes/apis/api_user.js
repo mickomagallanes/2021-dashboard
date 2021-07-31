@@ -4,7 +4,7 @@ const UserService = require('../../services/UserService.js');
 const utils = require('../../utils/session.js');
 const { createSingleImageUpload } = require('../../utils/imageupload.js');
 const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../../middlewares/routesauth.js');
-const { userInsertSchema, userLoginSchema, userGetAllSchema, userModifySchema } = require('../../middlewares/validator.js');
+const { userInsertSchema, userLoginSchema, userGetAllSchema, userModifySchema, userDeleteSchema } = require('../../middlewares/validator.js');
 const express = require('express');
 const router = express.Router();
 const path = require('path');
@@ -12,8 +12,6 @@ const fs = require('fs');
 
 /**
  * get all user rows
- * @param {number} [req.query.page] page number
- * @param {number} [req.query.limit] row limit per page
  */
 router.get('/get/all', [checkSession, userGetAllSchema, authorizeReadRoute], async function (req, res, next) {
 
@@ -48,6 +46,17 @@ router.get('/get/all/count', [checkSession, authorizeReadRoute], async function 
         res.json({ "status": false, "msg": "Failed getting count" });
     } else {
         res.json({ "status": true, "msg": "Successful getting count", "data": result.data });
+    }
+});
+
+// delete user, also deletes children data
+router.delete('/delete/:id', [checkSession, userDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await UserService.deleteUser(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting user" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted user successfully" });
     }
 });
 

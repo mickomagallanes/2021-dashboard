@@ -11,14 +11,32 @@ class UserService {
     }
 
     /**
+     * deleted user rows in the database
+     * @param {String} userID id of the user
+     */
+    static async deleteUser(userID) {
+
+        let ret = await UserModel.deleteUser(userID);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
      * get all user data
      * @param {Object} obj - An object.
      * @param {String} [obj.page] current page, must be greater than 0
      * @param {String} [obj.limit] limit count of rows, greater than 0
+     * @param {String} [obj.sortBy] column used for sort
+     * @param {String} [obj.order] ASC or DESC
      * @return all rows of users
      */
 
-    static async getAllUser({ page, limit }) {
+    static async getAllUser({ page, limit, sortBy, order }) {
         if ((!!page && page > 0) && (!limit || !(limit > 0))) {
             return { status: false }
         } else if ((!!limit && limit > 0) && (!page || !(page > 0))) {
@@ -29,11 +47,20 @@ class UserService {
 
         const startIndex = isPaged ? (page - 1) * limit : false;
 
+        if (sortBy) {
+            if (order === "DESC") {
+                order = "DESC";
+            } else {
+                order = "ASC";
+            }
+        }
+
+
         let userData;
         if (startIndex === false) {
-            userData = await UserModel.getAllUser();
+            userData = await UserModel.getAll(sortBy, order);
         } else {
-            userData = await UserModel.getAllUserPaged({ startIndex: startIndex, limit: limit });
+            userData = await UserModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
         }
 
         if (userData.length) {
