@@ -39,8 +39,6 @@ function ParentMenus({ priv }) {
   const [parentMenuData, setParentMenuData] = useState([]);
   const [totalParentMenus, setTotalParentMenus] = useState(null);
 
-  const shouldRefetch = useRef(true);
-
   const {
     searchParamQuery,
     entryProps,
@@ -55,17 +53,19 @@ function ParentMenus({ priv }) {
     BundledTable
   } = useBundledTable({ data: parentMenuData, dataCount: totalParentMenus });
 
+  const [deleteParentMenu, deleteParentMenuResult] = useDelete(parentMenuDeleteURL);
+
   // to determine if initial fetch of data is done
 
-  const fetchDepsCount = [currentEntries, currentPage, shouldRefetch.current];
-  const fetchDepsMenus = [shouldRefetch.current];
+  const fetchDepsCount = [currentEntries, currentPage, deleteParentMenuResult];
+  const fetchDepsMenus = [deleteParentMenuResult];
 
   // also only loads by page and not sort since url is static
   const [dataCount, loadingCount] = useFetch(parentMenuCountURL, { customDeps: fetchDepsCount });
 
   const [dataParentMenus, loadingParentMenus] = useFetch(parentMenuURL + searchParamQuery, { customDeps: fetchDepsMenus });
 
-  const [deleteParentMenu, deleteParentMenuResult] = useDelete(parentMenuDeleteURL);
+
   const [sortUp, sortUpResult] = usePost(sortUpURL);
   const [sortDown, sortDownResult] = usePost(sortDownURL);
 
@@ -141,7 +141,6 @@ function ParentMenus({ priv }) {
       timerErrorAlert([respData.msg]);
     }
 
-    shouldRefetch.current = !shouldRefetch.current;
   }
 
   // LIFECYCLES

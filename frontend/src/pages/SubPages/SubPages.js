@@ -34,8 +34,6 @@ function SubPages({ priv }) {
   const [subPageData, setSubPageData] = useState([]);
   const [totalSubPages, setTotalSubPages] = useState(null);
 
-  const shouldRefetch = useRef(true);
-
   const {
     searchParamQuery,
     entryProps,
@@ -50,17 +48,17 @@ function SubPages({ priv }) {
     BundledTable
   } = useBundledTable({ data: subPageData, dataCount: totalSubPages });
 
+  const [deleteSubPage, deleteSubPageResult] = useDelete(subPageDeleteURL);
+
   // to determine if initial fetch of data is done
 
-  const fetchDepsCount = [currentEntries, currentPage, shouldRefetch.current];
-  const fetchDepsSubPages = [shouldRefetch.current];
+  const fetchDepsCount = [currentEntries, currentPage, deleteSubPageResult];
+  const fetchDepsSubPages = [deleteSubPageResult];
 
   // also only loads by page and not sort since url is static
   const [dataCount, loadingCount] = useFetch(subPageCountURL, { customDeps: fetchDepsCount });
 
   const [dataSubPages, loadingSubPages] = useFetch(subPageURL + searchParamQuery, { customDeps: fetchDepsSubPages });
-
-  const [deleteSubPage, deleteSubPageResult] = useDelete(subPageDeleteURL);
 
   const confirmDelete = useRef();
 
@@ -143,7 +141,6 @@ function SubPages({ priv }) {
       timerErrorAlert([deleteSubPageResult.msg]);
     }
 
-    shouldRefetch.current = !shouldRefetch.current;
   }, [deleteSubPageResult]);
 
 
@@ -194,17 +191,17 @@ function SubPages({ priv }) {
             <div className="card">
               <div className="card-body">
                 <h4 className="card-title"> SubPage Table </h4>
-                {loadingSubPages && loadingCount ? <Spinner /> :
-                  <BundledTable
-                    tableProps={tableProps}
-                    entryProps={entryProps}
-                    paginationProps={paginationProps}
-                    colData={colData}
-                    idKey={idKey}
-                    actionButtons={actionButtons}
-                    addButtons={addButtons}
-                  />
-                }
+                {!!loadingSubPages && !!loadingCount && <Spinner />}
+
+                <BundledTable
+                  tableProps={tableProps}
+                  entryProps={entryProps}
+                  paginationProps={paginationProps}
+                  colData={colData}
+                  idKey={idKey}
+                  actionButtons={actionButtons}
+                  addButtons={addButtons}
+                />
 
               </div>
             </div>

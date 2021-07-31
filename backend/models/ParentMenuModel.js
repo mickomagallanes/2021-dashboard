@@ -5,8 +5,8 @@ const GettersModel = require("./GettersModel.js");
 
 const tableName = "ParentMenus";
 const primaryKey = "ParentMenuID";
-const sortCol = "ParentMenuSort";
-const getterModel = new GettersModel(tableName, primaryKey, sortCol);
+
+const getterModel = new GettersModel(tableName, primaryKey);
 
 // LESSON: One model per table
 class ParentMenuModel {

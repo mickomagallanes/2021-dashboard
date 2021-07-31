@@ -42,8 +42,18 @@ function userGetAllSchema(req, res, next) {
     const schema = Joi.object({
         page: Joi.number().integer(),
         limit: Joi.number().integer().min(5).max(100),
+        sortBy: Joi.string().max(30),
+        order: Joi.string().min(3).max(4),
     });
     validateRequestQuery(req, res, next, schema);
+}
+
+function userDeleteSchema(req, res, next) {
+
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequestParams(req, res, next, schema);
 }
 
 /**************** PAGE-ROLE ****************/
@@ -103,6 +113,14 @@ function roleModifySchema(req, res, next) {
         body: schemaBody
     }).unknown(true);
     validateRequest(req, res, next, wholeSchema);
+}
+
+function roleDeleteSchema(req, res, next) {
+
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequestParams(req, res, next, schema);
 }
 
 /**************** MENUS ****************/
@@ -376,10 +394,12 @@ module.exports = {
     userLoginSchema,
     userGetAllSchema,
     userModifySchema,
+    userDeleteSchema,
     routeRolePostSchema,
     pageRolePostSchema,
     roleInsertSchema,
     roleModifySchema,
+    roleDeleteSchema,
     parentMenuInsertSchema,
     parentMenuModifySchema,
     parentMenuGetAllSchema,

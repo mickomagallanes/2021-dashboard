@@ -35,8 +35,6 @@ function Pages({ priv }) {
   const [pageData, setPageData] = useState([]);
   const [totalPages, setTotalPages] = useState(null);
 
-  const shouldRefetch = useRef(true);
-
   const {
     searchParamQuery,
     entryProps,
@@ -53,15 +51,17 @@ function Pages({ priv }) {
 
   // to determine if initial fetch of data is done
 
-  const fetchDepsCount = [currentEntries, currentPage, shouldRefetch.current];
-  const fetchDepsPages = [shouldRefetch.current];
+  const [deletePage, deletePageResult] = useDelete(pageDeleteURL);
+
+  const fetchDepsCount = [currentEntries, currentPage, deletePageResult];
+  const fetchDepsPages = [deletePageResult];
 
   // also only loads by page and not sort since url is static
   const [dataCount, loadingCount] = useFetch(pageCountURL, { customDeps: fetchDepsCount });
 
   const [dataPages, loadingPages] = useFetch(pageURL + searchParamQuery, { customDeps: fetchDepsPages });
 
-  const [deletePage, deletePageResult] = useDelete(pageDeleteURL);
+
 
   const confirmDelete = useRef();
 
@@ -143,7 +143,6 @@ function Pages({ priv }) {
       timerErrorAlert([deletePageResult.msg]);
     }
 
-    shouldRefetch.current = !shouldRefetch.current;
   }, [deletePageResult]);
 
 
@@ -207,17 +206,18 @@ function Pages({ priv }) {
               <div className="card-body">
                 <h4 className="card-title"> Page Table </h4>
 
-                {loadingPages && loadingCount ? <Spinner /> :
-                  <BundledTable
-                    tableProps={tableProps}
-                    entryProps={entryProps}
-                    paginationProps={paginationProps}
-                    colData={colData}
-                    idKey={idKey}
-                    actionButtons={actionButtons}
-                    addButtons={addButtons}
-                  />
-                }
+                {!!loadingPages && !!loadingCount && <Spinner />}
+
+                <BundledTable
+                  tableProps={tableProps}
+                  entryProps={entryProps}
+                  paginationProps={paginationProps}
+                  colData={colData}
+                  idKey={idKey}
+                  actionButtons={actionButtons}
+                  addButtons={addButtons}
+                />
+
 
               </div>
             </div>

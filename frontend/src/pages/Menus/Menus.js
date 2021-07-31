@@ -35,8 +35,6 @@ function Menus({ priv }) {
   const [menuData, setMenuData] = useState([]);
   const [totalMenus, setTotalMenus] = useState(null);
 
-  const shouldRefetch = useRef(true);
-
   const {
     searchParamQuery,
     entryProps,
@@ -52,16 +50,15 @@ function Menus({ priv }) {
   } = useBundledTable({ data: menuData, dataCount: totalMenus });
 
   // to determine if initial fetch of data is done
+  const [deleteMenu, deleteMenuResult] = useDelete(menuDeleteURL);
 
-  const fetchDepsCount = [currentEntries, currentPage, shouldRefetch.current];
-  const fetchDepsMenus = [shouldRefetch.current];
+  const fetchDepsCount = [currentEntries, currentPage, deleteMenuResult];
+  const fetchDepsMenus = [deleteMenuResult];
 
   // also only loads by page and not sort since url is static
   const [dataCount, loadingCount] = useFetch(menuCountURL, { customDeps: fetchDepsCount });
 
   const [dataMenus, loadingMenus] = useFetch(menuURL + searchParamQuery, { customDeps: fetchDepsMenus });
-
-  const [deleteMenu, deleteMenuResult] = useDelete(menuDeleteURL);
 
   const confirmDelete = useRef();
 
@@ -145,7 +142,6 @@ function Menus({ priv }) {
       timerErrorAlert([deleteMenuResult.msg]);
     }
 
-    shouldRefetch.current = !shouldRefetch.current;
   }, [deleteMenuResult]);
 
 
@@ -196,17 +192,18 @@ function Menus({ priv }) {
             <div className="card">
               <div className="card-body">
                 <h4 className="card-title"> Menus Table </h4>
-                {loadingMenus && loadingCount ? <Spinner /> :
-                  <BundledTable
-                    tableProps={tableProps}
-                    entryProps={entryProps}
-                    paginationProps={paginationProps}
-                    colData={colData}
-                    idKey={idKey}
-                    actionButtons={actionButtons}
-                    addButtons={addButtons}
-                  />
-                }
+                {!!loadingMenus && !!loadingCount && <Spinner />}
+
+                <BundledTable
+                  tableProps={tableProps}
+                  entryProps={entryProps}
+                  paginationProps={paginationProps}
+                  colData={colData}
+                  idKey={idKey}
+                  actionButtons={actionButtons}
+                  addButtons={addButtons}
+                />
+
 
               </div>
             </div>
