@@ -9,6 +9,22 @@ class RoleService {
     }
 
     /**
+     * deleted role rows in the database
+     * @param {String} roleID id of the menu
+     */
+    static async deleteRole(roleID) {
+
+        let ret = await RoleModel.deleteRole(roleID);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
     * inserts new role in the database
     * @param {Object} obj - An object.
     * @param {String} obj.rolename name of the role

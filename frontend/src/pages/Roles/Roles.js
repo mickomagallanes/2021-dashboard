@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import './Roles.css';
 import { PRIVILEGES } from "../../helpers/constants"
 import { Link } from 'react-router-dom';
@@ -8,13 +8,19 @@ import useAlert from '../../components/useAlert';
 import Spinner from '../../components/Spinner/Spinner';
 import useDidUpdateEffect from '../../components/useDidUpdateEffect';
 import ReactDOM from "react-dom";
+import useDelete from '../../components/useDelete';
+import useDialog from '../../components/useDialog';
 
 const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
+const roleDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/delete/`;
 
 const colData = [
   { "id": "id", "name": "Role ID" },
   { "id": "rname", "name": "Role name" }
 ];
+
+const modalTitle = "Do you want to delete this role?";
+const modalBody = "This row will be deleted in the database, do you want to proceed?";
 
 const idKey = "id";
 
@@ -32,10 +38,25 @@ function Roles({ priv }) {
     BundledTable
   } = useBundledTable({ data: rolesData, isPaginated: false, isSorted: false });
 
-  const [dataFetchedRoles, loadingFetchedRoles] = useFetch(roleURL + searchParamQuery);
+  const [deleteRole, deleteRoleResult] = useDelete(roleDeleteURL);
+  const confirmDelete = useRef();
+
+  const fetchDepsRoles = [deleteRoleResult];
+
+  const [dataFetchedRoles, loadingFetchedRoles] = useFetch(roleURL + searchParamQuery, { customDeps: fetchDepsRoles });
+
+  const {
+    handleShow,
+    handleClose,
+    show,
+    DialogElements
+  } = useDialog();
+
 
   const {
     passErrorMsg,
+    timerSuccessAlert,
+    timerErrorAlert,
     AlertElements,
     clearErrorMsg,
     errorMsg,
@@ -46,6 +67,15 @@ function Roles({ priv }) {
   const isWriteable = priv === PRIVILEGES.readWrite;
 
   // FUNCTIONS AND EVENT HANDLERS
+
+  const handleDelete = (menuId) => {
+    handleShow();
+    confirmDelete.current = () => {
+      deleteRole(menuId);
+      handleClose();
+    }
+
+  }
 
   const checkFetchedData = async () => {
     if (dataFetchedRoles) {
@@ -76,6 +106,17 @@ function Roles({ priv }) {
     checkFetchedData();
   }, [dataFetchedRoles]);
 
+
+  useDidUpdateEffect(() => {
+
+    if (deleteRoleResult.status) {
+      timerSuccessAlert([deleteRoleResult.msg]);
+    } else {
+      timerErrorAlert([deleteRoleResult.msg]);
+    }
+
+  }, [deleteRoleResult]);
+
   // UI
   const actionButtons = (roleId) => {
     return (
@@ -94,6 +135,11 @@ function Roles({ priv }) {
           {isWriteable ? "Edit" : "Read"} Role-Pages Privileges
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
+
+        {isWriteable && <button onClick={() => handleDelete(roleId)} className="btn btn-icon-text btn-outline-secondary mr-3">
+          Delete
+          <i className={`mdi mdi-delete btn-icon-append `}></i>
+        </button>}
 
       </>
     )
@@ -125,24 +171,24 @@ function Roles({ priv }) {
             <div className="card">
               <div className="card-body">
                 <h4 className="card-title"> Roles Table </h4>
-                {loadingFetchedRoles ? <Spinner /> :
-                  <BundledTable
-                    tableProps={tableProps}
-                    entryProps={entryProps}
-                    paginationProps={paginationProps}
-                    colData={colData}
-                    idKey={idKey}
-                    actionButtons={actionButtons}
-                    addButtons={addButtons}
-                  />
-                }
+                {!!loadingFetchedRoles && <Spinner />}
+                <BundledTable
+                  tableProps={tableProps}
+                  entryProps={entryProps}
+                  paginationProps={paginationProps}
+                  colData={colData}
+                  idKey={idKey}
+                  actionButtons={actionButtons}
+                  addButtons={addButtons}
+                />
+
 
               </div>
             </div>
           </div>
         </div>
       </div>
-
+      <DialogElements show={show} handleClose={handleClose} handleDelete={confirmDelete.current} modalTitle={modalTitle} modalBody={modalBody} />
     </>
   );
 }

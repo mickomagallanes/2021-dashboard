@@ -9,6 +9,22 @@ class RoleModel {
     }
 
     /**
+     * deleted role rows in the database
+     * @param {String} roleID id of the menu
+     */
+    static async deleteRole(roleID) {
+
+        try {
+            const result = await mysql_conn.delete("Roles", "where RoleID=?", [roleID]);
+            return result;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
     * inserts new role in the database
     * @param {Object} obj - An object.
     * @param {String} obj.rolename name of the role

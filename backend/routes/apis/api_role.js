@@ -2,7 +2,7 @@
 const RoleService = require('../../services/RoleService.js');
 
 const { checkSession, authorizeReadRoute, authorizeWriteRoute } = require('../../middlewares/routesauth.js');
-const { roleInsertSchema, roleModifySchema } = require('../../middlewares/validator.js');
+const { roleInsertSchema, roleModifySchema, roleDeleteSchema } = require('../../middlewares/validator.js');
 const express = require('express');
 const router = express.Router();
 
@@ -71,6 +71,18 @@ router.put('/modify/:id', [checkSession, roleModifySchema, authorizeWriteRoute],
         res.json({ "status": false, "msg": "Failed modification" });
     } else {
         res.json({ "status": true, "msg": "Successful modification", "id": result.data });
+    }
+});
+
+
+// delete role, also deletes children data
+router.delete('/delete/:id', [checkSession, roleDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await RoleService.deleteRole(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting role" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted role successfully" });
     }
 });
 
