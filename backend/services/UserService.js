@@ -176,7 +176,7 @@ class UserService {
         if (ret == false) {
             return { status: false }
         } else {
-            return { status: true, data: ret.insertId }
+            return { status: true }
         }
 
     }

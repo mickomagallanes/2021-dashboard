@@ -155,7 +155,7 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
 
       history.push({
         pathname: '/menus',
-        successMsg: [successArr],
+        successMsg: successArr,
         search: location.search
       });
     } else {
@@ -236,14 +236,12 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
 
   useDidUpdateEffect(() => {
 
-    let successArr = [];
-
     if (isAddMode) {
-      postSuccessCallback(addData, successArr);
+      postSuccessCallback(addData);
 
     } else {
 
-      postSuccessCallback(editData, successArr);
+      postSuccessCallback(editData);
     }
 
   }, [addData, editData]);

@@ -104,7 +104,7 @@ function PagesForm({ priv }) {
 
       history.push({
         pathname: '/pages',
-        successMsg: [successArr],
+        successMsg: successArr,
         search: location.search
       });
     } else {
@@ -145,14 +145,12 @@ function PagesForm({ priv }) {
 
   useDidUpdateEffect(() => {
 
-    let successArr = [];
-
     if (isAddMode) {
-      postSuccessCallback(addData, successArr);
+      postSuccessCallback(addData);
 
     } else {
 
-      postSuccessCallback(editData, successArr);
+      postSuccessCallback(editData);
     }
 
   }, [addData, editData]);

@@ -162,7 +162,7 @@ function PagesFormBulk({ priv }) {
 
       history.push({
         pathname: '/pages',
-        successMsg: [successArr],
+        successMsg: successArr,
         search: location.search
       });
     } else {
@@ -232,14 +232,12 @@ function PagesFormBulk({ priv }) {
 
   useDidUpdateEffect(() => {
 
-    let successArr = [];
-
     if (isAddMode) {
-      postSuccessCallback(addData, successArr);
+      postSuccessCallback(addData);
 
     } else {
 
-      postSuccessCallback(editData, successArr);
+      postSuccessCallback(editData);
     }
 
   }, [addData, editData]);

@@ -3,6 +3,7 @@ const axiosConfig = {
     timeout: 10000
 }
 
+const axiosConfigFormData = { ...axiosConfig, headers: { 'Content-Type': "multipart/form-data" } }
 
 function equalTo(ref, msg) {
     return this.test({
@@ -31,5 +32,6 @@ function retryRequest(callback) {
 export {
     retryRequest,
     equalTo,
-    axiosConfig
+    axiosConfig,
+    axiosConfigFormData
 }

@@ -72,7 +72,7 @@ function SubPagesForm({ priv }) {
   const [dataSubPage, loadingSubPage] = useFetch(subPageByIdURL + urlParam);
   const [dataPages, loadingPages, extractedDataPages] = useFetch(pageAllURL, { initialData: List([]) });
 
-
+  // TODO: set all variables into useRef, to remember the value, applicable throught the App
   const isAddMode = urlParam === "add";
 
   const history = useHistory();
@@ -90,6 +90,7 @@ function SubPagesForm({ priv }) {
 
   const handleSubmitForm = async (fields) => {
 
+    // TODO: check if param is redundant, check also other forms
     const param = {
       "subPageName": fields.subPageName,
       "pageID": fields.pageID,
@@ -114,7 +115,7 @@ function SubPagesForm({ priv }) {
 
       history.push({
         pathname: '/subpages',
-        successMsg: [successArr],
+        successMsg: successArr,
         search: location.search
       });
     } else {
@@ -172,14 +173,12 @@ function SubPagesForm({ priv }) {
 
   useDidUpdateEffect(() => {
 
-    let successArr = [];
-
     if (isAddMode) {
-      postSuccessCallback(addData, successArr);
+      postSuccessCallback(addData);
 
     } else {
 
-      postSuccessCallback(editData, successArr);
+      postSuccessCallback(editData);
     }
 
   }, [addData, editData]);

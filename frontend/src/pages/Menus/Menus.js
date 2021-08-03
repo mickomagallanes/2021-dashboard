@@ -19,6 +19,7 @@ const menuDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/delete/`;
 const modalTitle = "Do you want to delete this menu?";
 const modalBody = "This row will be deleted in the database, do you want to proceed?";
 
+// TODO: add secondary tables
 const colData = [
   { "id": "MenuID", "name": "Menu ID" },
   { "id": "MenuName", "name": "Menu Name" }
