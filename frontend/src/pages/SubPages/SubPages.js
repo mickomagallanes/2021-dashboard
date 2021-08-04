@@ -20,6 +20,7 @@ const subPageDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/dele
 
 const colData = [
   { "id": "SubPageID", "name": "SubPage ID" },
+  { "id": "PageName", "name": "Page Name" },
   { "id": "SubPageName", "name": "SubPage Name" }
 ];
 

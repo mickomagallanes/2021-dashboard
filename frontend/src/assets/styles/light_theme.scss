@@ -299,6 +299,7 @@ $btnlink-color-light: #000000;
 .light-theme > div{
     .content-wrapper { 
       background: $wrapper-bg-light;
+      color: $body-color-light;
     }
     .page-title {
       color: $body-color-light;

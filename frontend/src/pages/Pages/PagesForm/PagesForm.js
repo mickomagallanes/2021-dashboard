@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect, useReducer, useRef } from 'react'
 import ReactDOM from "react-dom";
 import './PagesForm.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
@@ -64,11 +64,11 @@ function PagesForm({ priv }) {
 
   const [dataPage, loadingPage] = useFetch(pageByIdURL + urlParam);
 
-  const isAddMode = urlParam === "add";
+  const { current: isAddMode } = useRef(urlParam === "add");
 
   const history = useHistory();
 
-  const isWriteable = priv === PRIVILEGES.readWrite;
+  const { current: isWriteable } = useRef(priv === PRIVILEGES.readWrite);
 
   const {
     passErrorMsg,

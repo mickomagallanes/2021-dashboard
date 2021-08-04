@@ -15,7 +15,6 @@ import useDelete from '../../components/useDelete';
 const userURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/all`;
 const userCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/all/count`;
 
-// TODO: show what user was deleted, apply to all tables
 const userDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/delete/`;
 
 const modalTitle = "Do you want to delete this user?";

@@ -6,7 +6,8 @@ const GettersModel = require("./GettersModel.js");
 
 const tableName = "Menus";
 const primaryKey = "MenuID";
-const getterModel = new GettersModel(tableName, primaryKey);
+const secondaryTables = [{ id: "ParentMenuID", name: "ParentMenus" }];
+const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
 
 class MenusModel {
     constructor() {

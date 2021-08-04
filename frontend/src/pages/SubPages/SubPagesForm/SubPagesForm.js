@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect, useReducer, useRef } from 'react'
 import ReactDOM from "react-dom";
 import './SubPagesForm.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
@@ -72,12 +72,11 @@ function SubPagesForm({ priv }) {
   const [dataSubPage, loadingSubPage] = useFetch(subPageByIdURL + urlParam);
   const [dataPages, loadingPages, extractedDataPages] = useFetch(pageAllURL, { initialData: List([]) });
 
-  // TODO: set all variables into useRef, to remember the value, applicable throught the App
-  const isAddMode = urlParam === "add";
+  const { current: isAddMode } = useRef(urlParam === "add");
 
   const history = useHistory();
 
-  const isWriteable = priv === PRIVILEGES.readWrite;
+  const { current: isWriteable } = useRef(priv === PRIVILEGES.readWrite);
 
   const {
     passErrorMsg,
@@ -90,7 +89,6 @@ function SubPagesForm({ priv }) {
 
   const handleSubmitForm = async (fields) => {
 
-    // TODO: check if param is redundant, check also other forms
     const param = {
       "subPageName": fields.subPageName,
       "pageID": fields.pageID,

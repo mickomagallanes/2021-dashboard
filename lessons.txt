@@ -2,8 +2,6 @@ Class Components vs Functional Components.
 
 1. The following components are made with Class:
 
- - Users
- - UsersForm
  - RolesForm (depends on itself when inserting bulk data)
  - RouteRolesForm
  - PageRolesForm
@@ -33,7 +31,9 @@ Class Components vs Functional Components.
  - SubPages
  - SubPagesForm
  - Roles
- 
+ - Users
+ - UsersForm
+
 Note: try to use hooks everytime, so starting on July 2021, all of my components are written with Functional Components
 
 FILE STRUCTURE

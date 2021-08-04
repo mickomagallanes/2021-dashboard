@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useRef } from 'react';
 import './ParentMenusForm.css';
 import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
@@ -57,11 +57,11 @@ function ParentMenuForm({ priv }) {
 
   const [dataParentMenu, loadingParentMenu] = useFetch(parentMenuByIdURL + urlParam);
 
-  const isAddMode = urlParam === "add";
+  const { current: isAddMode } = useRef(urlParam === "add");
 
   const history = useHistory();
 
-  const isWriteable = priv === PRIVILEGES.readWrite;
+  const { current: isWriteable } = useRef(priv === PRIVILEGES.readWrite);
 
   const {
     passErrorMsg,

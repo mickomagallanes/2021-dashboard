@@ -83,11 +83,11 @@ function PagesFormBulk({ priv }) {
 
   const menuFormInitState = useRef(null);
 
-  const isAddMode = urlParam === "add";
+  const { current: isAddMode } = useRef(urlParam === "add");
 
   const history = useHistory();
 
-  const isWriteable = priv === PRIVILEGES.readWrite;
+  const { current: isWriteable } = useRef(priv === PRIVILEGES.readWrite);
 
   // Then inside the component body
   const formRef = useRef();

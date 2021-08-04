@@ -6,7 +6,8 @@ const GettersModel = require("./GettersModel.js");
 
 const tableName = "SubPages";
 const primaryKey = "SubPageID";
-const getterModel = new GettersModel(tableName, primaryKey);
+const secondaryTables = [{ id: "PageID", name: "Pages" }];
+const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
 
 class SubPageModel {
 

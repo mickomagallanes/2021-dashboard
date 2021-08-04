@@ -84,11 +84,11 @@ function UsersForm({ priv }) {
   const [dataUser, loadingUser] = useFetch(userByIdURL + urlParam);
   const [dataRoles, loadingRoles, extractedDataRoles] = useFetch(roleURL, { initialData: List([]) });
 
-  const isAddMode = urlParam === "add";
+  const { current: isAddMode } = useRef(urlParam === "add");
 
   const history = useHistory();
 
-  const isWriteable = priv === PRIVILEGES.readWrite;
+  const { current: isWriteable } = useRef(priv === PRIVILEGES.readWrite);
 
   const { current: schema } = useRef(isAddMode ? schemaAdd : schemaEdit);
 
