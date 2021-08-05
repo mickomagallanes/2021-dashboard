@@ -262,13 +262,13 @@ function UsersForm({ priv }) {
               <div className="row w-100 mx-0" data-testid="UsersForm">
                 <div className="col-lg-4 col-xlg-3 col-md-12">
                   <div className="row">
-                    <div className="col">
+                    <div className="col p-4 card">
                       <input name="userImg" type="file" disabled={!isWriteable} onChange={(event) => {
                         setFieldValue("userImg", Array.from(event.target.files));
                         handleFileChange(event);
                       }} className="form-control-file h-auto" />
 
-                      <img className="img-fluid" src={imgSrc} alt="User Profile" name="userImgUpload" />
+                      <img className="img-fluid mt-3" src={imgSrc} alt="User Profile" name="userImgUpload" />
                     </div>
                   </div>
                 </div>

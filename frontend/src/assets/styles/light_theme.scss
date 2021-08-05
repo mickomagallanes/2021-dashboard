@@ -324,6 +324,9 @@ $btnlink-color-light: #000000;
       }
     }
 
+    form > .row > div {
+        background: $wrapper-bg-light;
+    }
     .row {
       background: $table-bg-light;
 

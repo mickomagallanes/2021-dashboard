@@ -234,7 +234,7 @@ class Sidebar extends React.Component {
               ? <li key={`parent${item.ParentMenuID}`} className={this.isPathActive(item.ParentMenuID) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
                 <div className={this.state[`${item.ParentMenuID}Open`] ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState(`${item.ParentMenuID}Open`)} data-toggle="collapse">
                   <span className="menu-icon">
-                    <i className="mdi mdi-dashboard"></i>
+                    <i className="mdi mdi-speedometer"></i>
                   </span>
                   <span className="menu-title text-wrap"> {item.ParentMenuName} </span>
                   <i className="menu-arrow"></i>
