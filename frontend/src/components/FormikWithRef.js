@@ -19,7 +19,10 @@ const FormikWithRef = ({
             ref={formRef}
             enableReinitialize={enableReinitialize}
         >
-            {(props) => <Form>{children}</Form>}
+            {(props) =>
+                <Form>
+                    {typeof children === "function" ? children(props) : children}
+                </Form>}
         </FormWithRef>
     );
 };

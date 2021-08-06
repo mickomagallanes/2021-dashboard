@@ -56,7 +56,6 @@ function SubPages({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deleteSubPageResult];
   const fetchDepsSubPages = [deleteSubPageResult];
 
-  // also only loads by page and not sort since url is static
   const [dataCount, loadingCount] = useFetch(subPageCountURL, { customDeps: fetchDepsCount });
 
   const [dataSubPages, loadingSubPages] = useFetch(subPageURL + searchParamQuery, { customDeps: fetchDepsSubPages });

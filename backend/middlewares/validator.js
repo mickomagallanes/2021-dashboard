@@ -360,6 +360,60 @@ function subPageGetAllSchema(req, res, next) {
     validateRequestQuery(req, res, next, schema);
 }
 
+/**************** EMPLOYEES ****************/
+
+/*********** 1. Employee ************/
+
+/*********** 2. Employee Salary************/
+function employeeSalaryDeleteSchema(req, res, next) {
+
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequestParams(req, res, next, schema);
+}
+
+function employeeSalaryInsertSchema(req, res, next) {
+
+    const schema = Joi.object({
+        salary: Joi.string().max(30).required(),
+        startedDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
+        untilDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
+        employeeID: Joi.number().required()
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function employeeSalaryModifySchema(req, res, next) {
+
+    const schemaBody = Joi.object({
+        salary: Joi.string().max(30).required(),
+        startedDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
+        untilDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
+        employeeID: Joi.number().required()
+    });
+
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+    validateRequest(req, res, next, wholeSchema);
+}
+
+function employeeSalaryGetAllSchema(req, res, next) {
+    const schema = Joi.object({
+        page: Joi.number().integer(),
+        limit: Joi.number().integer().min(5).max(100),
+        sortBy: Joi.string().max(30),
+        order: Joi.string().min(3).max(4),
+    });
+    validateRequestQuery(req, res, next, schema);
+}
+
 /**************** GENERAL ****************/
 function validateRequestBody(req, res, next, schema) {
     validate(req.body, res, next, schema)
@@ -418,5 +472,9 @@ module.exports = {
     subPageGetAllSchema,
     subPageInsertSchema,
     subPageModifySchema,
-    subPageDeleteSchema
+    subPageDeleteSchema,
+    employeeSalaryGetAllSchema,
+    employeeSalaryModifySchema,
+    employeeSalaryInsertSchema,
+    employeeSalaryDeleteSchema
 }

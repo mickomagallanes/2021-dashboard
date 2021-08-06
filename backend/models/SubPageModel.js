@@ -6,7 +6,7 @@ const GettersModel = require("./GettersModel.js");
 
 const tableName = "SubPages";
 const primaryKey = "SubPageID";
-const secondaryTables = [{ id: "PageID", name: "Pages" }];
+const secondaryTables = [{ id: "PageID", name: "Pages", relation: " INNER JOIN " }];
 const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
 
 class SubPageModel {

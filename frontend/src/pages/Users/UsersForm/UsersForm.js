@@ -27,14 +27,14 @@ yup.addMethod(yup.string, 'equalTo', equalTo);
 
 const schemaAdd = yup.object().shape({
   username: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
-  // password: yup.string().min(12, 'Must be longer than 12'),
-  // confirmPassword: yup.string().equalTo(yup.ref('password'), "Passwords don't match!")
+  password: yup.string().min(12, 'Must be longer than 12'),
+  confirmPassword: yup.string().equalTo(yup.ref('password'), "Passwords don't match!")
 });
 
 const schemaEdit = yup.object().shape({
   username: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
-  // password: yup.string().min(12, 'Must be longer than 12').required('Required'),
-  // confirmPassword: yup.string().equalTo(yup.ref('password'), "Passwords don't match!").required('Required')
+  password: yup.string().min(12, 'Must be longer than 12').required('Required'),
+  confirmPassword: yup.string().equalTo(yup.ref('password'), "Passwords don't match!").required('Required')
 });
 
 const userReducer = (state, action) => {

@@ -232,11 +232,11 @@ class Sidebar extends React.Component {
             // match parent menu to the current page location
             (item.ParentMenuID !== null)
               ? <li key={`parent${item.ParentMenuID}`} className={this.isPathActive(item.ParentMenuID) ? 'nav-item menu-items active' : 'nav-item menu-items'}>
-                <div className={this.state[`${item.ParentMenuID}Open`] ? 'nav-link menu-expanded' : 'nav-link'} onClick={() => this.toggleMenuState(`${item.ParentMenuID}Open`)} data-toggle="collapse">
+                <div className={`${this.state[`${item.ParentMenuID}Open`] ? 'nav-link menu-expanded' : 'nav-link'} h-100`} onClick={() => this.toggleMenuState(`${item.ParentMenuID}Open`)} data-toggle="collapse">
                   <span className="menu-icon">
                     <i className="mdi mdi-speedometer"></i>
                   </span>
-                  <span className="menu-title text-wrap"> {item.ParentMenuName} </span>
+                  <span className="menu-title text-wrap w-75"> {item.ParentMenuName} </span>
                   <i className="menu-arrow"></i>
                 </div>
                 <Collapse in={!!this.state[`${item.ParentMenuID}Open`]}>

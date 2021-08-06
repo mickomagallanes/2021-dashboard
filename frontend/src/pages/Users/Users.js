@@ -57,7 +57,6 @@ function Users({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deleteUserResult];
   const fetchDepsUsers = [deleteUserResult];
 
-  // also only loads by page and not sort since url is static
   const [dataCount, loadingCount] = useFetch(userCountURL, { customDeps: fetchDepsCount });
 
   const [dataUsers, loadingUsers] = useFetch(userURL + searchParamQuery, { customDeps: fetchDepsUsers });

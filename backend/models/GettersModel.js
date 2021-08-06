@@ -56,8 +56,9 @@ class GettersModel {
         await loopArr(this.secondaryTables, (indx) => {
             let secondTbl = this.secondaryTables[indx].name;
             let secondTblKey = this.secondaryTables[indx].id;
+            let relationTbl = this.secondaryTables[indx].relation;
 
-            tblStmt += ` INNER JOIN ${secondTbl} ON ${currTbl}.${secondTblKey} = ${secondTbl}.${secondTblKey} `
+            tblStmt += ` ${relationTbl} ${secondTbl} ON ${currTbl}.${secondTblKey} = ${secondTbl}.${secondTblKey} `
         })
 
         const stmt = `SELECT * from ${tblStmt} ${sortStmt}`;
@@ -95,8 +96,9 @@ class GettersModel {
         await loopArr(this.secondaryTables, (indx) => {
             let secondTbl = this.secondaryTables[indx].name;
             let secondTblKey = this.secondaryTables[indx].id;
+            let relationTbl = this.secondaryTables[indx].relation;
 
-            tblStmt += ` INNER JOIN ${secondTbl} ON ${currTbl}.${secondTblKey} = ${secondTbl}.${secondTblKey} `
+            tblStmt += ` ${relationTbl} ${secondTbl} ON ${currTbl}.${secondTblKey} = ${secondTbl}.${secondTblKey} `
         })
 
         const limitClause = ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`;

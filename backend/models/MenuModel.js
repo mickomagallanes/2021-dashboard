@@ -6,7 +6,10 @@ const GettersModel = require("./GettersModel.js");
 
 const tableName = "Menus";
 const primaryKey = "MenuID";
-const secondaryTables = [{ id: "ParentMenuID", name: "ParentMenus" }];
+const secondaryTables = [
+    { id: "ParentMenuID", name: "ParentMenus", relation: " LEFT JOIN " },
+    { id: "PageID", name: "Pages", relation: " INNER JOIN " }
+];
 const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
 
 class MenusModel {

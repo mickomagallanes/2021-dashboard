@@ -17,7 +17,7 @@ class PageRoleService {
     static async getPagePrivByUser(userId, pagePath) {
         let pageRoleObj = await PageRoleModel.getPagePrivByUser(userId, pagePath);
 
-        if (pageRoleObj.length) {
+        if (pageRoleObj.length) { // TODO: consider reviewing these .length return in App
             return { status: true, data: pageRoleObj[0].PrivilegeName }
         }
         return { status: false }

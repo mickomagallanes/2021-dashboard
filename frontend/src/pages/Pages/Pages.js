@@ -56,7 +56,6 @@ function Pages({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deletePageResult];
   const fetchDepsPages = [deletePageResult];
 
-  // also only loads by page and not sort since url is static
   const [dataCount, loadingCount] = useFetch(pageCountURL, { customDeps: fetchDepsCount });
 
   const [dataPages, loadingPages] = useFetch(pageURL + searchParamQuery, { customDeps: fetchDepsPages });

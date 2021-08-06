@@ -22,6 +22,7 @@ const modalBody = "This row will be deleted in the database, do you want to proc
 const colData = [
   { "id": "MenuID", "name": "Menu ID" },
   { "id": "ParentMenuName", "name": "Parent Menu Name" },
+  { "id": "PageName", "name": "Page Name" },
   { "id": "MenuName", "name": "Menu Name" }
 ];
 
@@ -56,7 +57,6 @@ function Menus({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deleteMenuResult];
   const fetchDepsMenus = [deleteMenuResult];
 
-  // also only loads by page and not sort since url is static
   const [dataCount, loadingCount] = useFetch(menuCountURL, { customDeps: fetchDepsCount });
 
   const [dataMenus, loadingMenus] = useFetch(menuURL + searchParamQuery, { customDeps: fetchDepsMenus });

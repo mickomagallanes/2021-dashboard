@@ -132,7 +132,7 @@ class MenusService {
             menuArr = await MenuModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
         }
 
-        if (menuArr.length) {
+        if (menuArr) {
 
             return { status: true, data: menuArr }
 

@@ -34,9 +34,9 @@ const menuReducer = (state, action) => {
     case 'changeMenuName':
       return { ...state, menuName: action.payload };
     case 'changePageID':
-      return { ...state, pageID: action.payload || "" }; // cant be null, so return blank instead
+      return { ...state, pageID: action.payload };
     case 'changeParentMenuID':
-      return { ...state, parentMenuID: action.payload || "" };
+      return { ...state, parentMenuID: action.payload || "" }; // cant be null, so return blank instead, add if column is optional
     default:
       return state;
   }

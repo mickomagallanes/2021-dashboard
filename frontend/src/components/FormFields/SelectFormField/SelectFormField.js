@@ -1,6 +1,7 @@
 import React from 'react';
 import './SelectFormField.css';
 import { getIn } from "formik";
+import { Form } from 'react-bootstrap';
 
 /**
   * creates a text field
@@ -25,21 +26,29 @@ export default function SelectFormField({
     getIn(form.touched, field.name) && getIn(form.errors, field.name);
   return (
     <>
-      {label && <label htmlFor={field.name}>{label}</label>}
-      <select
-        data-testid="SelectFormField"
-        className="form-control btn"
-        disabled={errorText}
-        id={field.name}
-        {...field}
-        {...props}
-      >
-        {allowDefaultNull && <option value={""}> SELECT OPTIONAL OPTIONS </option>}
-        {options.map(x =>
-          <option key={x[idKey]} value={x[idKey]}>{x[valueKey]}</option>
-        )}
+      <Form.Group>
+        {label && <Form.Label htmlFor={field.name}>{label}</Form.Label>}
 
-      </select>
+        <Form.Control as="select"
+          isInvalid={!!errorText}
+          data-testid="SelectFormField"
+          className="form-control btn"
+          id={field.name}
+          {...field}
+          {...props}
+        >
+          {allowDefaultNull && <option value={""}> SELECT OPTIONAL OPTIONS </option>}
+          {options.map(x =>
+            <option key={x[idKey]} value={x[idKey]}>{x[valueKey]}</option>
+          )}
+        </Form.Control>
+
+        <Form.Control.Feedback type="invalid">
+          {errorText}
+        </Form.Control.Feedback>
+      </Form.Group>
+
+
     </>
   );
 }

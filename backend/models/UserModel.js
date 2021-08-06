@@ -5,7 +5,7 @@ const GettersModel = require("./GettersModel.js");
 
 const tableName = "Users";
 const primaryKey = "UserID";
-const secondaryTables = [{ id: "RoleID", name: "Roles" }];
+const secondaryTables = [{ id: "RoleID", name: "Roles", relation: " INNER JOIN " }];
 const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
 
 class UserModel {
