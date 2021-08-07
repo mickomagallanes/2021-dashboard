@@ -448,7 +448,7 @@ function employeeModifySchema(req, res, next) {
     }).unknown(true);
     validateRequest(req, res, next, wholeSchema);
 }
-
+// TODO: emplooyee schema
 function employeeGetAllSchema(req, res, next) {
     const schema = Joi.object({
         page: Joi.number().integer(),
