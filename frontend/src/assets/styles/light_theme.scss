@@ -358,7 +358,7 @@ $btnlink-color-light: #000000;
         
      }
 
-      div {
+      .col, .card, .card-body {
         background: $table-bg-light;
       }
 
@@ -541,3 +541,43 @@ $modals-text-color: #212529;
   }
 }
 
+
+/* REACT DATE-PICKER */
+$react-datepicker-bg-light: #242729;
+$react-datepicker-border-light: #6c757d;
+.light-theme {
+  .react-datepicker{
+    background-color: #fff !important;
+    
+    button {
+      background-color: #f0f0f0 !important;
+      
+      &:hover {
+        background-color: #fff !important;
+      }
+    }
+  }
+  
+  .react-datepicker__day:hover, 
+  .react-datepicker__month-text:hover, 
+  .react-datepicker__quarter-text:hover, 
+  .react-datepicker__year-text:hover {
+    background-color: #f0f0f0 !important;
+  }
+
+  .react-datepicker__header {
+    background-color: #f0f0f0 !important;
+  }
+
+  .react-datepicker div, .react-datepicker__header div {
+    color: #000 !important;
+  }
+
+  .react-datepicker__navigation-icon--previous::before {
+     border-color: $react-datepicker-border-light !important;
+  }
+
+  .react-datepicker__navigation-icon--next::before {
+    border-color: $react-datepicker-border-light !important;
+  }
+}

@@ -30,7 +30,7 @@ function useBundledTable({ data, dataCount, isPaginated = true, isSorted = true,
     const searchParams = new URLSearchParams(location.search);
 
     const pageParams = searchParams.get('page');
-    const entryParams = searchParams.get('entry');
+    const entryParams = searchParams.get('limit');
     const pageInitOptional = parseInt(pageParams);
     const entryInitOptional = parseInt(entryParams);
 

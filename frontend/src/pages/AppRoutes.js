@@ -30,6 +30,8 @@ import SubPagesForm from './SubPages/SubPagesForm/SubPagesForm';
 import PagesFormBulk from './Pages/PagesFormBulk/PagesFormBulk';
 import EmployeesSalaries from './EmployeeSalaries/EmployeeSalaries';
 import EmployeeSalariesForm from './EmployeeSalaries/EmployeeSalariesForm/EmployeeSalariesForm';
+import Routes from './Routes/Routes';
+import RoutesForm from './Routes/RoutesForm/RoutesForm';
 
 
 const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/session`;
@@ -163,6 +165,8 @@ function matchComponentName(name) {
     case "Pages": return Pages;
     case "PagesForm": return PagesForm;
     case "PagesFormBulk": return PagesFormBulk;
+    case "Routes": return Routes;
+    case "RoutesForm": return RoutesForm;
     case "SubPages": return SubPages;
     case "SubPagesForm": return SubPagesForm;
     case "EmployeeSalaries": return EmployeesSalaries;

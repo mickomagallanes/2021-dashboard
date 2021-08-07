@@ -58,7 +58,7 @@ router.get('/salary/get/all', [checkSession, employeeSalaryGetAllSchema, authori
 
     if (resp.status !== false) {
 
-        res.json({ "status": true, "msg": "Successfully fetched pages", "data": resp.data });
+        res.json({ "status": true, "msg": "Successfully fetched salaries", "data": resp.data });
     } else {
 
         res.json({ "status": false, "msg": "Failed getting salaries!" });
@@ -90,6 +90,142 @@ router.get('/salary/get/by/:id', [checkSession, authorizeReadRoute], async funct
         res.json({ "status": false, "msg": "Failed getting row by id" });
     } else {
         res.json({ "status": true, "msg": "Successful getting row by id", "data": result.data });
+    }
+});
+
+/******************************** EMPLOYEES ***************************************/
+
+/**
+ * get employees based on the logged-in user role
+ *
+ */
+router.get('/get/by/session', [checkSession], async function (req, res, next) {
+
+    let userId = req.session.userData.userid;
+
+    let resp = await EmployeeService.getEmployeesBySession(userId);
+
+    if (resp.status) {
+
+        res.json({ "status": true, "msg": "Successfully fetched employees", "data": resp.data });
+    } else {
+
+        res.json({ "status": false, "msg": "Failed getting employees!" });
+    }
+
+});
+
+/**
+ * get count of all employee rows
+ */
+router.get('/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
+
+    let result = await EmployeeService.getAllEmployeeCount();
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed getting count" });
+    } else {
+        res.json({ "status": true, "msg": "Successful getting count", "data": result.data });
+    }
+});
+
+/**
+ * get all employee rows
+ *
+ */
+router.get('/get/all', [checkSession, employeeGetAllSchema, authorizeReadRoute], async function (req, res, next) {
+
+    let resp = await EmployeeService.getAllEmployees(req.query);
+
+    if (resp.status !== false) {
+
+        res.json({ "status": true, "msg": "Successfully fetched employees", "data": resp.data });
+    } else {
+
+        res.json({ "status": false, "msg": "Failed getting employees!" });
+    }
+
+});
+
+/**
+ * get employee row by employee id
+ * @param {number} req.params.id id of employee
+ */
+router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
+
+    let result = await EmployeeService.getEmployeeById(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed getting row by id" });
+    } else {
+        res.json({ "status": true, "msg": "Successful getting row by id", "data": result.data });
+    }
+});
+
+// insert new employee by bulk: employee + menu + employeerole
+// returns insertId of employee
+router.post('/insert/bulk/by/session', [checkSession, employeeInsertBulkSchema, authorizeWriteRoute], async function (req, res, next) {
+    let roleId = req.session.userData.roleid;
+
+    // insert role information
+    let result = await EmployeeService.insertEmployeeBulk(roleId, req.body);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed inserting employee" });
+    } else {
+        res.json({ "status": true, "msg": "Successful inserting employee", "id": result.data });
+    }
+});
+
+
+// insert new employee
+// returns insertId of employee
+router.post('/insert', [checkSession, employeeInsertSchema, authorizeWriteRoute], async function (req, res, next) {
+
+    // insert role information
+    let result = await EmployeeService.insertEmployee(req.body);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed inserting employee by bulk" });
+    } else {
+        res.json({ "status": true, "msg": "Successful inserting employee by bulk", "id": result.data });
+    }
+});
+
+
+// edit employee by bulk: employee + menu + employeerole
+router.put('/modify/bulk/by/session/:id', [checkSession, employeeModifyBulkSchema, authorizeWriteRoute], async function (req, res, next) {
+
+    let roleId = req.session.userData.roleid;
+    let result = await EmployeeService.modifyEmployeeBulk(req.params.id, roleId, req.body);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed modification of employee by bulk" });
+    } else {
+        res.json({ "status": true, "msg": "Successful modification of employee by bulk", "id": result.data });
+    }
+});
+
+// edit employee
+router.put('/modify/:id', [checkSession, employeeModifySchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await EmployeeService.modifyEmployee(req.params.id, req.body);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed modification of employee" });
+    } else {
+        res.json({ "status": true, "msg": "Successful modification of employee", "id": result.data });
+    }
+});
+
+
+// delete employee, also deletes children data
+router.delete('/delete/:id', [checkSession, employeeDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await EmployeeService.deleteEmployee(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting employee" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted employee successfully" });
     }
 });
 

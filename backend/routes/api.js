@@ -10,5 +10,6 @@ router.use('/privilege', require('./apis/api_privilege'));
 router.use('/page', require('./apis/api_page'));
 router.use('/routerole', require('./apis/api_routerole'));
 router.use('/employee', require('./apis/api_employee'));
+router.use('/route', require('./apis/api_route'));
 
 module.exports = router;

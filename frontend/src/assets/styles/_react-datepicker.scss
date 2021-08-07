@@ -1,0 +1,49 @@
+
+
+  .react-datepicker {
+    background-color: lighten($content-bg, 10%) !important;
+
+    button {
+        &:hover {
+          background-color: lighten($content-bg, 20%) !important;
+        }
+      }
+  }
+
+  .react-datepicker div {
+    color: $white-smoke !important;
+  }
+
+  .react-datepicker__day:hover, 
+  .react-datepicker__month-text:hover, 
+  .react-datepicker__quarter-text:hover, 
+  .react-datepicker__year-text:hover {
+    color: $black !important;
+  }
+
+  .react-datepicker__header {
+    background-color: $content-bg !important;
+  }
+
+  .react-datepicker__header div {
+    color: $white !important;
+  }
+
+  .react-datepicker__navigation-icon {
+    position: static !important;
+  }
+  .react-datepicker__navigation {
+    overflow: unset !important;
+  }
+
+  .react-datepicker__navigation-icon--previous::before {
+    right: 10px !important;
+    top: 10px !important;
+    border-color: white !important;
+  }
+
+  .react-datepicker__navigation-icon--next::before {
+    left: 10px !important;
+    top: 10px !important;
+    border-color: white !important;
+  }

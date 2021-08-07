@@ -271,7 +271,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
                 formRef={parentFormRef}
                 enableReinitialize
               >
-                {({ setFieldValue, field }) =>
+                {({ setFieldValue, values }) =>
                   <>
                     <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
                     {
@@ -282,7 +282,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
                               label="Employee Salary Name"
                               type="text"
                               name="salary"
-                              placeholder="EmployeeSalary Name"
+                              placeholder="Employee Salary Name"
                               disabled={!isWriteable}
                               component={TextFormField}
                             />
@@ -290,8 +290,8 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
                           <div>
                             <Field
                               label="Started Date"
-                              name="salary"
-                              setStartDate={(value) => setFieldValue(field.salary, value)}
+                              name="startedDate"
+                              setStartDate={(value) => setFieldValue("startedDate", value)}
                               disabled={!isWriteable}
                               component={DateFormField}
                             />

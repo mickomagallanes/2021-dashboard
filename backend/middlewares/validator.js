@@ -5,7 +5,7 @@ function userInsertSchema(req, res, next) {
 
     const schema = Joi.object({
         username: Joi.string().max(45).required(),
-        password: Joi.string().min(12).required(),
+        password: Joi.string().min(12).max(60).required(),
         roleid: Joi.number().required()
     });
     validateRequestBody(req, res, next, schema);
@@ -15,7 +15,7 @@ function userModifySchema(req, res, next) {
 
     const schemaBody = Joi.object({
         username: Joi.string().max(45).required(),
-        password: Joi.string().min(12).allow('').optional(),
+        password: Joi.string().min(12).max(60).allow('').optional(),
         roleid: Joi.number().required()
     });
     const schemaID = Joi.object({
@@ -33,7 +33,7 @@ function userModifySchema(req, res, next) {
 function userLoginSchema(req, res, next) {
     const schema = Joi.object({
         username: Joi.string().max(45).required(),
-        password: Joi.string().required(),
+        password: Joi.string().max(60).required(),
     });
     validateRequestBody(req, res, next, schema);
 }
@@ -121,6 +121,52 @@ function roleDeleteSchema(req, res, next) {
         id: Joi.number().required()
     });
     validateRequestParams(req, res, next, schema);
+}
+
+/*********** ROUTES ************/
+function routeDeleteSchema(req, res, next) {
+
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequestParams(req, res, next, schema);
+}
+
+function routeInsertSchema(req, res, next) {
+
+    const schema = Joi.object({
+        routeName: Joi.string().max(45).required(),
+        routePath: Joi.string().max(30).required()
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function routeModifySchema(req, res, next) {
+
+    const schemaBody = Joi.object({
+        routeName: Joi.string().max(45).required(),
+        routePath: Joi.string().max(30).required()
+    });
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+
+    validateRequest(req, res, next, wholeSchema);
+}
+
+function routeGetAllSchema(req, res, next) {
+    const schema = Joi.object({
+        page: Joi.number().integer(),
+        limit: Joi.number().integer().min(5).max(100),
+        sortBy: Joi.string().max(30),
+        order: Joi.string().min(3).max(4),
+    });
+    validateRequestQuery(req, res, next, schema);
 }
 
 /**************** MENUS ****************/
@@ -364,6 +410,55 @@ function subPageGetAllSchema(req, res, next) {
 
 /*********** 1. Employee ************/
 
+function employeeDeleteSchema(req, res, next) {
+
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequestParams(req, res, next, schema);
+}
+
+function employeeInsertSchema(req, res, next) {
+
+    const schema = Joi.object({
+        salary: Joi.string().max(30).required(),
+        startedDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
+        untilDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
+        employeeID: Joi.number().required()
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function employeeModifySchema(req, res, next) {
+
+    const schemaBody = Joi.object({
+        salary: Joi.string().max(30).required(),
+        startedDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
+        untilDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
+        employeeID: Joi.number().required()
+    });
+
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+    validateRequest(req, res, next, wholeSchema);
+}
+
+function employeeGetAllSchema(req, res, next) {
+    const schema = Joi.object({
+        page: Joi.number().integer(),
+        limit: Joi.number().integer().min(5).max(100),
+        sortBy: Joi.string().max(30),
+        order: Joi.string().min(3).max(4),
+    });
+    validateRequestQuery(req, res, next, schema);
+}
+
 /*********** 2. Employee Salary************/
 function employeeSalaryDeleteSchema(req, res, next) {
 
@@ -454,6 +549,10 @@ module.exports = {
     roleInsertSchema,
     roleModifySchema,
     roleDeleteSchema,
+    routeInsertSchema,
+    routeModifySchema,
+    routeGetAllSchema,
+    routeDeleteSchema,
     parentMenuInsertSchema,
     parentMenuModifySchema,
     parentMenuGetAllSchema,

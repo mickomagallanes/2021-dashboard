@@ -27,12 +27,18 @@ export default function DateFormField({
   return (
     <>
       {label && <label htmlFor={field.name}>{label}</label>}
-      <DatePicker
-        {...field}
-        {...props}
-        id={field.name}
-        selected={(field.value && new Date(field.value)) || null}
-        onChange={(date) => setStartDate(date)} />
+      <div>
+        <DatePicker
+          {...field}
+          {...props}
+          className="form-control"
+          id={field.name}
+          selected={(field.value && new Date(field.value)) || new Date()}
+          onChange={(date) => setStartDate(date)}
+
+        />
+      </div>
+
     </>
   );
 }

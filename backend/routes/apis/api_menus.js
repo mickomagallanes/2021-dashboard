@@ -45,7 +45,7 @@ router.put('/modify/:id', [checkSession, menuModifySchema, authorizeWriteRoute],
 
 
 /**
- * get pages based on the logged-in user role
+ * get menus based on the logged-in user role
  *
  */
 router.get('/get/by/role', [checkSession], async function (req, res, next) {
@@ -56,7 +56,7 @@ router.get('/get/by/role', [checkSession], async function (req, res, next) {
 
     if (resp.status !== false) {
 
-        res.json({ "status": true, "msg": "Successfully fetched pages", "data": resp.data });
+        res.json({ "status": true, "msg": "Successfully fetched menus", "data": resp.data });
     } else {
 
         res.json({ "status": false, "msg": "Failed getting menus!" });
@@ -89,7 +89,7 @@ router.get('/get/all', [checkSession, menuGetAllSchema, authorizeReadRoute], asy
 
     if (resp.status !== false) {
 
-        res.json({ "status": true, "msg": "Successfully fetched pages", "data": resp.data });
+        res.json({ "status": true, "msg": "Successfully fetched menus", "data": resp.data });
     } else {
 
         res.json({ "status": false, "msg": "Failed getting menus!" });
@@ -185,10 +185,10 @@ router.get('/parent/get/all', [checkSession, parentMenuGetAllSchema, authorizeRe
 
     if (resp.status !== false) {
 
-        res.json({ "status": true, "msg": "Successfully fetched pages", "data": resp.data });
+        res.json({ "status": true, "msg": "Successfully fetched parent menus", "data": resp.data });
     } else {
 
-        res.json({ "status": false, "msg": "Failed getting menus!" });
+        res.json({ "status": false, "msg": "Failed getting parent menus!" });
     }
 
 });
