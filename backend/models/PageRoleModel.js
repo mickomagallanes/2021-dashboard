@@ -25,7 +25,7 @@ class PageRoleModel {
             const result = await mysql_conn.query(stmt, [userId, pagePath, PRIVILEGES.readWrite, PRIVILEGES.read]);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -58,7 +58,7 @@ class PageRoleModel {
             const result = await mysql_conn.query(stmt, [pageId, userId]);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -78,7 +78,7 @@ class PageRoleModel {
             const result = await mysql_conn.query(stmt, [valueArr]);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -109,7 +109,7 @@ class PageRoleModel {
 
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }

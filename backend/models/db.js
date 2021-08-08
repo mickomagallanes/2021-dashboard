@@ -11,13 +11,13 @@ class mysql_conn {
             return new Promise((resolve, reject) => {
                 this.pool.getConnection(function (err, connection) {
                     if (err) {
-                        console.log(err);
+                        console.error(err);
                         reject(err);
                     } else {
                         connection.query(cmd, param, (err, rows) => {
 
                             if (err) {
-                                console.log(err);
+                                console.error(err);
                                 reject(err);
                             } else {
                                 resolve(rows);
@@ -29,7 +29,7 @@ class mysql_conn {
             });
 
         } catch (e) {
-            console.log(e.message);
+            console.error(e.message);
             throw new RangeError(e.message);
         }
 
@@ -46,7 +46,7 @@ class mysql_conn {
             return new Promise((resolve, reject) => {
                 this.pool.getConnection(function (err, connection) {
                     if (err) {
-                        console.log(err);
+                        console.error(err);
                         reject(err)
                     } else {
                         // create select command
@@ -54,7 +54,7 @@ class mysql_conn {
                         connection.query(stmt, where_values, (err, rows) => {
 
                             if (err) {
-                                console.log(err);
+                                console.error(err);
                                 reject(err);
                             } else {
                                 resolve(rows);
@@ -65,7 +65,7 @@ class mysql_conn {
                 })
             });
         } catch (e) {
-            console.log(e.message);
+            console.error(e.message);
             throw new RangeError(e.message);
         }
     }
@@ -79,7 +79,7 @@ class mysql_conn {
             return new Promise((resolve, reject) => {
                 this.pool.getConnection(function (err, connection) {
                     if (err) {
-                        console.log(err);
+                        console.error(err);
                         reject(err)
                     } else {
                         // seperate the array
@@ -97,7 +97,7 @@ class mysql_conn {
                         connection.query(sql_str, values, (err, rows) => {
 
                             if (err) {
-                                console.log(err);
+                                console.error(err);
                                 reject(err);
                             } else {
                                 resolve(rows);
@@ -108,7 +108,7 @@ class mysql_conn {
                 })
             });
         } catch (e) {
-            console.log(e.message);
+            console.error(e.message);
             throw new RangeError(e.message);
         }
     }
@@ -122,14 +122,14 @@ class mysql_conn {
             return new Promise((resolve, reject) => {
                 this.pool.getConnection(function (err, connection) {
                     if (err) {
-                        console.log(err);
+                        console.error(err);
                         reject(err)
                     } else {
                         let stmt = `DELETE FROM ${tablename} ${wheres}`;
                         connection.query(stmt, where_values, (err, rows) => {
 
                             if (err) {
-                                console.log(err);
+                                console.error(err);
                                 reject(err);
                             } else {
                                 resolve(rows);
@@ -140,7 +140,7 @@ class mysql_conn {
                 })
             });
         } catch (e) {
-            console.log(e.message);
+            console.error(e.message);
             throw new RangeError(e.message);
         }
     }
@@ -154,7 +154,7 @@ class mysql_conn {
             return new Promise((resolve, reject) => {
                 this.pool.getConnection(function (err, connection) {
                     if (err) {
-                        console.log(err);
+                        console.error(err);
                         reject(err);
                     } else {
                         // seperate the array
@@ -173,7 +173,7 @@ class mysql_conn {
                         connection.query(sql_str, values, (err, rows) => {
 
                             if (err) {
-                                console.log(err);
+                                console.error(err);
                                 reject(err);
                             } else {
                                 resolve(rows);
@@ -196,13 +196,13 @@ class mysql_conn {
             return new Promise((resolve, reject) => {
                 this.pool.getConnection(function (err, connection) {
                     if (err) {
-                        console.log(err);
+                        console.error(err);
                         reject(err);
                     } else {
                         connection.query(cmd, param, (err, rows) => {
 
                             if (err) {
-                                console.log(err);
+                                console.error(err);
                                 reject(err);
                             } else {
                                 resolve(rows.length >= 1);

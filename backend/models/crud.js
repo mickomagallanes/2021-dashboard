@@ -17,7 +17,7 @@ class CRUD {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -32,7 +32,7 @@ class CRUD {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
 
@@ -46,7 +46,7 @@ class CRUD {
                 return results;
             }
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
 
@@ -57,7 +57,7 @@ class CRUD {
             await mysql_conn.delete(this.tableName, "where id=?", [id]);
             return true;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
 
@@ -68,7 +68,7 @@ class CRUD {
             await mysql_conn.update(this.tableName, rec, "where id=?", [id]);
             return true;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -78,7 +78,7 @@ class CRUD {
             await mysql_conn.insert(this.tableName, rec);
             return true;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }

@@ -31,7 +31,7 @@ class GettersModel {
             const result = await mysql_conn.query(stmt);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -67,7 +67,7 @@ class GettersModel {
             const result = await mysql_conn.query(stmt);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -108,10 +108,9 @@ class GettersModel {
 
         try {
             const result = await mysql_conn.query(stmt);
-            console.log(result)
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -130,7 +129,7 @@ class GettersModel {
             const result = await mysql_conn.query(stmt, [id]);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -154,7 +153,7 @@ class GettersModel {
             }
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }

@@ -25,7 +25,7 @@ class UserModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -47,7 +47,7 @@ class UserModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -90,7 +90,7 @@ class UserModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -108,7 +108,7 @@ class UserModel {
             const result = await mysql_conn.query(stmt);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -134,7 +134,7 @@ class UserModel {
             const result = await mysql_conn.query(stmt, [id]);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -161,7 +161,7 @@ class UserModel {
             const result = await mysql_conn.query(stmt, [username]);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }

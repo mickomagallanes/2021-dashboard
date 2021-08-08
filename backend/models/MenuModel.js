@@ -28,7 +28,7 @@ class MenusModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -47,7 +47,7 @@ class MenusModel {
             const result = await mysql_conn.query(stmt, [id]);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -68,7 +68,7 @@ class MenusModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -107,7 +107,7 @@ class MenusModel {
 
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -129,7 +129,7 @@ class MenusModel {
             const result = await mysql_conn.query(stmt, [PRIVILEGES.readWrite, PRIVILEGES.read, userId]);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }

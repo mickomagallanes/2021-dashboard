@@ -29,7 +29,7 @@ class EmployeeModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -49,7 +49,7 @@ class EmployeeModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -81,7 +81,7 @@ class EmployeeModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }

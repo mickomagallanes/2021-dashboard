@@ -26,7 +26,7 @@ class SubPageModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -47,7 +47,7 @@ class SubPageModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -84,7 +84,7 @@ class SubPageModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -105,7 +105,7 @@ class SubPageModel {
             const result = await mysql_conn.query(stmt, [PRIVILEGES.readWrite, PRIVILEGES.read, userId]);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }

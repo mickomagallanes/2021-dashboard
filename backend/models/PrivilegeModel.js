@@ -19,7 +19,7 @@ class PrivilegeModel {
             const result = await mysql_conn.query(stmt);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }

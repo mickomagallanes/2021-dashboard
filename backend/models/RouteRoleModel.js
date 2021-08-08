@@ -24,7 +24,7 @@ class RouteRoleModel {
 
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -44,7 +44,7 @@ class RouteRoleModel {
             const result = await mysql_conn.query(stmt, [valueArr]);
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -75,7 +75,7 @@ class RouteRoleModel {
 
             return result;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }

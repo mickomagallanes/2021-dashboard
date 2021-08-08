@@ -42,7 +42,7 @@ async function checkFileType(file, res, next) {
         })
     } else {
         fs.unlink(oldPath, function (err) {
-            if (err) { console.log(err); }
+            if (err) { console.error(err); }
             else {
                 res.json({ "status": false, "msg": "File Type is invalid" });
             }

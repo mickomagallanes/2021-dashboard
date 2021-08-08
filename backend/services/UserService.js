@@ -225,7 +225,7 @@ class UserService {
 
         if (currentImgObj.img) {
             fs.unlink("public" + currentImgObj.img, function (err) {
-                if (err) return console.log(err);
+                if (err) return console.error(err);
 
             });
         }

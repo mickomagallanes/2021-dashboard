@@ -26,7 +26,7 @@ class ParentMenuModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -46,7 +46,7 @@ class ParentMenuModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -78,7 +78,7 @@ class ParentMenuModel {
             return result;
 
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -116,7 +116,7 @@ class ParentMenuModel {
 
             return results;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
@@ -154,7 +154,7 @@ class ParentMenuModel {
 
             return results;
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return false;
         }
     }
