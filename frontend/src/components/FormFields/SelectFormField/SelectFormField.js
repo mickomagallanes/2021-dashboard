@@ -4,12 +4,13 @@ import { getIn } from "formik";
 import { Form } from 'react-bootstrap';
 
 /**
-  * creates a text field
+  * creates a select field
   * @param {Formik Prop} field
   * @param {Formik Prop} form
-  * @param {String} placeholder placeholder of input text
-  * @param {String} type type of input
-  * @param {String} [label] laber for input
+  * @param {String} [label] label of select
+  * @param {String} options array data converted to options
+  * @param {String} idKey ID column name
+  * @param {String|Array} valueKey text shown in option, can be array
   * @param {Boolean} allowDefaultNull specify whether to put a default option with Blank value
   */
 export default function SelectFormField({
@@ -38,8 +39,17 @@ export default function SelectFormField({
           {...props}
         >
           {allowDefaultNull && <option value={""}> SELECT OPTIONAL OPTIONS </option>}
-          {options.map(x =>
-            <option key={x[idKey]} value={x[idKey]}>{x[valueKey]}</option>
+          {options.map(x => {
+            let optionValue = x[idKey];
+            let optionText = "";
+            if (typeof valueKey !== "string") {
+
+              valueKey.forEach(o => optionText += ` ${x[o]} `);
+            } else {
+              optionText = x[valueKey];
+            }
+            return <option key={optionValue} value={optionValue}>{optionText}</option>
+          }
           )}
         </Form.Control>
 

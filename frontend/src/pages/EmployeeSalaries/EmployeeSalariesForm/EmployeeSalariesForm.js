@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef } from 'react'
+import React, { useCallback, useEffect, useReducer, useRef } from 'react'
 import ReactDOM from "react-dom";
 import './EmployeeSalariesForm.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
@@ -9,7 +9,7 @@ import { Field } from 'formik';
 import * as yup from 'yup';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
-import { equalTo } from '../../../helpers/utils';
+import { equalTo, formatDate } from '../../../helpers/utils';
 import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
@@ -19,14 +19,14 @@ import { List } from 'immutable';
 import DateFormField from '../../../components/FormFields/DateFormField/DateFormField';
 
 const employeeSalaryByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/salary/get/by/`;
-const employeeAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all`;
+const employeeAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/get/all`;
 const addEmployeeSalaryURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/salary/insert`;
 const editEmployeeSalaryURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/salary/modify/`;
 
 yup.addMethod(yup.string, 'equalTo', equalTo);
 
 const schema = yup.object().shape({
-  employeeSalary: yup.string().max(30, 'Must be 30 characters or less').required('Required')
+  salary: yup.string().max(30, 'Must be 30 characters or less').required('Required')
 });
 
 // TODO: Employees, and Routes.... Fix DateFormField
@@ -35,11 +35,11 @@ const employeeSalaryReducer = (state, action) => {
     case 'changeSalary':
       return { ...state, salary: action.payload };
     case 'changeEmployeeID':
-      return { ...state, employeeID: action.payload || "" }; // cant be null, so return blank instead
+      return { ...state, employeeID: action.payload };
     case 'changeStartedDate':
-      return { ...state, startedDate: action.payload || "" };
+      return { ...state, startedDate: action.payload };
     case 'changeUntilDate':
-      return { ...state, untilDate: action.payload || "" };
+      return { ...state, untilDate: action.payload || "" }; // cant be null, so return blank instead
     default:
       return state;
   }
@@ -48,16 +48,19 @@ const employeeSalaryReducer = (state, action) => {
 const mapDispatch = dispatch => ({
   changeSalary: (payload) => dispatch({ type: 'changeSalary', payload: payload }),
   changeEmployeeID: (payload) => dispatch({ type: 'changeEmployeeID', payload: payload }),
-  changeStartedDate: (payload) => dispatch({ type: 'startedDate', payload: payload }),
-  changeUntilDate: (payload) => dispatch({ type: 'untilDate', payload: payload })
+  changeStartedDate: (payload) => dispatch({ type: 'changeStartedDate', payload: payload }),
+  changeUntilDate: (payload) => dispatch({ type: 'changeUntilDate', payload: payload })
 })
 
 export const employeeSalaryFormInitialState = {
   salary: "",
   employeeID: "",
-  startedDate: "",
+  startedDate: formatDate(new Date()),
   untilDate: ""
 };
+
+const idKeySelect = "EmployeeID";
+const valueKeySelect = ["EmployeeNo", "FirstName", "LastName"];
 
 /**
  * EmployeeSalariesForm Component
@@ -70,8 +73,10 @@ export const employeeSalaryFormInitialState = {
 function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, parentMemoData }) {
 
   // if this component is used as child
-  const isRenderedAsChild = customEmployeeSalaryURL !== undefined;
-  const employeeSalaryURL = isRenderedAsChild ? customEmployeeSalaryURL : employeeSalaryByIdURL;
+  const { current: isRenderedAsChild } = useRef(customEmployeeSalaryURL !== undefined);
+  // const isRenderedAsChild = customEmployeeSalaryURL !== undefined;
+  // const employeeSalaryURL = isRenderedAsChild ? customEmployeeSalaryURL : employeeSalaryByIdURL;
+  const { current: employeeSalaryURL } = useRef(isRenderedAsChild ? customEmployeeSalaryURL : employeeSalaryByIdURL);
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
@@ -103,14 +108,14 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
 
   // FUNCTIONS AND EVENT HANDLERS
 
-  const WrapperTable = (props) => {
+  const WrapperTable = useCallback((props) => {
 
     return (
       <>
         {isRenderedAsChild
           ?
           <>
-            <h5 className="card-title"> EmployeeSalary </h5>
+            <h5 className="card-title"> Employee Salary </h5>
             {props.children}
           </>
           :
@@ -119,7 +124,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
               <div className="card px-4 px-sm-5">
 
                 <div className="card-body">
-                  <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} EmployeeSalary</h4>
+                  <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} Employee Salary</h4>
                   {props.children}
                 </div>
               </div>
@@ -130,15 +135,15 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
       </>
 
     )
-  }
+  }, [isAddMode, isRenderedAsChild])
 
   const handleSubmitForm = async (fields) => {
 
     const param = {
       "salary": fields.salary,
       "employeeID": fields.employeeID,
-      "startedDate": fields.startedDate,
-      "untilDate": fields.untilDate
+      "startedDate": formatDate(fields.startedDate),
+      "untilDate": fields.untilDate === "" ? null : formatDate(fields.untilDate)
     }
 
     if (isAddMode) {
@@ -217,8 +222,8 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
 
         ReactDOM.unstable_batchedUpdates(() => {
           actionsEmployeeSalaryData.changeSalary(data.Salary);
-          actionsEmployeeSalaryData.changeStartedDate(data.startedDate);
-          actionsEmployeeSalaryData.changeUntilDate(data.untilDate);
+          actionsEmployeeSalaryData.changeStartedDate(data.StartedDate);
+          actionsEmployeeSalaryData.changeUntilDate(data.UntilDate);
           actionsEmployeeSalaryData.changeEmployeeID(data.EmployeeID);
         });
 
@@ -260,6 +265,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
 
           </div>
         }
+
         <WrapperTable>
 
           <div className="row mb-4">
@@ -271,7 +277,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
                 formRef={parentFormRef}
                 enableReinitialize
               >
-                {({ setFieldValue, values }) =>
+                {({ setFieldValue }) =>
                   <>
                     <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
                     {
@@ -279,10 +285,10 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
                         <>
                           <div>
                             <Field
-                              label="Employee Salary Name"
+                              label="Employee Salary"
                               type="text"
                               name="salary"
-                              placeholder="Employee Salary Name"
+                              placeholder="Employee Salary"
                               disabled={!isWriteable}
                               component={TextFormField}
                             />
@@ -296,21 +302,33 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
                               component={DateFormField}
                             />
                           </div>
+
+                          <div>
+                            <Field
+                              label="Until Date"
+                              name="untilDate"
+                              setStartDate={(value) => setFieldValue("untilDate", value)}
+                              disabled={!isWriteable}
+                              component={DateFormField}
+                            />
+                          </div>
                           {!isRenderedAsChild &&
                             <>
                               <div className="mt-3">
                                 <Field
                                   label="Employee"
                                   options={extractedDataEmployees}
-                                  idKey="EmployeeID"
-                                  valueKey="EmployeeName"
+                                  idKey={idKeySelect}
+                                  valueKey={valueKeySelect}
                                   name="employeeID"
                                   component={SelectFormField}
                                   disabled={!isWriteable}
                                 />
                               </div>
                               <div className="mt-3">
-                                {priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
+                                {priv === PRIVILEGES.readWrite &&
+                                  <button type="submit" className="btn btn-primary mr-2">Submit</button>
+                                }
                               </div>
                             </>
                           }
@@ -318,7 +336,6 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
                     }
                   </>
                 }
-
 
               </FormikWithRef>
 

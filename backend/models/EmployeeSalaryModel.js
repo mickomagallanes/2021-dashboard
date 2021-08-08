@@ -5,7 +5,7 @@ const GettersModel = require("./GettersModel.js");
 
 const tableName = "EmployeeSalaries";
 const primaryKey = "EmployeeSalaryID";
-const secondaryTables = [{ id: "EmployeeID", name: "Employees", relation: " INNER JOIN " }];
+const secondaryTables = [{ id: "EmployeeID", name: "Employees", relation: " INNER JOIN " }]; // TODO: add fields specifically for faster query
 const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
 
 // LESSON: One model per table
@@ -35,14 +35,17 @@ class EmployeeSalaryModel {
     /**
      * inserts new employeeSalary in the database
      * @param {Object} obj - An object.
-     * @param {String} obj.employeeSalaryName name of the employeeSalary
+     * @param {String} obj.salary value of salary per month
+     * @param {String} obj.startedDate start date of the salary of employee
+     * @param {String} obj.untilDate end of salary enabled
+     * @param {String} obj.employeeID primary key id of employee
      * @return {Object} result
      * @return {Number} result.insertId employeeSalary id of last inserted
      */
-    static async insertEmployeeSalary({ employeeSalaryName }) {
-        const stmt = `INSERT INTO EmployeeSalaries (EmployeeSalaryName) VALUES (?)`;
+    static async insertEmployeeSalary({ salary, startedDate, untilDate, employeeID }) {
+        const stmt = `INSERT INTO EmployeeSalaries (Salary, StartedDate, UntilDate, EmployeeID) VALUES (?, ?, ?, ?)`;
         try {
-            const result = await mysql_conn.query(stmt, [employeeSalaryName]);
+            const result = await mysql_conn.query(stmt, [salary, startedDate, untilDate, employeeID]);
             return result;
 
         } catch (err) {
@@ -55,22 +58,32 @@ class EmployeeSalaryModel {
      * modify employeeSalary information to the database
      * @param {Object} obj - An object.
      * @param {String} obj.employeeSalaryID id of the employeeSalary
-     * @param {String} [obj.employeeSalaryName] name of the employeeSalary
-     * @param {String} [obj.EmployeeSalariesort] sort value of the employeeSalary
+     * @param {String} obj.salary value of salary per month
+     * @param {String} obj.startedDate start date of the salary of employee
+     * @param {String} obj.untilDate end of salary enabled
+     * @param {String} obj.employeeID primary key id of employee
      * @return {Object} result
      * @return {Number} result.insertId employeeSalary id of last inserted
      */
-    static async modifyEmployeeSalary({ employeeSalaryID, employeeSalaryName, EmployeeSalariesort }) {
+    static async modifyEmployeeSalary({ employeeSalaryID, salary, startedDate, untilDate, employeeID }) {
         let whereParams = [employeeSalaryID];
         let setObj = {};
         let stmtWhere = ` WHERE EmployeeSalaryID = ?`
 
-        if (employeeSalaryName !== undefined) {
-            setObj.EmployeeSalaryName = employeeSalaryName
+        if (salary !== undefined) {
+            setObj.Salary = salary;
         }
 
-        if (EmployeeSalariesort !== undefined) {
-            setObj.EmployeeSalariesort = EmployeeSalariesort
+        if (startedDate !== undefined) {
+            setObj.StartedDate = startedDate;
+        }
+
+        if (untilDate !== undefined) {
+            setObj.UntilDate = untilDate;
+        }
+
+        if (employeeID !== undefined) {
+            setObj.EmployeeID = employeeID;
         }
 
         try {

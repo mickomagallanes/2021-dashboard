@@ -235,7 +235,8 @@ if (process.env.DB_HOST) {
         port: process.env.DB_PORT,
         user: process.env.DB_USER,
         database: process.env.DB_DATABASE,
-        password: process.env.DB_PASS
+        password: process.env.DB_PASS,
+        dateStrings: 'date'
     });
 } else if (process.env.CLOUD_SQL_CONNECTION_NAME) {
     mysql_conn.pool = mysql.createPool({
@@ -244,6 +245,7 @@ if (process.env.DB_HOST) {
         database: process.env.DB_DATABASE,
         password: process.env.DB_PASS,
         socketPath: `/cloudsql/${process.env.CLOUD_SQL_CONNECTION_NAME}`,
+        dateStrings: 'date'
     });
 }
 

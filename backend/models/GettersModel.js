@@ -104,8 +104,11 @@ class GettersModel {
         const limitClause = ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`;
 
         const stmt = `SELECT * from ${tblStmt} ${sortStmt} ${limitClause}`;
+
+
         try {
             const result = await mysql_conn.query(stmt);
+            console.log(result)
             return result;
         } catch (err) {
             console.log(err);

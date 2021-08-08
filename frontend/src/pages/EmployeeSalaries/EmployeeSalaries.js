@@ -29,6 +29,7 @@ const colData = [
 
 const idKey = "EmployeeSalaryID";
 
+// TODO: employeedepartment and positions, then employee 
 function EmployeesSalaries({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
@@ -36,7 +37,7 @@ function EmployeesSalaries({ priv }) {
   const location = useLocation();
 
   const [employeeSalaryData, setEmployeeSalaryData] = useState([]);
-  const [totalEmployeeSalarys, setTotalEmployeeSalarys] = useState(null);
+  const [totalEmployeeSalaries, setTotalEmployeeSalaries] = useState(null);
 
   const {
     searchParamQuery,
@@ -50,7 +51,7 @@ function EmployeesSalaries({ priv }) {
     },
     tableProps,
     BundledTable
-  } = useBundledTable({ data: employeeSalaryData, dataCount: totalEmployeeSalarys });
+  } = useBundledTable({ data: employeeSalaryData, dataCount: totalEmployeeSalaries });
 
   const [deleteEmployeeSalary, deleteEmployeeSalaryResult] = useDelete(employeeSalaryDeleteURL);
 
@@ -61,7 +62,7 @@ function EmployeesSalaries({ priv }) {
 
   const [dataCount, loadingCount] = useFetch(employeeSalaryCountURL, { customDeps: fetchDepsCount });
 
-  const [dataEmployeeSalarys, loadingEmployeeSalarys] = useFetch(employeeSalaryURL + searchParamQuery, { customDeps: fetchDepsEmployee });
+  const [dataEmployeeSalaries, loadingEmployeeSalaries] = useFetch(employeeSalaryURL + searchParamQuery, { customDeps: fetchDepsEmployee });
 
   const confirmDelete = useRef();
 
@@ -98,14 +99,14 @@ function EmployeesSalaries({ priv }) {
   }
 
   const checkFetchedData = async () => {
-    if (dataEmployeeSalarys && dataCount) {
+    if (dataEmployeeSalaries && dataCount) {
       if (dataCount.status === true) {
         let count = dataCount.data.count;
 
-        if (dataEmployeeSalarys.status === true) {
+        if (dataEmployeeSalaries.status === true) {
           ReactDOM.unstable_batchedUpdates(() => {
-            setTotalEmployeeSalarys(count);
-            setEmployeeSalaryData(dataEmployeeSalarys.data);
+            setTotalEmployeeSalaries(count);
+            setEmployeeSalaryData(dataEmployeeSalaries.data);
           });
 
           if (!errorTimerValue) {
@@ -115,10 +116,10 @@ function EmployeesSalaries({ priv }) {
         } else {
           // resets everything when fetched is error
           ReactDOM.unstable_batchedUpdates(() => {
-            setTotalEmployeeSalarys(null);
+            setTotalEmployeeSalaries(null);
             setEmployeeSalaryData([]);
           });
-          passErrorMsg(`${dataEmployeeSalarys.msg}`);
+          passErrorMsg(`${dataEmployeeSalaries.msg}`);
         }
 
       } else {
@@ -142,7 +143,7 @@ function EmployeesSalaries({ priv }) {
   useDidUpdateEffect(() => {
 
     checkFetchedData();
-  }, [dataEmployeeSalarys, dataCount]);
+  }, [dataEmployeeSalaries, dataCount]);
 
 
   useDidUpdateEffect(() => {
@@ -198,12 +199,12 @@ function EmployeesSalaries({ priv }) {
         </div>
 
         <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
-        <div className="row" data-testid="EmployeeSalarys" >
+        <div className="row" data-testid="EmployeeSalaries" >
           <div className="col-lg-12 grid-margin stretch-card">
             <div className="card">
               <div className="card-body">
                 <h4 className="card-title"> Employee Salary Table </h4>
-                {!!loadingEmployeeSalarys && !!loadingCount && <Spinner />}
+                {!!loadingEmployeeSalaries && !!loadingCount && <Spinner />}
                 <BundledTable
                   tableProps={tableProps}
                   entryProps={entryProps}

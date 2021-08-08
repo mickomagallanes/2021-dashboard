@@ -8,7 +8,11 @@ const {
     employeeSalaryGetAllSchema,
     employeeSalaryModifySchema,
     employeeSalaryInsertSchema,
-    employeeSalaryDeleteSchema
+    employeeSalaryDeleteSchema,
+    employeeGetAllSchema,
+    employeeModifySchema,
+    employeeInsertSchema,
+    employeeDeleteSchema
 } = require('../../middlewares/validator.js');
 
 /******************************** EMPLOYEE SALARIES ***************************************/
@@ -44,7 +48,7 @@ router.put('/salary/modify/:id', [checkSession, employeeSalaryModifySchema, auth
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed modification" });
     } else {
-        res.json({ "status": true, "msg": "Successful modification", "id": result.data });
+        res.json({ "status": true, "msg": "Successful modification" });
     }
 });
 
@@ -135,7 +139,7 @@ router.get('/get/all/count', [checkSession, authorizeReadRoute], async function 
  */
 router.get('/get/all', [checkSession, employeeGetAllSchema, authorizeReadRoute], async function (req, res, next) {
 
-    let resp = await EmployeeService.getAllEmployees(req.query);
+    let resp = await EmployeeService.getAllEmployee(req.query);
 
     if (resp.status !== false) {
 
@@ -162,22 +166,6 @@ router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (re
     }
 });
 
-// insert new employee by bulk: employee + menu + employeerole
-// returns insertId of employee
-router.post('/insert/bulk/by/session', [checkSession, employeeInsertBulkSchema, authorizeWriteRoute], async function (req, res, next) {
-    let roleId = req.session.userData.roleid;
-
-    // insert role information
-    let result = await EmployeeService.insertEmployeeBulk(roleId, req.body);
-
-    if (result.status === false) {
-        res.json({ "status": false, "msg": "Failed inserting employee" });
-    } else {
-        res.json({ "status": true, "msg": "Successful inserting employee", "id": result.data });
-    }
-});
-
-
 // insert new employee
 // returns insertId of employee
 router.post('/insert', [checkSession, employeeInsertSchema, authorizeWriteRoute], async function (req, res, next) {
@@ -192,20 +180,6 @@ router.post('/insert', [checkSession, employeeInsertSchema, authorizeWriteRoute]
     }
 });
 
-
-// edit employee by bulk: employee + menu + employeerole
-router.put('/modify/bulk/by/session/:id', [checkSession, employeeModifyBulkSchema, authorizeWriteRoute], async function (req, res, next) {
-
-    let roleId = req.session.userData.roleid;
-    let result = await EmployeeService.modifyEmployeeBulk(req.params.id, roleId, req.body);
-
-    if (result.status === false) {
-        res.json({ "status": false, "msg": "Failed modification of employee by bulk" });
-    } else {
-        res.json({ "status": true, "msg": "Successful modification of employee by bulk", "id": result.data });
-    }
-});
-
 // edit employee
 router.put('/modify/:id', [checkSession, employeeModifySchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await EmployeeService.modifyEmployee(req.params.id, req.body);
@@ -213,7 +187,7 @@ router.put('/modify/:id', [checkSession, employeeModifySchema, authorizeWriteRou
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed modification of employee" });
     } else {
-        res.json({ "status": true, "msg": "Successful modification of employee", "id": result.data });
+        res.json({ "status": true, "msg": "Successful modification of employee" });
     }
 });
 

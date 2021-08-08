@@ -128,6 +128,7 @@ function useBundledTable({ data, dataCount, isPaginated = true, isSorted = true,
     }
 }
 
+// TODO: add filter input box on every header... new feature
 
 function BundledTable({
     tableProps,

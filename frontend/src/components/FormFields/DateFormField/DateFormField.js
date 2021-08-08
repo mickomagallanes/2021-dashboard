@@ -5,25 +5,22 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 /**
-  * creates a text field
+  * creates a date picker
   * @param {Formik Prop} field
   * @param {Formik Prop} form
-  * @param {String} placeholder placeholder of input text
-  * @param {String} type type of input
+  * @param {Function} setStartDate for onchange, sets the value of field
   * @param {String} [label] laber for input
-  * @param {Boolean} allowDefaultNull specify whether to put a default option with Blank value
   */
 export default function DateFormField({
   field,
   form,
   label,
   setStartDate,
-  valueKey,
-  allowDefaultNull,
   ...props
 }) {
   // const errorText =
   //   getIn(form.touched, field.name) && getIn(form.errors, field.name);
+
   return (
     <>
       {label && <label htmlFor={field.name}>{label}</label>}
@@ -32,8 +29,9 @@ export default function DateFormField({
           {...field}
           {...props}
           className="form-control"
+          dateFormat="yyyy-MM-dd"
           id={field.name}
-          selected={(field.value && new Date(field.value)) || new Date()}
+          selected={(field.value && new Date(field.value)) || null}
           onChange={(date) => setStartDate(date)}
 
         />

@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useImperativeHandle } from "react";
 import { Formik, Form } from "formik";
 
 const FormWithRef = forwardRef(FormHelper);
@@ -29,17 +29,19 @@ const FormikWithRef = ({
 
 function FormHelper(props, ref) {
 
-    return (
-        <Formik {...props} innerRef={ref}>
-            {(formikProps) => {
+    let _formikProps = {};
 
-                if (typeof props.children === "function") {
-                    return props.children(formikProps);
-                }
-                return props.children;
+    useImperativeHandle(ref, () => _formikProps);
+
+    return (
+        <Formik {...props}>
+            {(formikProps) => {
+                _formikProps = formikProps;
+                return props.children(formikProps);
             }}
         </Formik>
     );
+
 }
 
 export default FormikWithRef;

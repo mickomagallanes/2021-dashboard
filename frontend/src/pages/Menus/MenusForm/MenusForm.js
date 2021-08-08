@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef } from 'react'
+import React, { useCallback, useEffect, useReducer, useRef } from 'react'
 import ReactDOM from "react-dom";
 import './MenusForm.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
@@ -100,7 +100,7 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
 
   // FUNCTIONS AND EVENT HANDLERS
 
-  const WrapperTable = (props) => {
+  const WrapperTable = useCallback((props) => {
 
     return (
       <>
@@ -127,7 +127,7 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
       </>
 
     )
-  }
+  }, [isAddMode, isRenderedAsChild])
 
   const handleSubmitForm = async (fields) => {
 

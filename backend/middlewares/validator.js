@@ -1,4 +1,6 @@
-const Joi = require('joi');
+const Joi = require('joi')
+    .extend(require('@joi/date'));
+
 
 /**************** USER ****************/
 function userInsertSchema(req, res, next) {
@@ -421,10 +423,16 @@ function employeeDeleteSchema(req, res, next) {
 function employeeInsertSchema(req, res, next) {
 
     const schema = Joi.object({
-        salary: Joi.string().max(30).required(),
-        startedDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
-        untilDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
-        employeeID: Joi.number().required()
+        employeeNo: Joi.string().max(45).required(),
+        firstName: Joi.string().max(60).required(),
+        middleName: Joi.string().max(60).required(),
+        lastName: Joi.string().max(60).required(),
+        sex: Joi.string().max(10).required(),
+        contactNo: Joi.string().max(20).required(),
+        hireDate: Joi.date().format('YYYY-MM-DD').required(),
+        birthDate: Joi.date().format('YYYY-MM-DD').required(),
+        employeePositionID: Joi.number().required(),
+        employeeDepartmentID: Joi.number().required()
     });
     validateRequestBody(req, res, next, schema);
 }
@@ -432,10 +440,16 @@ function employeeInsertSchema(req, res, next) {
 function employeeModifySchema(req, res, next) {
 
     const schemaBody = Joi.object({
-        salary: Joi.string().max(30).required(),
-        startedDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
-        untilDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
-        employeeID: Joi.number().required()
+        employeeNo: Joi.string().max(45).required(),
+        firstName: Joi.string().max(60).required(),
+        middleName: Joi.string().max(60).required(),
+        lastName: Joi.string().max(60).required(),
+        sex: Joi.string().max(10).required(),
+        contactNo: Joi.string().max(20).required(),
+        hireDate: Joi.date().format('YYYY-MM-DD').required(),
+        birthDate: Joi.date().format('YYYY-MM-DD').required(),
+        employeePositionID: Joi.number().required(),
+        employeeDepartmentID: Joi.number().required()
     });
 
     const schemaID = Joi.object({
@@ -448,7 +462,7 @@ function employeeModifySchema(req, res, next) {
     }).unknown(true);
     validateRequest(req, res, next, wholeSchema);
 }
-// TODO: emplooyee schema
+
 function employeeGetAllSchema(req, res, next) {
     const schema = Joi.object({
         page: Joi.number().integer(),
@@ -472,7 +486,7 @@ function employeeSalaryInsertSchema(req, res, next) {
 
     const schema = Joi.object({
         salary: Joi.string().max(30).required(),
-        startedDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
+        startedDate: Joi.date().format('YYYY-MM-DD').required(),
         untilDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
         employeeID: Joi.number().required()
     });
@@ -483,7 +497,7 @@ function employeeSalaryModifySchema(req, res, next) {
 
     const schemaBody = Joi.object({
         salary: Joi.string().max(30).required(),
-        startedDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
+        startedDate: Joi.date().format('YYYY-MM-DD').required(),
         untilDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
         employeeID: Joi.number().required()
     });
@@ -533,6 +547,7 @@ function validate(req, res, next, schema) {
     const { error } = schema.validate(req, options);
 
     if (error) {
+
         res.json({ "status": false, "msg": error.details[0].message });
     } else {
         next();
@@ -572,6 +587,10 @@ module.exports = {
     subPageInsertSchema,
     subPageModifySchema,
     subPageDeleteSchema,
+    employeeGetAllSchema,
+    employeeModifySchema,
+    employeeInsertSchema,
+    employeeDeleteSchema,
     employeeSalaryGetAllSchema,
     employeeSalaryModifySchema,
     employeeSalaryInsertSchema,
