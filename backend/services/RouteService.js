@@ -84,7 +84,7 @@ class RouteService {
      * @param {String} [obj.order] ASC or DESC
      * @return routeArr all rows of route
      */
-    static async getAllRoutes({ page, limit, sortBy, order }) {
+    static async getAllRoutes({ page, limit, sortBy, order, filter }) {
 
         if ((!!page && page > 0) && (!limit || !(limit > 0))) {
             return { status: false }
@@ -104,12 +104,13 @@ class RouteService {
             }
         }
 
-        let routeArr;
-        if (startIndex === false) {
-            routeArr = await RouteModel.getAll(sortBy, order);
-        } else {
-            routeArr = await RouteModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
-        }
+        let routeArr = await RouteModel.getAll({
+            startIndex: startIndex,
+            limit: limit,
+            sortBy: sortBy,
+            order: order,
+            filter: filter
+        });
 
         if (routeArr.length) {
 

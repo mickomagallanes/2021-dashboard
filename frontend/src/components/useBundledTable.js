@@ -9,6 +9,9 @@ import useDidUpdateEffect from './useDidUpdateEffect';
 
 const initPageValue = 1;
 const initEntryValue = 5;
+const initSortValue = null;
+const initOrderValue = null;
+const initFilterValue = [];
 
 /**
  * Custom Hook to make Table + or Pagination + or Entry + or Sort functionality
@@ -24,30 +27,44 @@ const initEntryValue = 5;
  * @returns obj.tableProps props for table, returns differently by the isSorted value
  * @returns obj.paginationProps props for pagination, returns differently by the isPaginated value
  */
-function useBundledTable({ data, dataCount, isPaginated = true, isSorted = true, enabledSearchParam = true }) {
+function useBundledTable({
+    data,
+    dataCount,
+    isPaginated = true,
+    isSorted = true,
+    enabledSearchParam = true,
+    isFiltered = true
+}) {
 
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
 
-    const pageParams = searchParams.get('page');
-    const entryParams = searchParams.get('limit');
-    const pageInitOptional = parseInt(pageParams);
-    const entryInitOptional = parseInt(entryParams);
+    // PAGINATION AND LIMIT ENTRY
+    const pageParamsValue = searchParams.get('page');
+    const entryParamsValue = searchParams.get('limit');
+    const pageInitOptional = parseInt(pageParamsValue);
+    const entryInitOptional = parseInt(entryParamsValue);
 
-    const [currentPage, setCurrentPage] = useState(pageParams ? pageInitOptional : initPageValue);
-    const [currentEntries, setCurrentEntries] = useState(entryParams ? entryInitOptional : initEntryValue);
-
-    const sortByParams = searchParams.get('sortBy');
-    const orderParams = searchParams.get('order');
-    const [currentSortCol, setCurrentSortCol] = useState(sortByParams ? sortByParams : null);
-    const [currentSortOrder, setCurrentSortOrder] = useState(orderParams ? orderParams : null);
-
+    const [currentPage, setCurrentPage] = useState(pageParamsValue ? pageInitOptional : initPageValue);
+    const [currentEntries, setCurrentEntries] = useState(entryParamsValue ? entryInitOptional : initEntryValue);
     const [maxPage, setMaxPage] = useState(null);
 
+    // SORT AND ORDER FUNCTIONALITY
+    const sortByParamsValue = searchParams.get('sortBy');
+    const orderParamsValue = searchParams.get('order');
+    const [currentSortCol, setCurrentSortCol] = useState(sortByParamsValue ? sortByParamsValue : initSortValue);
+    const [currentSortOrder, setCurrentSortOrder] = useState(orderParamsValue ? orderParamsValue : initOrderValue);
+
+    // FILTER FUNCTIONALITY
+    const filterParams = searchParams.get('filter');
+    const [currentFilter, setCurrentFilter] = useState(filterParams ? filterParams : initFilterValue);
+
+    ///////////////////////////////////////
     const sortParam = (isSorted && currentSortCol && currentSortOrder) ? `&sortBy=${currentSortCol}&order=${currentSortOrder}` : "";
     const pageAndEntryParam = isPaginated ? `page=${currentPage}&limit=${currentEntries}` : "";
-
-    const currSearch = `?${pageAndEntryParam}${sortParam}`;
+    const filterParam = isFiltered ? `&filter={value: ${currentFilter}}` : "";
+    // TODO: fix filter type
+    const currSearch = `?${pageAndEntryParam}${sortParam}${filterParam}`;
 
     const tableProps = isSorted
         ? {
@@ -87,6 +104,29 @@ function useBundledTable({ data, dataCount, isPaginated = true, isSorted = true,
         }
         : null;
 
+    const filteringProps = isFiltered
+        ? {
+            currentFilter,
+            handleFilter: (colName, filterVal) => {
+                const tempArray = [...currentFilter];
+                const filterIndex = tempArray.findIndex(o => o.id === colName);
+
+                if (filterIndex !== -1) {
+                    if (filterVal.length) {
+                        tempArray[filterIndex] = { id: colName, value: filterVal };
+                    } else {
+                        tempArray.splice(filterIndex, 1);
+                    }
+
+                } else {
+                    tempArray.push({ id: colName, value: filterVal })
+                }
+
+                setCurrentFilter(tempArray);
+            }
+        }
+        : null;
+
     const history = useHistory();
 
 
@@ -117,14 +157,15 @@ function useBundledTable({ data, dataCount, isPaginated = true, isSorted = true,
             })
         }
 
-    }, [currentPage, currentEntries, currentSortCol, currentSortOrder]);
+    }, [currentPage, currentEntries, currentSortCol, currentSortOrder, currentFilter]);
 
     return {
         searchParamQuery: currSearch,
         BundledTable,
         entryProps,
         tableProps,
-        paginationProps
+        paginationProps,
+        filteringProps
     }
 }
 
@@ -134,6 +175,7 @@ function BundledTable({
     tableProps,
     entryProps,
     paginationProps,
+    filteringProps,
     colData,
     idKey,
     actionButtons,
@@ -141,6 +183,7 @@ function BundledTable({
 }) {
 
     const sortFunc = tableProps.handleSort ? tableProps.handleSort : null;
+    const filterFunc = filteringProps && filteringProps.handleFilter ? filteringProps.handleFilter : null;
 
     return (
         <>
@@ -177,6 +220,7 @@ function BundledTable({
                 sortFunc={sortFunc}
                 currentOrder={tableProps.currentSortOrder}
                 currentSortCol={tableProps.currentSortCol}
+                filterFunc={filterFunc}
             />
 
         </>

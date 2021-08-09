@@ -105,7 +105,7 @@ class MenusService {
      * @param {String} [obj.order] ASC or DESC
      * @return menuArr all rows of menu
      */
-    static async getAllMenus({ page, limit, sortBy, order }) {
+    static async getAllMenus({ page, limit, sortBy, order, filter }) {
 
         if ((!!page && page > 0) && (!limit || !(limit > 0))) {
             return { status: false }
@@ -125,12 +125,13 @@ class MenusService {
             }
         }
 
-        let menuArr;
-        if (startIndex === false) {
-            menuArr = await MenuModel.getAll(sortBy, order);
-        } else {
-            menuArr = await MenuModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
-        }
+        let menuArr = await MenuModel.getAll({
+            startIndex: startIndex,
+            limit: limit,
+            sortBy: sortBy,
+            order: order,
+            filter: filter
+        });
 
         if (menuArr) {
 
@@ -278,7 +279,7 @@ class MenusService {
      * @param {String} [obj.order] ASC or DESC
      * @return parentMenuArr all rows of parent menu
      */
-    static async getAllParentMenus({ page, limit, sortBy, order }) {
+    static async getAllParentMenus({ page, limit, sortBy, order, filter }) {
 
         if ((!!page && page > 0) && (!limit || !(limit > 0))) {
             return { status: false }
@@ -298,12 +299,13 @@ class MenusService {
 
         const startIndex = isPaged ? (page - 1) * limit : false;
 
-        let parentMenuArr;
-        if (startIndex === false) {
-            parentMenuArr = await ParentMenuModel.getAll(sortBy, order);
-        } else {
-            parentMenuArr = await ParentMenuModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
-        }
+        let parentMenuArr = await ParentMenuModel.getAll({
+            startIndex: startIndex,
+            limit: limit,
+            sortBy: sortBy,
+            order: order,
+            filter: filter
+        });
 
         if (parentMenuArr.length) {
 

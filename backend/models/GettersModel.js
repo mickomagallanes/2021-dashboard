@@ -15,7 +15,8 @@ class GettersModel {
     constructor(tableName, primaryKey, secondaryTables = []) {
         this.tableName = tableName;
         this.primaryKey = primaryKey;
-        this.secondaryTables = secondaryTables
+        this.secondaryTables = secondaryTables;
+
     }
 
     /**
@@ -37,17 +38,36 @@ class GettersModel {
     }
 
     /**
-     * get all menu rows
+     * get all rows
+     * @param {Object} obj - An object.
+     * @param {Number} obj.startIndex start of limit
+     * @param {Number} obj.limit limit count
+     * @param {Number} obj.sortBy column to be sorted
+     * @param {Number} obj.order ASC or DESC
+     * @param {Array} obj.filter filter arrays
      * @return {Array} result
      */
-    async getAll(sortBy = undefined, order = undefined) {
+    async getAll({ startIndex, limit, sortBy, order, filter }) {
         let sortStmt = "";
         if (sortBy) {
-            sortStmt = await this.searchColIfExist(sortBy, order);
+            let doesColExist = await this.searchColIfExist(sortBy);
 
-            if (!sortStmt) {
+            if (!doesColExist) {
+                return false;
+            } else {
+                sortStmt = ` ORDER BY ${sortBy} ${order}`;
+            }
+        }
+
+        let filterStmt = "";
+
+        if (filter || !filter.length) {
+            filterStmt = await this.filterColCheckAndStmt(filter);
+
+            if (!filterStmt) {
                 return false;
             }
+
         }
 
         const currTbl = this.tableName;
@@ -61,50 +81,13 @@ class GettersModel {
             tblStmt += ` ${relationTbl} ${secondTbl} ON ${currTbl}.${secondTblKey} = ${secondTbl}.${secondTblKey} `
         })
 
-        const stmt = `SELECT * from ${tblStmt} ${sortStmt}`;
+        let limitClause = "";
+        if (startIndex === false) {
+            limitClause = ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`;
 
-        try {
-            const result = await mysql_conn.query(stmt);
-            return result;
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
-
-    /**
-       * get all rows
-       * @param {Object} obj - An object.
-       * @param {Number} obj.startIndex start of limit
-       * @param {Number} obj.limit limit count
-       * @param {Number} obj.sortBy column to be sorted
-       * @param {Number} obj.order ASC or DESC
-       * @return {Array} result
-       */
-    async getAllPaged({ startIndex, limit, sortBy, order }) {
-        let sortStmt = "";
-        if (sortBy) {
-            sortStmt = await this.searchColIfExist(sortBy, order);
-            if (!sortStmt) {
-                return false;
-            }
         }
 
-        const currTbl = this.tableName;
-        let tblStmt = `${currTbl}`;
-
-        await loopArr(this.secondaryTables, (indx) => {
-            let secondTbl = this.secondaryTables[indx].name;
-            let secondTblKey = this.secondaryTables[indx].id;
-            let relationTbl = this.secondaryTables[indx].relation;
-
-            tblStmt += ` ${relationTbl} ${secondTbl} ON ${currTbl}.${secondTblKey} = ${secondTbl}.${secondTblKey} `
-        })
-
-        const limitClause = ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`;
-
-        const stmt = `SELECT * from ${tblStmt} ${sortStmt} ${limitClause}`;
-
+        const stmt = `SELECT * from ${tblStmt} ${filter} ${sortStmt} ${limitClause}`;
 
         try {
             const result = await mysql_conn.query(stmt);
@@ -134,22 +117,70 @@ class GettersModel {
         }
     }
 
-    async searchColIfExist(sortBy, order) {
+    async searchColIfExist(column) {
         try {
+            // TODO: memoize this, so it doesn't have to loop everytime
             let allTbl = `('${this.tableName}'`;
             await loopArr(this.secondaryTables, (indx) => {
                 allTbl += `, '${this.secondaryTables[indx].name}'`
             })
-
             allTbl += `)`;
 
             const resultSort = await mysql_conn.query(`SELECT COLUMN_NAME 
             FROM INFORMATION_SCHEMA.COLUMNS
             WHERE TABLE_NAME IN ${allTbl}
-                AND COLUMN_NAME LIKE ?;`, sortBy);
+                AND COLUMN_NAME LIKE ?;`, column);
 
             if (resultSort.length) {
-                return ` ORDER BY ${sortBy} ${order}`;
+                return true;
+
+            } else {
+                return false
+            }
+
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
+    async filterColCheckAndStmt(columnArrObj) {
+        try {
+            // TODO: memoize this, so it doesn't have to loop everytime
+            let allTbl = `('${this.tableName}'`;
+            await loopArr(this.secondaryTables, (indx) => {
+                allTbl += `, '${this.secondaryTables[indx].name}'`
+            })
+            allTbl += `)`;
+
+            let likeStmt = "";
+            let colArrNames = [];
+
+            let filterStmt = " WHERE ";
+
+
+
+            await loopArr(columnArrObj, (indx) => {
+                if (indx === columnArrObj.length) {
+                    likeStmt += `?`;
+                } else {
+                    likeStmt += `?, `;
+                }
+                colArrNames.push(columnArrObj[index].id);
+
+                filterStmt += ` ${columnArrObj[index].id} LIKE '${columnArrObj[index].id}%' `;
+            })
+
+            const resultSort = await mysql_conn.query(`SELECT COLUMN_NAME 
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_NAME IN ${allTbl}
+                AND COLUMN_NAME LIKE ${likeStmt};`, columnArrObj);
+
+            if (resultSort.length) {
+                return filterStmt;
+
+            } else {
+                return false
             }
 
         } catch (err) {

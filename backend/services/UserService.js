@@ -36,7 +36,7 @@ class UserService {
      * @return all rows of users
      */
 
-    static async getAllUser({ page, limit, sortBy, order }) {
+    static async getAllUser({ page, limit, sortBy, order, filter }) {
         if ((!!page && page > 0) && (!limit || !(limit > 0))) {
             return { status: false }
         } else if ((!!limit && limit > 0) && (!page || !(page > 0))) {
@@ -55,13 +55,13 @@ class UserService {
             }
         }
 
-
-        let userData;
-        if (startIndex === false) {
-            userData = await UserModel.getAll(sortBy, order);
-        } else {
-            userData = await UserModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
-        }
+        let userData = await UserModel.getAll({
+            startIndex: startIndex,
+            limit: limit,
+            sortBy: sortBy,
+            order: order,
+            filter: filter
+        });
 
         if (userData.length) {
 

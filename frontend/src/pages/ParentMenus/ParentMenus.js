@@ -49,6 +49,7 @@ function ParentMenus({ priv }) {
     paginationProps: {
       currentPage
     },
+    filteringProps,
     tableProps,
     BundledTable
   } = useBundledTable({ data: parentMenuData, dataCount: totalParentMenus });
@@ -238,6 +239,7 @@ function ParentMenus({ priv }) {
                   idKey={idKey}
                   actionButtons={actionButtons}
                   addButtons={addButtons}
+                  filteringProps={filteringProps}
                 />
 
 

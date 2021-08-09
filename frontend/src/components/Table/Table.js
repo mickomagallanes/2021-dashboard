@@ -15,6 +15,7 @@ function Table({
   currentOrder,
   currentSortCol,
   sortFunc,
+  filterFunc
 }) {
 
   const [order, setOrder] = useState(currentOrder ? currentOrder : defaultOrder);
@@ -57,6 +58,8 @@ function Table({
     {order === "ASC" ? <i className="mdi mdi-arrow-up-bold"> </i> : <i className="mdi mdi-arrow-down-bold"> </i>}
   </>)
 
+  const SortTH = filterFunc ? SortedTHNoBorder : SortedTH;
+
   return (
 
     <div className="table-responsive">
@@ -66,21 +69,32 @@ function Table({
             {sortFunc
               ? colData.map(x => (
 
-                <SortedTH key={`th${x.id}`} onClick={() => handleSortClick(x.id)}>
+                <SortTH key={`th${x.id}`} onClick={() => handleSortClick(x.id)}>
                   {x.name}
                   {
                     matchSortedCol(x.id)
                       ? sortIcon
                       : <i className="mdi mdi-sort"></i>}
-                </SortedTH>
+                </SortTH>
 
               ))
               : colData.map(x => <th key={`th${x.id}`}>{x.name}</th>)
             }
 
-            {!actionDisabled && <th>Action/s</th>}
+            {!actionDisabled && <THNoBorder>Action/s</THNoBorder>}
 
           </tr>
+
+          {filterFunc &&
+            <tr>
+              {colData.map(x => (
+                <FilterTH key={`th2${x.id}`}>
+                  <input onChange={(e) => filterFunc(x.id, e.value)}></input>
+                </FilterTH>
+
+              ))}
+            </tr>
+          }
         </thead>
         <tbody>
           {!data.length &&
@@ -116,8 +130,30 @@ function Table({
 }
 
 const SortedTH = styled.th`
-    cursor: pointer;
+  cursor: pointer;
+
+`
+
+const SortedTHNoBorder = styled.th`
+ &&& {
+  cursor: pointer;
+  border: 0px;
+ }
+`
+
+const THNoBorder = styled.th`
+&&& {
+ border: 0px;
+}
+`
+const FilterTH = styled.td`
+ &&& {
+  border: 0px;
+  padding-top: 0px;
+  
+ }
  
+
 `
 
 export default Table;

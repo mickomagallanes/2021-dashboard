@@ -95,7 +95,7 @@ class EmployeeService {
      * @param {String} [obj.order] ASC or DESC
      * @return employeeSalaryArr all rows of employeeSalary
      */
-    static async getAllEmployeeSalaries({ page, limit, sortBy, order }) {
+    static async getAllEmployeeSalaries({ page, limit, sortBy, order, filter }) {
 
         if ((!!page && page > 0) && (!limit || !(limit > 0))) {
             return { status: false }
@@ -115,12 +115,13 @@ class EmployeeService {
 
         const startIndex = isPaged ? (page - 1) * limit : false;
 
-        let employeeSalaryArr;
-        if (startIndex === false) {
-            employeeSalaryArr = await EmployeeSalaryModel.getAll(sortBy, order);
-        } else {
-            employeeSalaryArr = await EmployeeSalaryModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
-        }
+        let employeeSalaryArr = await EmployeeSalaryModel.getAll({
+            startIndex: startIndex,
+            limit: limit,
+            sortBy: sortBy,
+            order: order,
+            filter: filter
+        });
 
         if (employeeSalaryArr) {
 
@@ -239,7 +240,7 @@ class EmployeeService {
      * @param {String} [obj.order] ASC or DESC
      * @return employeeArr all rows of employee
      */
-    static async getAllEmployee({ page, limit, sortBy, order }) {
+    static async getAllEmployee({ page, limit, sortBy, order, filter }) {
 
         if ((!!page && page > 0) && (!limit || !(limit > 0))) {
             return { status: false }
@@ -259,12 +260,13 @@ class EmployeeService {
 
         const startIndex = isPaged ? (page - 1) * limit : false;
 
-        let employeeArr;
-        if (startIndex === false) {
-            employeeArr = await EmployeeModel.getAll(sortBy, order);
-        } else {
-            employeeArr = await EmployeeModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
-        }
+        let employeeArr = await EmployeeModel.getAll({
+            startIndex: startIndex,
+            limit: limit,
+            sortBy: sortBy,
+            order: order,
+            filter: filter
+        });
 
         if (employeeArr) {
 

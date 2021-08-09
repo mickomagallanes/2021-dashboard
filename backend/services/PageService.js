@@ -205,7 +205,7 @@ class PageService {
      * @param {String} [obj.order] ASC or DESC
      * @return pageArr all rows of page
      */
-    static async getAllPages({ page, limit, sortBy, order }) {
+    static async getAllPages({ page, limit, sortBy, order, filter }) {
 
         if ((!!page && page > 0) && (!limit || !(limit > 0))) {
             return { status: false }
@@ -225,12 +225,13 @@ class PageService {
             }
         }
 
-        let pageArr;
-        if (startIndex === false) {
-            pageArr = await PageModel.getAll(sortBy, order);
-        } else {
-            pageArr = await PageModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
-        }
+        let pageArr = await PageModel.getAll({
+            startIndex: startIndex,
+            limit: limit,
+            sortBy: sortBy,
+            order: order,
+            filter: filter
+        });
 
         if (pageArr.length) {
 

@@ -103,7 +103,7 @@ class SubPageService {
      * @param {String} [obj.order] ASC or DESC
      * @return subPageArr all rows of subPage
      */
-    static async getAllSubPages({ page, limit, sortBy, order }) {
+    static async getAllSubPages({ page, limit, sortBy, order, filter }) {
 
         if ((!!page && page > 0) && (!limit || !(limit > 0))) {
             return { status: false }
@@ -123,12 +123,13 @@ class SubPageService {
             }
         }
 
-        let subPageArr;
-        if (startIndex === false) {
-            subPageArr = await SubPageModel.getAll(sortBy, order);
-        } else {
-            subPageArr = await SubPageModel.getAllPaged({ startIndex: startIndex, limit: limit, sortBy: sortBy, order: order });
-        }
+        let subPageArr = await SubPageModel.getAll({
+            startIndex: startIndex,
+            limit: limit,
+            sortBy: sortBy,
+            order: order,
+            filter: filter
+        });
 
         if (subPageArr.length) {
 

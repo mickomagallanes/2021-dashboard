@@ -46,6 +46,14 @@ function userGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
+        filter: Joi.object({
+            filter: Joi.array().items(
+                Joi.object({
+                    id: Joi.string().required(),
+                    value: Joi.string().required()
+                })
+            )
+        })
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -167,6 +175,14 @@ function routeGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
+        filter: Joi.object({
+            filter: Joi.array().items(
+                Joi.object({
+                    id: Joi.string().required(),
+                    value: Joi.string().required()
+                })
+            )
+        })
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -216,11 +232,20 @@ function parentMenuModifySchema(req, res, next) {
 }
 
 function parentMenuGetAllSchema(req, res, next) {
+
     const schema = Joi.object({
         page: Joi.number().integer(),
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
+        filter: Joi.object({
+            filter: Joi.array().items(
+                Joi.object({
+                    id: Joi.string().required(),
+                    value: Joi.string().required()
+                })
+            )
+        })
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -270,6 +295,14 @@ function menuGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
+        filter: Joi.object({
+            filter: Joi.array().items(
+                Joi.object({
+                    id: Joi.string().required(),
+                    value: Joi.string().required()
+                })
+            )
+        })
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -354,6 +387,15 @@ function pageGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
+        // TODO: fix this filter
+        filter: Joi.object({
+            filter: Joi.array().items(
+                Joi.object({
+                    id: Joi.string().required(),
+                    value: Joi.string().required()
+                })
+            )
+        })
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -404,6 +446,14 @@ function subPageGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
+        filter: Joi.object({
+            filter: Joi.array().items(
+                Joi.object({
+                    id: Joi.string().required(),
+                    value: Joi.string().required()
+                })
+            )
+        })
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -469,6 +519,14 @@ function employeeGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
+        filter: Joi.object({
+            filter: Joi.array().items(
+                Joi.object({
+                    id: Joi.string().required(),
+                    value: Joi.string().required()
+                })
+            )
+        })
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -519,6 +577,14 @@ function employeeSalaryGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
+        filter: Joi.object({
+            filter: Joi.array().items(
+                Joi.object({
+                    id: Joi.string().required(),
+                    value: Joi.string().required()
+                })
+            )
+        })
     });
     validateRequestQuery(req, res, next, schema);
 }
