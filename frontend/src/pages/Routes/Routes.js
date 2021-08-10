@@ -45,6 +45,7 @@ function Routes({ priv }) {
     paginationProps: {
       currentRoute
     },
+    filteringProps,
     tableProps,
     BundledTable
   } = useBundledTable({ data: routeData, dataCount: totalRoutes });
@@ -56,7 +57,7 @@ function Routes({ priv }) {
   const fetchDepsCount = [currentEntries, currentRoute, deleteRouteResult];
   const fetchDepsRoutes = [deleteRouteResult];
 
-  const [dataCount, loadingCount] = useFetch(routeCountURL, { customDeps: fetchDepsCount });
+  const [dataCount, loadingCount] = useFetch(routeCountURL + searchParamQuery, { customDeps: fetchDepsCount });
 
   const [dataRoutes, loadingRoutes] = useFetch(routeURL + searchParamQuery, { customDeps: fetchDepsRoutes });
 
@@ -204,6 +205,7 @@ function Routes({ priv }) {
                   idKey={idKey}
                   actionButtons={actionButtons}
                   addButtons={addButtons}
+                  filteringProps={filteringProps}
                 />
 
 

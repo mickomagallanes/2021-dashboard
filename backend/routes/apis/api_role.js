@@ -2,7 +2,7 @@
 const RoleService = require('../../services/RoleService.js');
 
 const { checkSession, authorizeReadRoute, authorizeWriteRoute } = require('../../middlewares/routesauth.js');
-const { roleInsertSchema, roleModifySchema, roleDeleteSchema } = require('../../middlewares/validator.js');
+const { roleInsertSchema, roleModifySchema, roleDeleteSchema, getAllCountGeneralSchema } = require('../../middlewares/validator.js');
 const express = require('express');
 const router = express.Router();
 
@@ -38,9 +38,9 @@ router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (re
 /**
  * get count of all role rows
  */
-router.get('/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
-    let result = await RoleService.getAllCount();
+    let result = await RoleService.getAllCount(req.query);
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed getting count" });
     } else {

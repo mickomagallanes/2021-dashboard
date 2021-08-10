@@ -46,6 +46,7 @@ function SubPages({ priv }) {
       currentPage
     },
     tableProps,
+    filteringProps,
     BundledTable
   } = useBundledTable({ data: subPageData, dataCount: totalSubPages });
 
@@ -56,7 +57,7 @@ function SubPages({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deleteSubPageResult];
   const fetchDepsSubPages = [deleteSubPageResult];
 
-  const [dataCount, loadingCount] = useFetch(subPageCountURL, { customDeps: fetchDepsCount });
+  const [dataCount, loadingCount] = useFetch(subPageCountURL + searchParamQuery, { customDeps: fetchDepsCount });
 
   const [dataSubPages, loadingSubPages] = useFetch(subPageURL + searchParamQuery, { customDeps: fetchDepsSubPages });
 
@@ -201,6 +202,7 @@ function SubPages({ priv }) {
                   idKey={idKey}
                   actionButtons={actionButtons}
                   addButtons={addButtons}
+                  filteringProps={filteringProps}
                 />
 
               </div>

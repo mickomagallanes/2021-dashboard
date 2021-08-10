@@ -48,6 +48,7 @@ function Users({ priv }) {
       currentPage
     },
     tableProps,
+    filteringProps,
     BundledTable
   } = useBundledTable({ data: userData, dataCount: totalUsers });
 
@@ -57,7 +58,7 @@ function Users({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deleteUserResult];
   const fetchDepsUsers = [deleteUserResult];
 
-  const [dataCount, loadingCount] = useFetch(userCountURL, { customDeps: fetchDepsCount });
+  const [dataCount, loadingCount] = useFetch(userCountURL + searchParamQuery, { customDeps: fetchDepsCount });
 
   const [dataUsers, loadingUsers] = useFetch(userURL + searchParamQuery, { customDeps: fetchDepsUsers });
 
@@ -201,6 +202,7 @@ function Users({ priv }) {
                   idKey={idKey}
                   actionButtons={actionButtons}
                   addButtons={addButtons}
+                  filteringProps={filteringProps}
                 />
 
               </div>

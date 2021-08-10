@@ -96,9 +96,9 @@ class UserService {
     * @return count of all rows
     */
 
-    static async getAllCount() {
+    static async getAllCount({ filter }) {
 
-        const userCount = await UserModel.getAllUserCount();
+        const userCount = await UserModel.getAllCount({ filter });
         if (userCount.length) {
             return { status: true, data: userCount[0] }
         } else {

@@ -8,7 +8,8 @@ const {
     routeInsertSchema,
     routeModifySchema,
     routeGetAllSchema,
-    routeDeleteSchema
+    routeDeleteSchema,
+    getAllCountGeneralSchema
 } = require('../../middlewares/validator.js');
 
 /*************************** Routes *************************************/
@@ -68,8 +69,8 @@ router.get('/get/all', [checkSession, routeGetAllSchema, authorizeReadRoute], as
 /**
  * get count of all route rows
  */
-router.get('/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
-    let result = await RouteService.getAllRouteCount();
+router.get('/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeReadRoute], async function (req, res, next) {
+    let result = await RouteService.getAllRouteCount(req.query);
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed getting count" });
     } else {

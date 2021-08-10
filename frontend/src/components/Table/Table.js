@@ -15,7 +15,8 @@ function Table({
   currentOrder,
   currentSortCol,
   sortFunc,
-  filterFunc
+  filterFunc,
+  currentFilter
 }) {
 
   const [order, setOrder] = useState(currentOrder ? currentOrder : defaultOrder);
@@ -78,7 +79,7 @@ function Table({
                 </SortTH>
 
               ))
-              : colData.map(x => <th key={`th${x.id}`}>{x.name}</th>)
+              : colData.map(x => <THNoBorder key={`th${x.id}`}>{x.name}</THNoBorder>)
             }
 
             {!actionDisabled && <THNoBorder>Action/s</THNoBorder>}
@@ -87,21 +88,27 @@ function Table({
 
           {filterFunc &&
             <tr>
-              {colData.map(x => (
-                <FilterTH key={`th2${x.id}`}>
-                  <input onChange={(e) => filterFunc(x.id, e.value)}></input>
-                </FilterTH>
+              {colData.map(x => {
+                const matchedFilterObj = currentFilter.find(o => o.id === x.id);
+                const filterVal = matchedFilterObj !== undefined ? matchedFilterObj.value : "";
 
-              ))}
+                return (
+                  <FilterTH key={`th2${x.id}`}>
+                    <input className="form-control" placeholder="Filter" value={filterVal} onChange={(e) => filterFunc(x.id, e.target.value)}></input>
+                  </FilterTH>
+
+                )
+              })}
             </tr>
           }
         </thead>
         <tbody>
           {!data.length &&
             <tr>
-              <td>
+              <td colSpan={colData.length + 1}>
                 <p>Table is empty!</p>
               </td>
+
             </tr>
           }
 
@@ -124,7 +131,7 @@ function Table({
         </tbody>
       </table>
 
-    </div>
+    </div >
 
   );
 }

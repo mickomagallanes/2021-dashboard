@@ -11,7 +11,8 @@ const {
     pageModifySchema,
     pageInsertBulkSchema,
     pageModifyBulkSchema,
-    pageDeleteSchema
+    pageDeleteSchema,
+    getAllCountGeneralSchema
 } = require('../../middlewares/validator.js');
 
 /**
@@ -37,9 +38,9 @@ router.get('/get/by/session', [checkSession], async function (req, res, next) {
 /**
  * get count of all page rows
  */
-router.get('/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
-    let result = await PageService.getAllPageCount();
+    let result = await PageService.getAllPageCount(req.query);
 
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed getting count" });

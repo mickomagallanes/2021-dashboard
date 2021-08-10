@@ -4,7 +4,7 @@ const UserService = require('../../services/UserService.js');
 const utils = require('../../utils/session.js');
 const { createSingleImageUpload } = require('../../utils/imageupload.js');
 const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../../middlewares/routesauth.js');
-const { userInsertSchema, userLoginSchema, userGetAllSchema, userModifySchema, userDeleteSchema } = require('../../middlewares/validator.js');
+const { userInsertSchema, userLoginSchema, userGetAllSchema, userModifySchema, userDeleteSchema, getAllCountGeneralSchema } = require('../../middlewares/validator.js');
 const express = require('express');
 const router = express.Router();
 const path = require('path');
@@ -39,9 +39,9 @@ router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (re
 /**
  * get  count of all user rows
  */
-router.get('/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
-    let result = await UserService.getAllCount();
+    let result = await UserService.getAllCount(req.query);
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed getting count" });
     } else {

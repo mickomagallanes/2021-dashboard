@@ -8,7 +8,8 @@ const {
     subPageGetAllSchema,
     subPageInsertSchema,
     subPageModifySchema,
-    subPageDeleteSchema
+    subPageDeleteSchema,
+    getAllCountGeneralSchema
 } = require('../../middlewares/validator.js');
 
 /**
@@ -59,9 +60,9 @@ router.put('/modify/:id', [checkSession, subPageModifySchema, authorizeWriteRout
 /**
  * get count of all subPage rows
  */
-router.get('/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
-    let result = await SubPageService.getAllSubPageCount();
+    let result = await SubPageService.getAllSubPageCount(req.query);
 
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed getting count" });

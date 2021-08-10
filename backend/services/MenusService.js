@@ -126,11 +126,11 @@ class MenusService {
         }
 
         let menuArr = await MenuModel.getAll({
-            startIndex: startIndex,
-            limit: limit,
-            sortBy: sortBy,
-            order: order,
-            filter: filter
+            startIndex,
+            limit,
+            sortBy,
+            order,
+            filter
         });
 
         if (menuArr) {
@@ -181,9 +181,9 @@ class MenusService {
      * get total count of menu rows
      * @return count of all rows
      */
-    static async getAllMenuCount() {
+    static async getAllMenuCount({ filter }) {
 
-        const menuCount = await MenuModel.getAllCount();
+        const menuCount = await MenuModel.getAllCount({ filter });
 
         if (menuCount.length) {
             return { status: true, data: menuCount[0] }
@@ -338,9 +338,9 @@ class MenusService {
      * get total count of parent menu rows
      * @return count of all rows
      */
-    static async getAllParentMenuCount() {
+    static async getAllParentMenuCount({ filter }) {
 
-        const parentMenuCount = await ParentMenuModel.getAllCount();
+        const parentMenuCount = await ParentMenuModel.getAllCount({ filter });
 
         if (parentMenuCount.length) {
             return { status: true, data: parentMenuCount[0] }

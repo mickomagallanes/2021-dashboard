@@ -162,9 +162,9 @@ class SubPageService {
      * get total count of subPage rows
      * @return count of all rows
      */
-    static async getAllSubPageCount() {
+    static async getAllSubPageCount({ filter }) {
 
-        const subPageCount = await SubPageModel.getAllCount();
+        const subPageCount = await SubPageModel.getAllCount({ filter });
 
         if (subPageCount.length) {
             return { status: true, data: subPageCount[0] }

@@ -96,24 +96,6 @@ class UserModel {
     }
 
     /**
-    * get count of all user for pagination
-    * @return {Array} result, length = 1
-    */
-    static async getAllUserCount() {
-        const stmt = `SELECT 
-               count(UserID) as count
-            FROM
-                Users as a INNER JOIN Roles as b ON a.RoleID = b.RoleID`;
-        try {
-            const result = await mysql_conn.query(stmt);
-            return result;
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
-
-    /**
     * get a row using by user id
     * @param {Number} id id of the user
     * @return {Array} result, length = 1

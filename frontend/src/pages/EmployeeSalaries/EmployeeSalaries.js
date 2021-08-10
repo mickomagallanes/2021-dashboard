@@ -50,6 +50,7 @@ function EmployeesSalaries({ priv }) {
       currentPage
     },
     tableProps,
+    filteringProps,
     BundledTable
   } = useBundledTable({ data: employeeSalaryData, dataCount: totalEmployeeSalaries });
 
@@ -60,7 +61,7 @@ function EmployeesSalaries({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deleteEmployeeSalaryResult];
   const fetchDepsEmployee = [deleteEmployeeSalaryResult];
 
-  const [dataCount, loadingCount] = useFetch(employeeSalaryCountURL, { customDeps: fetchDepsCount });
+  const [dataCount, loadingCount] = useFetch(employeeSalaryCountURL + searchParamQuery, { customDeps: fetchDepsCount });
 
   const [dataEmployeeSalaries, loadingEmployeeSalaries] = useFetch(employeeSalaryURL + searchParamQuery, { customDeps: fetchDepsEmployee });
 
@@ -213,6 +214,7 @@ function EmployeesSalaries({ priv }) {
                   idKey={idKey}
                   actionButtons={actionButtons}
                   addButtons={addButtons}
+                  filteringProps={filteringProps}
                 />
 
 

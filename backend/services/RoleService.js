@@ -105,8 +105,8 @@ class RoleService {
     /**
     * get all roles count
     */
-    static async getAllCount() {
-        let roleArr = await RoleModel.getAllCount();
+    static async getAllCount({ filter }) {
+        let roleArr = await RoleModel.getAllCount({ filter });
         if (roleArr.length) {
             return { status: true, data: roleArr[0] }
         } else {

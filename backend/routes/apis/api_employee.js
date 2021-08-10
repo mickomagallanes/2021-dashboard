@@ -12,7 +12,8 @@ const {
     employeeGetAllSchema,
     employeeModifySchema,
     employeeInsertSchema,
-    employeeDeleteSchema
+    employeeDeleteSchema,
+    getAllCountGeneralSchema
 } = require('../../middlewares/validator.js');
 
 /******************************** EMPLOYEE SALARIES ***************************************/
@@ -73,7 +74,7 @@ router.get('/salary/get/all', [checkSession, employeeSalaryGetAllSchema, authori
 /**
  * get count of all employee salary rows
  */
-router.get('/salary/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
+router.get('/salary/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeReadRoute], async function (req, res, next) {
     let result = await EmployeeService.getAllEmployeeSalaryCount();
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed getting count" });
@@ -122,9 +123,9 @@ router.get('/get/by/session', [checkSession], async function (req, res, next) {
 /**
  * get count of all employee rows
  */
-router.get('/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
-    let result = await EmployeeService.getAllEmployeeCount();
+    let result = await EmployeeService.getAllEmployeeCount(req.query);
 
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed getting count" });

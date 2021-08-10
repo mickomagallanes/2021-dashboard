@@ -47,6 +47,7 @@ function Menus({ priv }) {
     paginationProps: {
       currentPage
     },
+    filteringProps,
     tableProps,
     BundledTable
   } = useBundledTable({ data: menuData, dataCount: totalMenus });
@@ -57,7 +58,7 @@ function Menus({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deleteMenuResult];
   const fetchDepsMenus = [deleteMenuResult];
 
-  const [dataCount, loadingCount] = useFetch(menuCountURL, { customDeps: fetchDepsCount });
+  const [dataCount, loadingCount] = useFetch(menuCountURL + searchParamQuery, { customDeps: fetchDepsCount });
 
   const [dataMenus, loadingMenus] = useFetch(menuURL + searchParamQuery, { customDeps: fetchDepsMenus });
 
@@ -203,6 +204,7 @@ function Menus({ priv }) {
                   idKey={idKey}
                   actionButtons={actionButtons}
                   addButtons={addButtons}
+                  filteringProps={filteringProps}
                 />
 
 

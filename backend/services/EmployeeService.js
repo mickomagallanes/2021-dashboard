@@ -154,9 +154,9 @@ class EmployeeService {
      * get total count of employeeSalary rows
      * @return count of all rows
      */
-    static async getAllEmployeeSalaryCount() {
+    static async getAllEmployeeSalaryCount({ filter }) {
 
-        const employeeSalaryCount = await EmployeeSalaryModel.getAllCount();
+        const employeeSalaryCount = await EmployeeSalaryModel.getAllCount({ filter });
 
         if (employeeSalaryCount.length) {
             return { status: true, data: employeeSalaryCount[0] }
@@ -299,9 +299,9 @@ class EmployeeService {
      * get total count of employee rows
      * @return count of all rows
      */
-    static async getAllEmployeeCount() {
+    static async getAllEmployeeCount({ filter }) {
 
-        const employeeCount = await EmployeeModel.getAllCount();
+        const employeeCount = await EmployeeModel.getAllCount({ filter });
 
         if (employeeCount.length) {
             return { status: true, data: employeeCount[0] }

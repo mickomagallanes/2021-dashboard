@@ -13,7 +13,8 @@ const {
     menuModifySchema,
     menuDeleteSchema,
     parentMenuDeleteSchema,
-    parentMenuSortSchema
+    parentMenuSortSchema,
+    getAllCountGeneralSchema
 } = require('../../middlewares/validator.js');
 
 /******************************** Menu ***************************************/
@@ -68,9 +69,9 @@ router.get('/get/by/role', [checkSession], async function (req, res, next) {
 /**
  * get count of all menu rows
  */
-router.get('/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
-    let result = await MenusService.getAllMenuCount();
+    let result = await MenusService.getAllMenuCount(req.query);
 
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed getting count" });
@@ -196,8 +197,8 @@ router.get('/parent/get/all', [checkSession, parentMenuGetAllSchema, authorizeRe
 /**
  * get count of all parent menu rows
  */
-router.get('/parent/get/all/count', [checkSession, authorizeReadRoute], async function (req, res, next) {
-    let result = await MenusService.getAllParentMenuCount();
+router.get('/parent/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeReadRoute], async function (req, res, next) {
+    let result = await MenusService.getAllParentMenuCount(req.query);
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed getting count" });
     } else {

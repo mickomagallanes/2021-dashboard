@@ -264,9 +264,9 @@ class PageService {
      * get total count of page rows
      * @return count of all rows
      */
-    static async getAllPageCount() {
+    static async getAllPageCount({ filter }) {
 
-        const pageCount = await PageModel.getAllCount();
+        const pageCount = await PageModel.getAllCount({ filter });
 
         if (pageCount.length) {
             return { status: true, data: pageCount[0] }

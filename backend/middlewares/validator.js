@@ -46,14 +46,13 @@ function userGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
-        filter: Joi.object({
-            filter: Joi.array().items(
-                Joi.object({
-                    id: Joi.string().required(),
-                    value: Joi.string().required()
-                })
-            )
-        })
+        filter: Joi.array().items(
+            Joi.object({
+                id: Joi.string().required(),
+                value: Joi.string().required()
+            })
+        )
+
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -175,14 +174,13 @@ function routeGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
-        filter: Joi.object({
-            filter: Joi.array().items(
-                Joi.object({
-                    id: Joi.string().required(),
-                    value: Joi.string().required()
-                })
-            )
-        })
+        filter: Joi.array().items(
+            Joi.object({
+                id: Joi.string().required(),
+                value: Joi.string().required()
+            })
+        )
+
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -238,14 +236,13 @@ function parentMenuGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
-        filter: Joi.object({
-            filter: Joi.array().items(
-                Joi.object({
-                    id: Joi.string().required(),
-                    value: Joi.string().required()
-                })
-            )
-        })
+        filter: Joi.array().items(
+            Joi.object({
+                id: Joi.string().required(),
+                value: Joi.string().required()
+            })
+        )
+
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -290,19 +287,19 @@ function menuModifySchema(req, res, next) {
 }
 
 function menuGetAllSchema(req, res, next) {
+
     const schema = Joi.object({
         page: Joi.number().integer(),
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
-        filter: Joi.object({
-            filter: Joi.array().items(
-                Joi.object({
-                    id: Joi.string().required(),
-                    value: Joi.string().required()
-                })
-            )
-        })
+        filter: Joi.array().items(
+            Joi.object({
+                id: Joi.string().required(),
+                value: Joi.string().required()
+            })
+        )
+
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -388,14 +385,13 @@ function pageGetAllSchema(req, res, next) {
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
         // TODO: fix this filter
-        filter: Joi.object({
-            filter: Joi.array().items(
-                Joi.object({
-                    id: Joi.string().required(),
-                    value: Joi.string().required()
-                })
-            )
-        })
+        filter: Joi.array().items(
+            Joi.object({
+                id: Joi.string().required(),
+                value: Joi.string().required()
+            })
+        )
+
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -446,14 +442,13 @@ function subPageGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
-        filter: Joi.object({
-            filter: Joi.array().items(
-                Joi.object({
-                    id: Joi.string().required(),
-                    value: Joi.string().required()
-                })
-            )
-        })
+        filter: Joi.array().items(
+            Joi.object({
+                id: Joi.string().required(),
+                value: Joi.string().required()
+            })
+        )
+
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -519,14 +514,13 @@ function employeeGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
-        filter: Joi.object({
-            filter: Joi.array().items(
-                Joi.object({
-                    id: Joi.string().required(),
-                    value: Joi.string().required()
-                })
-            )
-        })
+        filter: Joi.array().items(
+            Joi.object({
+                id: Joi.string().required(),
+                value: Joi.string().required()
+            })
+        )
+
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -577,14 +571,13 @@ function employeeSalaryGetAllSchema(req, res, next) {
         limit: Joi.number().integer().min(5).max(100),
         sortBy: Joi.string().max(30),
         order: Joi.string().min(3).max(4),
-        filter: Joi.object({
-            filter: Joi.array().items(
-                Joi.object({
-                    id: Joi.string().required(),
-                    value: Joi.string().required()
-                })
-            )
-        })
+        filter: Joi.array().items(
+            Joi.object({
+                id: Joi.string().required(),
+                value: Joi.string().required()
+            })
+        )
+
     });
     validateRequestQuery(req, res, next, schema);
 }
@@ -604,6 +597,24 @@ function validateRequestParams(req, res, next, schema) {
 
 function validateRequest(req, res, next, schema) {
     validate(req, res, next, schema)
+}
+
+// TODO: make get all schema non-redundant
+function getAllCountGeneralSchema(req, res, next) {
+    const schema = Joi.object({
+        page: Joi.number().integer(),
+        limit: Joi.number().integer().min(5).max(100),
+        sortBy: Joi.string().max(30),
+        order: Joi.string().min(3).max(4),
+        filter: Joi.array().items(
+            Joi.object({
+                id: Joi.string().required(),
+                value: Joi.string().required()
+            })
+        )
+
+    });
+    validateRequestQuery(req, res, next, schema);
 }
 
 function validate(req, res, next, schema) {
@@ -660,5 +671,6 @@ module.exports = {
     employeeSalaryGetAllSchema,
     employeeSalaryModifySchema,
     employeeSalaryInsertSchema,
-    employeeSalaryDeleteSchema
+    employeeSalaryDeleteSchema,
+    getAllCountGeneralSchema
 }

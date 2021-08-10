@@ -143,9 +143,9 @@ class RouteService {
      * get total count of route rows
      * @return count of all rows
      */
-    static async getAllRouteCount() {
+    static async getAllRouteCount({ filter }) {
 
-        const routeCount = await RouteModel.getAllCount();
+        const routeCount = await RouteModel.getAllCount({ filter });
 
         if (routeCount.length) {
             return { status: true, data: routeCount[0] }

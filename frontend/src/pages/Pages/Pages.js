@@ -46,6 +46,7 @@ function Pages({ priv }) {
       currentPage
     },
     tableProps,
+    filteringProps,
     BundledTable
   } = useBundledTable({ data: pageData, dataCount: totalPages });
 
@@ -56,7 +57,7 @@ function Pages({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deletePageResult];
   const fetchDepsPages = [deletePageResult];
 
-  const [dataCount, loadingCount] = useFetch(pageCountURL, { customDeps: fetchDepsCount });
+  const [dataCount, loadingCount] = useFetch(pageCountURL + searchParamQuery, { customDeps: fetchDepsCount });
 
   const [dataPages, loadingPages] = useFetch(pageURL + searchParamQuery, { customDeps: fetchDepsPages });
 
@@ -215,6 +216,7 @@ function Pages({ priv }) {
                   idKey={idKey}
                   actionButtons={actionButtons}
                   addButtons={addButtons}
+                  filteringProps={filteringProps}
                 />
 
 

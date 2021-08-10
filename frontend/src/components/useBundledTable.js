@@ -13,6 +13,45 @@ const initSortValue = null;
 const initOrderValue = null;
 const initFilterValue = [];
 
+URLSearchParams.prototype.toObject = function () {
+    let _obj = {};
+    const bracketToDots = function (str) {
+
+        return str.split("[").join(".").split("]").join("");
+        // .replace('[', '.').replace(']', '')
+    }
+    const parseDotNotation = function (str, val, obj) {
+
+        let currentObj = obj,
+            keys = str.split("."),
+            i, l = Math.max(1, keys.length - 1),
+            key;
+
+        if (l === 1) {
+            key = keys[0];
+            currentObj[key] = val;
+        } else {
+
+            for (i = 0; i < l; ++i) {
+                key = keys[i];
+                if (i === 0) {
+                    currentObj[key] = currentObj[key] || [];
+                } else {
+                    currentObj[key] = currentObj[key] || {};
+                }
+
+                currentObj = currentObj[key];
+            }
+
+            currentObj[keys[i]] = val;
+        }
+    }
+    for (const [key, value] of this.entries()) {
+        parseDotNotation(bracketToDots(key), value, _obj);
+    }
+    return _obj;
+}
+
 /**
  * Custom Hook to make Table + or Pagination + or Entry + or Sort functionality
  * @param {Array} data
@@ -56,15 +95,31 @@ function useBundledTable({
     const [currentSortOrder, setCurrentSortOrder] = useState(orderParamsValue ? orderParamsValue : initOrderValue);
 
     // FILTER FUNCTIONALITY
-    const filterParams = searchParams.get('filter');
-    const [currentFilter, setCurrentFilter] = useState(filterParams ? filterParams : initFilterValue);
+    const allParamsAsObj = searchParams.toObject();
+    const filterParamsValue = allParamsAsObj["filter"];
+
+    const [currentFilter, setCurrentFilter] = useState(filterParamsValue ? filterParamsValue : initFilterValue);
 
     ///////////////////////////////////////
     const sortParam = (isSorted && currentSortCol && currentSortOrder) ? `&sortBy=${currentSortCol}&order=${currentSortOrder}` : "";
     const pageAndEntryParam = isPaginated ? `page=${currentPage}&limit=${currentEntries}` : "";
-    const filterParam = isFiltered ? `&filter={value: ${currentFilter}}` : "";
-    // TODO: fix filter type
+    const filterParam = isFiltered ? convertFilterToQueryParam() : "";
+
     const currSearch = `?${pageAndEntryParam}${sortParam}${filterParam}`;
+
+    const history = useHistory();
+
+    // FUNCTIONS
+
+    function convertFilterToQueryParam() {
+        let filterURL = "";
+
+        for (let i = 0, n = currentFilter.length; i < n; i++) {
+            filterURL += `&filter[${i}][id]=${currentFilter[i].id}&filter[${i}][value]=${currentFilter[i].value}`;
+        }
+        return filterURL;
+
+    }
 
     const tableProps = isSorted
         ? {
@@ -127,9 +182,9 @@ function useBundledTable({
         }
         : null;
 
-    const history = useHistory();
 
 
+    // LIFECYCLES
     useDidUpdateEffect(() => {
 
         if (isPaginated) {
@@ -184,6 +239,7 @@ function BundledTable({
 
     const sortFunc = tableProps.handleSort ? tableProps.handleSort : null;
     const filterFunc = filteringProps && filteringProps.handleFilter ? filteringProps.handleFilter : null;
+    const currentFilter = filteringProps && filteringProps.currentFilter ? filteringProps.currentFilter : null;
 
     return (
         <>
@@ -221,6 +277,7 @@ function BundledTable({
                 currentOrder={tableProps.currentSortOrder}
                 currentSortCol={tableProps.currentSortCol}
                 filterFunc={filterFunc}
+                currentFilter={currentFilter}
             />
 
         </>
