@@ -13,7 +13,7 @@ class PrivilegeService {
     */
     static async getAllPrivileges() {
         let privArr = await PrivilegeModel.getAllPrivileges();
-        if (privArr.length) {
+        if (privArr) {
             return { status: true, data: privArr }
         } else {
             return { status: false }

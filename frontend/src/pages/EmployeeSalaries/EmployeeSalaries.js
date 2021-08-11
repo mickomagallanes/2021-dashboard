@@ -45,6 +45,7 @@ function EmployeesSalaries({ priv }) {
     entryProps: {
       currentEntries
     },
+    filterParam,
     paginationProps,
     paginationProps: {
       currentPage
@@ -61,7 +62,7 @@ function EmployeesSalaries({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deleteEmployeeSalaryResult];
   const fetchDepsEmployee = [deleteEmployeeSalaryResult];
 
-  const [dataCount, loadingCount] = useFetch(employeeSalaryCountURL + searchParamQuery, { customDeps: fetchDepsCount });
+  const [dataCount, loadingCount] = useFetch(employeeSalaryCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
   const [dataEmployeeSalaries, loadingEmployeeSalaries] = useFetch(employeeSalaryURL + searchParamQuery, { customDeps: fetchDepsEmployee });
 

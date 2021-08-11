@@ -152,8 +152,6 @@ class Sidebar extends React.Component {
       this.props.location.pathname.startsWith(path + "/")
   }
 
-
-  //TODO: render Sidebar based on PageRoles of User, also add custom privilege for each User
   render() {
 
     return (

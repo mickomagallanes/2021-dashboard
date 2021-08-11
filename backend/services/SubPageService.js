@@ -131,7 +131,7 @@ class SubPageService {
             filter: filter
         });
 
-        if (subPageArr.length) {
+        if (subPageArr) {
 
             return { status: true, data: subPageArr }
 

@@ -30,7 +30,7 @@ class RouteRoleService {
     static async getAllRoutesLeftRole(roleId) {
         let routesArr = await RouteRoleModel.getAllRoutesLeftRole(roleId);
 
-        if (routesArr.length) {
+        if (routesArr) {
             return { status: true, data: routesArr }
         }
         return { status: false }

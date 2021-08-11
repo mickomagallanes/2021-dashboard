@@ -112,7 +112,7 @@ class RouteService {
             filter: filter
         });
 
-        if (routeArr.length) {
+        if (routeArr) {
 
             return { status: true, data: routeArr }
 

@@ -13,7 +13,7 @@ const initSortValue = null;
 const initOrderValue = null;
 const initFilterValue = [];
 
-URLSearchParams.prototype.toObject = function () {
+URLSearchParams.prototype.toArrayOfObjects = function () {
     let _obj = {};
     const bracketToDots = function (str) {
 
@@ -61,6 +61,9 @@ URLSearchParams.prototype.toObject = function () {
  * @param {Boolean} [enabledSearchParam] default: true. If true, pushes all parameters of table to history url
  * @returns obj
  * @returns obj.searchparamQuery added to the fetch url, contains page, entry, sortBy and order parameter
+ * @returns obj.sortParam sort query parameter string
+ * @returns obj.pageAndEntryParam page and entry query parameter string
+ * @returns obj.filterParam filter query parameter string
  * @returns obj.BundledTable the mixed Components of table and pagination
  * @returns obj.entryProps props for entry, returns differently by the isPaginated value
  * @returns obj.tableProps props for table, returns differently by the isSorted value
@@ -95,17 +98,17 @@ function useBundledTable({
     const [currentSortOrder, setCurrentSortOrder] = useState(orderParamsValue ? orderParamsValue : initOrderValue);
 
     // FILTER FUNCTIONALITY
-    const allParamsAsObj = searchParams.toObject();
+    const allParamsAsObj = searchParams.toArrayOfObjects();
     const filterParamsValue = allParamsAsObj["filter"];
 
     const [currentFilter, setCurrentFilter] = useState(filterParamsValue ? filterParamsValue : initFilterValue);
 
     ///////////////////////////////////////
-    const sortParam = (isSorted && currentSortCol && currentSortOrder) ? `&sortBy=${currentSortCol}&order=${currentSortOrder}` : "";
+    const sortParam = (isSorted && currentSortCol && currentSortOrder) ? `sortBy=${currentSortCol}&order=${currentSortOrder}` : "";
     const pageAndEntryParam = isPaginated ? `page=${currentPage}&limit=${currentEntries}` : "";
     const filterParam = isFiltered ? convertFilterToQueryParam() : "";
 
-    const currSearch = `?${pageAndEntryParam}${sortParam}${filterParam}`;
+    const currSearch = `?${pageAndEntryParam}${sortParam && "&" + sortParam}${filterParam && "&" + filterParam}`;
 
     const history = useHistory();
 
@@ -115,7 +118,11 @@ function useBundledTable({
         let filterURL = "";
 
         for (let i = 0, n = currentFilter.length; i < n; i++) {
-            filterURL += `&filter[${i}][id]=${currentFilter[i].id}&filter[${i}][value]=${currentFilter[i].value}`;
+            if (i !== 0) {
+                filterURL += "&";
+            }
+
+            filterURL += `filter[${i}][id]=${currentFilter[i].id}&filter[${i}][value]=${currentFilter[i].value}`;
         }
         return filterURL;
 
@@ -216,6 +223,9 @@ function useBundledTable({
 
     return {
         searchParamQuery: currSearch,
+        sortParam,
+        filterParam,
+        pageAndEntryParam,
         BundledTable,
         entryProps,
         tableProps,
@@ -223,8 +233,6 @@ function useBundledTable({
         filteringProps
     }
 }
-
-// TODO: add filter input box on every header... new feature
 
 function BundledTable({
     tableProps,

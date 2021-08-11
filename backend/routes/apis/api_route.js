@@ -7,7 +7,7 @@ const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../..
 const {
     routeInsertSchema,
     routeModifySchema,
-    routeGetAllSchema,
+    getAllGeneralSchema,
     routeDeleteSchema,
     getAllCountGeneralSchema
 } = require('../../middlewares/validator.js');
@@ -52,7 +52,7 @@ router.put('/modify/:id', [checkSession, routeModifySchema, authorizeWriteRoute]
  * get all route rows
  *
  */
-router.get('/get/all', [checkSession, routeGetAllSchema, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/all', [checkSession, getAllGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
     let resp = await RouteService.getAllRoutes(req.query);
 

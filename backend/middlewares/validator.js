@@ -40,23 +40,6 @@ function userLoginSchema(req, res, next) {
     validateRequestBody(req, res, next, schema);
 }
 
-function userGetAllSchema(req, res, next) {
-    const schema = Joi.object({
-        page: Joi.number().integer(),
-        limit: Joi.number().integer().min(5).max(100),
-        sortBy: Joi.string().max(30),
-        order: Joi.string().min(3).max(4),
-        filter: Joi.array().items(
-            Joi.object({
-                id: Joi.string().required(),
-                value: Joi.string().required()
-            })
-        )
-
-    });
-    validateRequestQuery(req, res, next, schema);
-}
-
 function userDeleteSchema(req, res, next) {
 
     const schema = Joi.object({
@@ -168,23 +151,6 @@ function routeModifySchema(req, res, next) {
     validateRequest(req, res, next, wholeSchema);
 }
 
-function routeGetAllSchema(req, res, next) {
-    const schema = Joi.object({
-        page: Joi.number().integer(),
-        limit: Joi.number().integer().min(5).max(100),
-        sortBy: Joi.string().max(30),
-        order: Joi.string().min(3).max(4),
-        filter: Joi.array().items(
-            Joi.object({
-                id: Joi.string().required(),
-                value: Joi.string().required()
-            })
-        )
-
-    });
-    validateRequestQuery(req, res, next, schema);
-}
-
 /**************** MENUS ****************/
 
 /*********** 1. PARENT MENU ************/
@@ -229,24 +195,6 @@ function parentMenuModifySchema(req, res, next) {
     validateRequest(req, res, next, wholeSchema);
 }
 
-function parentMenuGetAllSchema(req, res, next) {
-
-    const schema = Joi.object({
-        page: Joi.number().integer(),
-        limit: Joi.number().integer().min(5).max(100),
-        sortBy: Joi.string().max(30),
-        order: Joi.string().min(3).max(4),
-        filter: Joi.array().items(
-            Joi.object({
-                id: Joi.string().required(),
-                value: Joi.string().required()
-            })
-        )
-
-    });
-    validateRequestQuery(req, res, next, schema);
-}
-
 /*********** 2. MENU ************/
 
 function menuDeleteSchema(req, res, next) {
@@ -284,24 +232,6 @@ function menuModifySchema(req, res, next) {
         body: schemaBody
     }).unknown(true);
     validateRequest(req, res, next, wholeSchema);
-}
-
-function menuGetAllSchema(req, res, next) {
-
-    const schema = Joi.object({
-        page: Joi.number().integer(),
-        limit: Joi.number().integer().min(5).max(100),
-        sortBy: Joi.string().max(30),
-        order: Joi.string().min(3).max(4),
-        filter: Joi.array().items(
-            Joi.object({
-                id: Joi.string().required(),
-                value: Joi.string().required()
-            })
-        )
-
-    });
-    validateRequestQuery(req, res, next, schema);
 }
 
 /**************** PAGE ****************/
@@ -378,24 +308,6 @@ function pageModifyBulkSchema(req, res, next) {
 
 }
 
-function pageGetAllSchema(req, res, next) {
-    const schema = Joi.object({
-        page: Joi.number().integer(),
-        limit: Joi.number().integer().min(5).max(100),
-        sortBy: Joi.string().max(30),
-        order: Joi.string().min(3).max(4),
-        // TODO: fix this filter
-        filter: Joi.array().items(
-            Joi.object({
-                id: Joi.string().required(),
-                value: Joi.string().required()
-            })
-        )
-
-    });
-    validateRequestQuery(req, res, next, schema);
-}
-
 /**************** SUB PAGE ****************/
 function subPageDeleteSchema(req, res, next) {
 
@@ -434,23 +346,6 @@ function subPageModifySchema(req, res, next) {
 
     validateRequest(req, res, next, wholeSchema);
 
-}
-
-function subPageGetAllSchema(req, res, next) {
-    const schema = Joi.object({
-        page: Joi.number().integer(),
-        limit: Joi.number().integer().min(5).max(100),
-        sortBy: Joi.string().max(30),
-        order: Joi.string().min(3).max(4),
-        filter: Joi.array().items(
-            Joi.object({
-                id: Joi.string().required(),
-                value: Joi.string().required()
-            })
-        )
-
-    });
-    validateRequestQuery(req, res, next, schema);
 }
 
 /**************** EMPLOYEES ****************/
@@ -508,22 +403,6 @@ function employeeModifySchema(req, res, next) {
     validateRequest(req, res, next, wholeSchema);
 }
 
-function employeeGetAllSchema(req, res, next) {
-    const schema = Joi.object({
-        page: Joi.number().integer(),
-        limit: Joi.number().integer().min(5).max(100),
-        sortBy: Joi.string().max(30),
-        order: Joi.string().min(3).max(4),
-        filter: Joi.array().items(
-            Joi.object({
-                id: Joi.string().required(),
-                value: Joi.string().required()
-            })
-        )
-
-    });
-    validateRequestQuery(req, res, next, schema);
-}
 
 /*********** 2. Employee Salary************/
 function employeeSalaryDeleteSchema(req, res, next) {
@@ -565,22 +444,6 @@ function employeeSalaryModifySchema(req, res, next) {
     validateRequest(req, res, next, wholeSchema);
 }
 
-function employeeSalaryGetAllSchema(req, res, next) {
-    const schema = Joi.object({
-        page: Joi.number().integer(),
-        limit: Joi.number().integer().min(5).max(100),
-        sortBy: Joi.string().max(30),
-        order: Joi.string().min(3).max(4),
-        filter: Joi.array().items(
-            Joi.object({
-                id: Joi.string().required(),
-                value: Joi.string().required()
-            })
-        )
-
-    });
-    validateRequestQuery(req, res, next, schema);
-}
 
 /**************** GENERAL ****************/
 function validateRequestBody(req, res, next, schema) {
@@ -599,8 +462,20 @@ function validateRequest(req, res, next, schema) {
     validate(req, res, next, schema)
 }
 
-// TODO: make get all schema non-redundant
 function getAllCountGeneralSchema(req, res, next) {
+    const schema = Joi.object({
+        filter: Joi.array().items(
+            Joi.object({
+                id: Joi.string().required(),
+                value: Joi.string().required()
+            })
+        )
+
+    });
+    validateRequestQuery(req, res, next, schema);
+}
+
+function getAllGeneralSchema(req, res, next) {
     const schema = Joi.object({
         page: Joi.number().integer(),
         limit: Joi.number().integer().min(5).max(100),
@@ -633,7 +508,6 @@ function validate(req, res, next, schema) {
 module.exports = {
     userInsertSchema,
     userLoginSchema,
-    userGetAllSchema,
     userModifySchema,
     userDeleteSchema,
     routeRolePostSchema,
@@ -643,34 +517,28 @@ module.exports = {
     roleDeleteSchema,
     routeInsertSchema,
     routeModifySchema,
-    routeGetAllSchema,
     routeDeleteSchema,
     parentMenuInsertSchema,
     parentMenuModifySchema,
-    parentMenuGetAllSchema,
     parentMenuDeleteSchema,
     parentMenuSortSchema,
-    menuGetAllSchema,
     menuInsertSchema,
     menuModifySchema,
     menuDeleteSchema,
-    pageGetAllSchema,
     pageInsertSchema,
     pageInsertBulkSchema,
     pageModifyBulkSchema,
     pageModifySchema,
     pageDeleteSchema,
-    subPageGetAllSchema,
     subPageInsertSchema,
     subPageModifySchema,
     subPageDeleteSchema,
-    employeeGetAllSchema,
     employeeModifySchema,
     employeeInsertSchema,
     employeeDeleteSchema,
-    employeeSalaryGetAllSchema,
     employeeSalaryModifySchema,
     employeeSalaryInsertSchema,
     employeeSalaryDeleteSchema,
-    getAllCountGeneralSchema
+    getAllCountGeneralSchema,
+    getAllGeneralSchema
 }

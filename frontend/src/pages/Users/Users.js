@@ -43,6 +43,7 @@ function Users({ priv }) {
     entryProps: {
       currentEntries
     },
+    filterParam,
     paginationProps,
     paginationProps: {
       currentPage
@@ -58,7 +59,7 @@ function Users({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deleteUserResult];
   const fetchDepsUsers = [deleteUserResult];
 
-  const [dataCount, loadingCount] = useFetch(userCountURL + searchParamQuery, { customDeps: fetchDepsCount });
+  const [dataCount, loadingCount] = useFetch(userCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
   const [dataUsers, loadingUsers] = useFetch(userURL + searchParamQuery, { customDeps: fetchDepsUsers });
 

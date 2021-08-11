@@ -94,7 +94,7 @@ class RoleService {
     */
     static async getAllRoles() {
         let roleArr = await RoleModel.getAllRoles();
-        if (roleArr.length) {
+        if (roleArr) {
             return { status: true, data: roleArr }
         } else {
             return { status: false }

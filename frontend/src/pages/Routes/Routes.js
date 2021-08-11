@@ -41,6 +41,7 @@ function Routes({ priv }) {
     entryProps: {
       currentEntries
     },
+    filterParam,
     paginationProps,
     paginationProps: {
       currentRoute
@@ -57,7 +58,7 @@ function Routes({ priv }) {
   const fetchDepsCount = [currentEntries, currentRoute, deleteRouteResult];
   const fetchDepsRoutes = [deleteRouteResult];
 
-  const [dataCount, loadingCount] = useFetch(routeCountURL + searchParamQuery, { customDeps: fetchDepsCount });
+  const [dataCount, loadingCount] = useFetch(routeCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
   const [dataRoutes, loadingRoutes] = useFetch(routeURL + searchParamQuery, { customDeps: fetchDepsRoutes });
 

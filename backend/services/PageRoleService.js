@@ -17,7 +17,7 @@ class PageRoleService {
     static async getPagePrivByUser(userId, pagePath) {
         let pageRoleObj = await PageRoleModel.getPagePrivByUser(userId, pagePath);
 
-        if (pageRoleObj.length) { // TODO: consider reviewing these .length return in App
+        if (pageRoleObj.length) {
             return { status: true, data: pageRoleObj[0].PrivilegeName }
         }
         return { status: false }
@@ -30,7 +30,7 @@ class PageRoleService {
     static async getAllPagesLeftRole(roleId) {
         let pagesArr = await PageRoleModel.getAllPagesLeftRole(roleId);
 
-        if (pagesArr.length) {
+        if (pagesArr) {
             return { status: true, data: pagesArr }
         }
         return { status: false }

@@ -6,7 +6,7 @@ function loopArr(arr, callback) {
         function help(i, cb) {
             if (i == n) {
                 resolve(true);
-                return;
+                return true;;
             }
             cb(i);
             // "Asynchronous recursion".

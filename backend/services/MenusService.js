@@ -307,7 +307,7 @@ class MenusService {
             filter: filter
         });
 
-        if (parentMenuArr.length) {
+        if (parentMenuArr) {
 
             return { status: true, data: parentMenuArr }
 

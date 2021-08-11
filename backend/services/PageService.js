@@ -189,7 +189,7 @@ class PageService {
     static async getPagesBySession(userId) {
         let pagesArr = await PageModel.getPagesByUser(userId);
 
-        if (pagesArr.length) {
+        if (pagesArr) {
             return { status: true, data: pagesArr }
         }
         return { status: false }
@@ -233,7 +233,7 @@ class PageService {
             filter: filter
         });
 
-        if (pageArr.length) {
+        if (pageArr) {
 
             return { status: true, data: pageArr }
 

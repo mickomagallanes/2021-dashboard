@@ -17,6 +17,51 @@ class GettersModel {
         this.primaryKey = primaryKey;
         this.secondaryTables = secondaryTables;
 
+        this.isInit = false;
+        this.isResolvedInit = false;
+        this.currPromise = false;
+
+        this.allTblStrFrom = `${this.tableName}`;
+        this.allTblStrIn = `('${this.tableName}'`;
+    }
+
+    // executed on all functions that needed allTblStr
+    async init() {
+        let _self = this;
+        if (!this.isInit) {
+            this.isInit = true;
+
+            this.currPromise = new Promise(async function (resolve, reject) {
+                if (_self.isResolvedInit) {
+                    resolve(true);
+
+                } else {
+                    await loopArr(_self.secondaryTables, (indx) => {
+                        let secondTbl = _self.secondaryTables[indx].name;
+                        let secondTblKey = _self.secondaryTables[indx].id;
+                        let relationTbl = _self.secondaryTables[indx].relation;
+
+                        _self.allTblStrFrom += ` ${relationTbl} ${secondTbl} ON ${_self.tableName}.${secondTblKey} = ${secondTbl}.${secondTblKey} `
+                    });
+
+                    await loopArr(_self.secondaryTables, (indx) => {
+                        _self.allTblStrIn += `, '${_self.secondaryTables[indx].name}'`
+                    })
+
+                    _self.allTblStrIn += `)`;
+
+                    _self.isResolvedInit = true;
+                    resolve(true);
+                }
+
+            });
+            return this.currPromise;
+        } else {
+            console.log(_self.currPromise)
+            return _self.currPromise
+        }
+
+
     }
 
     /**
@@ -36,22 +81,10 @@ class GettersModel {
 
         }
 
-        const currTbl = this.tableName;
-        let tblStmt = `${currTbl}`;
-        // TODO: memoize this, so it doesn't have to loop everytime
-        await loopArr(this.secondaryTables, (indx) => {
-            let secondTbl = this.secondaryTables[indx].name;
-            let secondTblKey = this.secondaryTables[indx].id;
-            let relationTbl = this.secondaryTables[indx].relation;
-
-            tblStmt += ` ${relationTbl} ${secondTbl} ON ${currTbl}.${secondTblKey} = ${secondTbl}.${secondTblKey} `
-        })
-
-
         const stmt = `SELECT 
-               count(1) as count
-            FROM
-                ${tblStmt} ${filterStmt}`;
+                   count(1) as count
+                FROM
+                    ${this.allTblStrFrom} ${filterStmt}`;
         try {
             const result = await mysql_conn.query(stmt);
             return result;
@@ -59,6 +92,8 @@ class GettersModel {
             console.error(err);
             return false;
         }
+
+
     }
 
     /**
@@ -72,6 +107,9 @@ class GettersModel {
      * @return {Array} result
      */
     async getAll({ startIndex, limit, sortBy, order, filter }) {
+
+        await this.init();
+
         let sortStmt = "";
         if (sortBy) {
             let doesColExist = await this.searchColIfExist(sortBy);
@@ -94,16 +132,6 @@ class GettersModel {
 
         }
 
-        const currTbl = this.tableName;
-        let tblStmt = `${currTbl}`;
-
-        await loopArr(this.secondaryTables, (indx) => {
-            let secondTbl = this.secondaryTables[indx].name;
-            let secondTblKey = this.secondaryTables[indx].id;
-            let relationTbl = this.secondaryTables[indx].relation;
-
-            tblStmt += ` ${relationTbl} ${secondTbl} ON ${currTbl}.${secondTblKey} = ${secondTbl}.${secondTblKey} `
-        })
 
         let limitClause = "";
         if (startIndex !== false) {
@@ -111,7 +139,7 @@ class GettersModel {
 
         }
 
-        const stmt = `SELECT * from ${tblStmt} ${filterStmt} ${sortStmt} ${limitClause}`;
+        const stmt = `SELECT * from ${this.allTblStrFrom} ${filterStmt} ${sortStmt} ${limitClause}`;
 
         try {
             const result = await mysql_conn.query(stmt);
@@ -120,6 +148,9 @@ class GettersModel {
             console.error(err);
             return false;
         }
+
+
+
     }
 
     /**
@@ -142,18 +173,15 @@ class GettersModel {
     }
 
     async searchColIfExist(column) {
+
+        await this.init();
+
         try {
-            // TODO: memoize this, so it doesn't have to loop everytime
-            let allTbl = `('${this.tableName}'`;
-            await loopArr(this.secondaryTables, (indx) => {
-                allTbl += `, '${this.secondaryTables[indx].name}'`
-            })
-            allTbl += `)`;
 
             const resultSort = await mysql_conn.query(`SELECT COLUMN_NAME 
-            FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE TABLE_NAME IN ${allTbl}
-                AND COLUMN_NAME LIKE ?;`, column);
+                FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_NAME IN ${this.allTblStrIn}
+                    AND COLUMN_NAME LIKE ?;`, column);
 
             if (resultSort.length) {
                 return true;
@@ -162,21 +190,21 @@ class GettersModel {
                 return false
             }
 
+
+
         } catch (err) {
             console.error(err);
             return false;
         }
+
+
     }
 
     async filterColCheckAndStmt(columnArrObj) {
-        try {
 
-            // TODO: memoize this, so it doesn't have to loop everytime
-            let allTbl = `('${this.tableName}'`;
-            await loopArr(this.secondaryTables, (indx) => {
-                allTbl += `, '${this.secondaryTables[indx].name}'`
-            })
-            allTbl += `)`;
+        await this.init();
+
+        try {
 
             let likeStmt = "";
             let colArrNames = [];
@@ -196,9 +224,9 @@ class GettersModel {
             })
 
             const resultSort = await mysql_conn.query(`SELECT COLUMN_NAME 
-            FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE TABLE_NAME IN ${allTbl}
-               AND ${likeStmt};`, colArrNames);
+                FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_NAME IN ${this.allTblStrIn}
+                   AND ${likeStmt};`, colArrNames);
 
             if (resultSort.length) {
                 return filterStmt;
@@ -211,6 +239,7 @@ class GettersModel {
             console.error(err);
             return false;
         }
+
     }
 }
 

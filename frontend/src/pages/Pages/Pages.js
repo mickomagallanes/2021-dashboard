@@ -41,6 +41,7 @@ function Pages({ priv }) {
     entryProps: {
       currentEntries
     },
+    filterParam,
     paginationProps,
     paginationProps: {
       currentPage
@@ -57,7 +58,7 @@ function Pages({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deletePageResult];
   const fetchDepsPages = [deletePageResult];
 
-  const [dataCount, loadingCount] = useFetch(pageCountURL + searchParamQuery, { customDeps: fetchDepsCount });
+  const [dataCount, loadingCount] = useFetch(pageCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
   const [dataPages, loadingPages] = useFetch(pageURL + searchParamQuery, { customDeps: fetchDepsPages });
 

@@ -63,7 +63,7 @@ class UserService {
             filter: filter
         });
 
-        if (userData.length) {
+        if (userData) {
 
             return { status: true, data: userData }
 

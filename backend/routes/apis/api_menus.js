@@ -7,8 +7,7 @@ const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../..
 const {
     parentMenuInsertSchema,
     parentMenuModifySchema,
-    parentMenuGetAllSchema,
-    menuGetAllSchema,
+    getAllGeneralSchema,
     menuInsertSchema,
     menuModifySchema,
     menuDeleteSchema,
@@ -84,7 +83,7 @@ router.get('/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeR
  * get all menu rows
  *
  */
-router.get('/get/all', [checkSession, menuGetAllSchema, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/all', [checkSession, getAllGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
     let resp = await MenusService.getAllMenus(req.query);
 
@@ -180,7 +179,7 @@ router.put('/parent/modify/:id', [checkSession, parentMenuModifySchema, authoriz
  * get all parent menu rows
  *
  */
-router.get('/parent/get/all', [checkSession, parentMenuGetAllSchema, authorizeReadRoute], async function (req, res, next) {
+router.get('/parent/get/all', [checkSession, getAllGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
     let resp = await MenusService.getAllParentMenus(req.query);
 

@@ -5,11 +5,10 @@ const express = require('express');
 const router = express.Router();
 const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../../middlewares/routesauth.js');
 const {
-    employeeSalaryGetAllSchema,
+    getAllGeneralSchema,
     employeeSalaryModifySchema,
     employeeSalaryInsertSchema,
     employeeSalaryDeleteSchema,
-    employeeGetAllSchema,
     employeeModifySchema,
     employeeInsertSchema,
     employeeDeleteSchema,
@@ -57,7 +56,7 @@ router.put('/salary/modify/:id', [checkSession, employeeSalaryModifySchema, auth
  * get all employee salary rows
  *
  */
-router.get('/salary/get/all', [checkSession, employeeSalaryGetAllSchema, authorizeReadRoute], async function (req, res, next) {
+router.get('/salary/get/all', [checkSession, getAllGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
     let resp = await EmployeeService.getAllEmployeeSalaries(req.query);
 
@@ -75,7 +74,7 @@ router.get('/salary/get/all', [checkSession, employeeSalaryGetAllSchema, authori
  * get count of all employee salary rows
  */
 router.get('/salary/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeReadRoute], async function (req, res, next) {
-    let result = await EmployeeService.getAllEmployeeSalaryCount();
+    let result = await EmployeeService.getAllEmployeeSalaryCount(req.query);
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed getting count" });
     } else {
@@ -138,7 +137,7 @@ router.get('/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeR
  * get all employee rows
  *
  */
-router.get('/get/all', [checkSession, employeeGetAllSchema, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/all', [checkSession, getAllGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
     let resp = await EmployeeService.getAllEmployee(req.query);
 

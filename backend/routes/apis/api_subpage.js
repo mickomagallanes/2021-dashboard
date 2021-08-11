@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../../middlewares/routesauth.js');
 const {
-    subPageGetAllSchema,
+    getAllGeneralSchema,
     subPageInsertSchema,
     subPageModifySchema,
     subPageDeleteSchema,
@@ -75,7 +75,7 @@ router.get('/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeR
  * get all subPage rows
  *
  */
-router.get('/get/all', [checkSession, subPageGetAllSchema, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/all', [checkSession, getAllGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
     let resp = await SubPageService.getAllSubPages(req.query);
 

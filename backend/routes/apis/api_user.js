@@ -4,7 +4,7 @@ const UserService = require('../../services/UserService.js');
 const utils = require('../../utils/session.js');
 const { createSingleImageUpload } = require('../../utils/imageupload.js');
 const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../../middlewares/routesauth.js');
-const { userInsertSchema, userLoginSchema, userGetAllSchema, userModifySchema, userDeleteSchema, getAllCountGeneralSchema } = require('../../middlewares/validator.js');
+const { userInsertSchema, userLoginSchema, getAllGeneralSchema, userModifySchema, userDeleteSchema, getAllCountGeneralSchema } = require('../../middlewares/validator.js');
 const express = require('express');
 const router = express.Router();
 const path = require('path');
@@ -13,7 +13,7 @@ const fs = require('fs');
 /**
  * get all user rows
  */
-router.get('/get/all', [checkSession, userGetAllSchema, authorizeReadRoute], async function (req, res, next) {
+router.get('/get/all', [checkSession, getAllGeneralSchema, authorizeReadRoute], async function (req, res, next) {
 
     let result = await UserService.getAllUser(req.query);
     if (result.status === false) {

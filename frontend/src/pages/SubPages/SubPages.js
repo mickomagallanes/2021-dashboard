@@ -41,6 +41,7 @@ function SubPages({ priv }) {
     entryProps: {
       currentEntries
     },
+    filterParam,
     paginationProps,
     paginationProps: {
       currentPage
@@ -57,7 +58,7 @@ function SubPages({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deleteSubPageResult];
   const fetchDepsSubPages = [deleteSubPageResult];
 
-  const [dataCount, loadingCount] = useFetch(subPageCountURL + searchParamQuery, { customDeps: fetchDepsCount });
+  const [dataCount, loadingCount] = useFetch(subPageCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
   const [dataSubPages, loadingSubPages] = useFetch(subPageURL + searchParamQuery, { customDeps: fetchDepsSubPages });
 

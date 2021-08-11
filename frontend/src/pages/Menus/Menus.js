@@ -43,6 +43,7 @@ function Menus({ priv }) {
     entryProps: {
       currentEntries
     },
+    filterParam,
     paginationProps,
     paginationProps: {
       currentPage
@@ -58,7 +59,7 @@ function Menus({ priv }) {
   const fetchDepsCount = [currentEntries, currentPage, deleteMenuResult];
   const fetchDepsMenus = [deleteMenuResult];
 
-  const [dataCount, loadingCount] = useFetch(menuCountURL + searchParamQuery, { customDeps: fetchDepsCount });
+  const [dataCount, loadingCount] = useFetch(menuCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
   const [dataMenus, loadingMenus] = useFetch(menuURL + searchParamQuery, { customDeps: fetchDepsMenus });
 
