@@ -11,7 +11,7 @@ import useBundledTable from '../../components/useBundledTable';
 import useDelete from '../../components/useDelete';
 import useDialog from '../../components/useDialog';
 
-const modalTitle = "Do you want to delete this page?";
+const modalTitle = "Do you want to delete this sub page?";
 const modalBody = "This row will be deleted in the database, do you want to proceed?";
 
 const subPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/all`;
@@ -20,8 +20,8 @@ const subPageDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/dele
 
 const colData = [
   { "id": "SubPageID", "name": "SubPage ID" },
+  { "id": "SubPageName", "name": "SubPage Name" },
   { "id": "PageName", "name": "Page Name" },
-  { "id": "SubPageName", "name": "SubPage Name" }
 ];
 
 const idKey = "SubPageID";

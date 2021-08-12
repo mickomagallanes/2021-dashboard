@@ -12,8 +12,182 @@ const {
     employeeModifySchema,
     employeeInsertSchema,
     employeeDeleteSchema,
+    employeePositionModifySchema,
+    employeePositionInsertSchema,
+    employeePositionDeleteSchema,
+    employeeDepartmentModifySchema,
+    employeeDepartmentInsertSchema,
+    employeeDepartmentDeleteSchema,
     getAllCountGeneralSchema
 } = require('../../middlewares/validator.js');
+
+
+
+/******************************** EMPLOYEE POSITIONS ***************************************/
+
+// delete position, also deletes children data
+router.delete('/position/delete/:id', [checkSession, employeePositionDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await EmployeeService.deleteEmployeePosition(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting position" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted position successfully" });
+    }
+});
+
+// insert new employee position
+// returns insertId of employee position
+router.post('/position/insert', [checkSession, employeePositionInsertSchema, authorizeWriteRoute], async function (req, res, next) {
+
+    // insert role information
+    let result = await EmployeeService.insertEmployeePosition(req.body);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed inserting" });
+    } else {
+        res.json({ "status": true, "msg": "Successful inserting", "id": result.data });
+    }
+});
+
+// edit position position
+router.put('/position/modify/:id', [checkSession, employeePositionModifySchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await EmployeeService.modifyEmployeePosition(req.params.id, req.body);
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed modification" });
+    } else {
+        res.json({ "status": true, "msg": "Successful modification" });
+    }
+});
+
+/**
+ * get all employee position rows
+ *
+ */
+router.get('/position/get/all', [checkSession, getAllGeneralSchema, authorizeReadRoute], async function (req, res, next) {
+
+    let resp = await EmployeeService.getAllEmployeePositions(req.query);
+
+    if (resp.status !== false) {
+
+        res.json({ "status": true, "msg": "Successfully fetched positions", "data": resp.data });
+    } else {
+
+        res.json({ "status": false, "msg": "Failed getting positions!" });
+    }
+
+});
+
+/**
+ * get count of all employee position rows
+ */
+router.get('/position/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeReadRoute], async function (req, res, next) {
+    let result = await EmployeeService.getAllEmployeePositionCount(req.query);
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed getting count" });
+    } else {
+        res.json({ "status": true, "msg": "Successful getting count", "data": result.data });
+    }
+});
+
+/**
+ * get a row by employee position id
+ * @param {number} req.params.id id of employee position
+ */
+router.get('/position/get/by/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
+
+    let result = await EmployeeService.getEmployeePositionById(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed getting row by id" });
+    } else {
+        res.json({ "status": true, "msg": "Successful getting row by id", "data": result.data });
+    }
+});
+
+
+
+/******************************** EMPLOYEE DEPARTMENTS ***************************************/
+
+// delete department, also deletes children data
+router.delete('/department/delete/:id', [checkSession, employeeDepartmentDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await EmployeeService.deleteEmployeeDepartment(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting department" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted department successfully" });
+    }
+});
+
+// insert new employee department
+// returns insertId of employee department
+router.post('/department/insert', [checkSession, employeeDepartmentInsertSchema, authorizeWriteRoute], async function (req, res, next) {
+
+    // insert role information
+    let result = await EmployeeService.insertEmployeeDepartment(req.body);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed inserting" });
+    } else {
+        res.json({ "status": true, "msg": "Successful inserting", "id": result.data });
+    }
+});
+
+// edit department department
+router.put('/department/modify/:id', [checkSession, employeeDepartmentModifySchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await EmployeeService.modifyEmployeeDepartment(req.params.id, req.body);
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed modification" });
+    } else {
+        res.json({ "status": true, "msg": "Successful modification" });
+    }
+});
+
+/**
+ * get all employee department rows
+ *
+ */
+router.get('/department/get/all', [checkSession, getAllGeneralSchema, authorizeReadRoute], async function (req, res, next) {
+
+    let resp = await EmployeeService.getAllEmployeeDepartments(req.query);
+
+    if (resp.status !== false) {
+
+        res.json({ "status": true, "msg": "Successfully fetched departments", "data": resp.data });
+    } else {
+
+        res.json({ "status": false, "msg": "Failed getting departments!" });
+    }
+
+});
+
+/**
+ * get count of all employee department rows
+ */
+router.get('/department/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeReadRoute], async function (req, res, next) {
+    let result = await EmployeeService.getAllEmployeeDepartmentCount(req.query);
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed getting count" });
+    } else {
+        res.json({ "status": true, "msg": "Successful getting count", "data": result.data });
+    }
+});
+
+/**
+ * get a row by employee department id
+ * @param {number} req.params.id id of employee department
+ */
+router.get('/department/get/by/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
+
+    let result = await EmployeeService.getEmployeeDepartmentById(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed getting row by id" });
+    } else {
+        res.json({ "status": true, "msg": "Successful getting row by id", "data": result.data });
+    }
+});
 
 /******************************** EMPLOYEE SALARIES ***************************************/
 
@@ -97,6 +271,8 @@ router.get('/salary/get/by/:id', [checkSession, authorizeReadRoute], async funct
     }
 });
 
+
+
 /******************************** EMPLOYEES ***************************************/
 
 /**
@@ -174,9 +350,9 @@ router.post('/insert', [checkSession, employeeInsertSchema, authorizeWriteRoute]
     let result = await EmployeeService.insertEmployee(req.body);
 
     if (result.status === false) {
-        res.json({ "status": false, "msg": "Failed inserting employee by bulk" });
+        res.json({ "status": false, "msg": "Failed inserting employee" });
     } else {
-        res.json({ "status": true, "msg": "Successful inserting employee by bulk", "id": result.data });
+        res.json({ "status": true, "msg": "Successful inserting employee", "id": result.data });
     }
 });
 

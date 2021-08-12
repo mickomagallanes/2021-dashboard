@@ -1,3 +1,5 @@
+import moment from "moment";
+
 const axiosConfig = {
     withCredentials: true,
     timeout: 10000
@@ -29,18 +31,12 @@ function retryRequest(callback) {
     }, 3000);
 }
 
-function formatDate(date) {
-    let d = new Date(date),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
-
-    if (month.length < 2)
-        month = '0' + month;
-    if (day.length < 2)
-        day = '0' + day;
-
-    return [year, month, day].join('-');
+function formatDate(date, format) {
+    if (!date) {
+        return moment().format(format); // return current date
+    }
+    let d = new Date(date);
+    return moment(d).format(format);
 }
 
 export {

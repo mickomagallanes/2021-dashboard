@@ -9,7 +9,7 @@ import { Field } from 'formik';
 import * as yup from 'yup';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
-import { equalTo, formatDate } from '../../../helpers/utils';
+import { formatDate } from '../../../helpers/utils';
 import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
@@ -23,10 +23,9 @@ const employeeAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/get/a
 const addEmployeeSalaryURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/salary/insert`;
 const editEmployeeSalaryURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/salary/modify/`;
 
-yup.addMethod(yup.string, 'equalTo', equalTo);
-
 const schema = yup.object().shape({
-  salary: yup.string().max(30, 'Must be 30 characters or less').required('Required')
+  salary: yup.number().max(1000000000000, 'Must be below 1,000,000,000,000').required('Required').positive().integer(),
+  startedDate: yup.date().required('Required')
 });
 
 // TODO: Employees, and Routes.... Fix DateFormField
@@ -55,7 +54,7 @@ const mapDispatch = dispatch => ({
 export const employeeSalaryFormInitialState = {
   salary: "",
   employeeID: "",
-  startedDate: formatDate(new Date()),
+  startedDate: formatDate(false, "YYYY-MM-DD"),
   untilDate: ""
 };
 
@@ -68,9 +67,8 @@ const valueKeySelect = ["EmployeeNo", "FirstName", "LastName"];
  * @param {String} obj.priv Privilege of logged-in user to EmployeeSalariesForm
  * @param {String} [obj.customEmployeeSalaryURL] replaces url of employeeSalary get by id, added if component is rendered as child from other form
  * @param {React useRef} [obj.parentFormRef] add ref for formik, so parent component can fetch the form value
- * @param {Object} [obj.parentMemoData] saved form value in parent, passed when parent component rerenders so employeeSalary form value persists
  */
-function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, parentMemoData }) {
+function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef }) {
 
   // if this component is used as child
   const { current: isRenderedAsChild } = useRef(customEmployeeSalaryURL !== undefined);
@@ -142,8 +140,8 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
     const param = {
       "salary": fields.salary,
       "employeeID": fields.employeeID,
-      "startedDate": formatDate(fields.startedDate),
-      "untilDate": fields.untilDate === "" ? null : formatDate(fields.untilDate)
+      "startedDate": formatDate(fields.startedDate, "YYYY-MM-DD"),
+      "untilDate": fields.untilDate === "" ? null : formatDate(fields.untilDate, "YYYY-MM-DD")
     }
 
     if (isAddMode) {
@@ -163,7 +161,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
       successArr.push(respData.msg);
 
       history.push({
-        pathname: '/employee/salary',
+        pathname: '/employee/salaries',
         successMsg: successArr,
         search: location.search
       });
@@ -177,25 +175,12 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
   useEffect(() => {
     if (isAddMode && priv === PRIVILEGES.read) {
       history.push({
-        pathname: '/employee/salary',
+        pathname: '/employee/salaries',
         errorMsg: [ERRORMSG.noPrivilege],
         search: location.search
       });
     }
   }, [history, isAddMode, location.search, priv])
-
-  useDidUpdateEffect(() => {
-    if (parentMemoData) {
-      ReactDOM.unstable_batchedUpdates(() => {
-        actionsEmployeeSalaryData.changeSalary(parentMemoData.salary);
-        actionsEmployeeSalaryData.changeEmployeeID(parentMemoData.employeeID);
-        actionsEmployeeSalaryData.changeStartedDate(parentMemoData.startedDate);
-        actionsEmployeeSalaryData.changeUntilDate(parentMemoData.untilDate);
-      });
-
-    }
-
-  }, [parentMemoData])
 
   useDidUpdateEffect(() => {
     if (dataEmployees) {
@@ -256,7 +241,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
       <div>
         {!isRenderedAsChild &&
           <div className="page-header">
-            <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/employee/salary${location.search}`}>
+            <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/employee/salaries${location.search}`}>
               <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
               <span className="d-inline-block text-left">
                 Back
@@ -286,7 +271,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
                           <div>
                             <Field
                               label="Employee Salary"
-                              type="text"
+                              type="number"
                               name="salary"
                               placeholder="Employee Salary"
                               disabled={!isWriteable}

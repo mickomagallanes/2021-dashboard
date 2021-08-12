@@ -1,4 +1,6 @@
 const EmployeeSalaryModel = require('../models/EmployeeSalaryModel.js');
+const EmployeeDepartmentModel = require('../models/EmployeeDepartmentModel.js');
+const EmployeePositionModel = require('../models/EmployeePositionModel.js');
 const EmployeeModel = require('../models/EmployeeModel.js');
 
 "use strict";
@@ -9,6 +11,297 @@ class EmployeeService {
 
     }
 
+    /*************************** Employee Position *************************************/
+    /**
+     * deleted employeePosition rows in the database
+     * @param {String} employeePositionID id of the employeePosition
+     */
+    static async deleteEmployeePosition(employeePositionID) {
+
+        let ret = await EmployeePositionModel.deleteEmployeePosition(employeePositionID);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
+   * inserts new employeePosition in the database
+   * @param {Object} obj - An object.
+   * @param {String} obj.positionName name of the  employeePosition
+   * @return {Object} result
+   * @return {Number} result.insertId role id of last inserted
+   */
+    static async insertEmployeePosition({ positionName }) {
+        let obj = {
+            positionName: positionName
+        };
+        let ret = await EmployeePositionModel.insertEmployeePosition(obj);
+
+        if (ret === false) {
+
+            return { status: false }
+        } else {
+            return { status: true, data: ret.insertId }
+        }
+
+    }
+
+    /**
+    * modify employeePosition information to the database, doesn't have sort because its handled differently
+    * @param {String} employeePositionID id of the employeePosition
+    * @param {Object} obj - An object.
+    * @param {String} obj.positionName name of the employeePosition
+    * @return {Object} result
+    * @return {Number} result.insertId employeePosition id of last inserted
+    */
+    static async modifyEmployeePosition(employeePositionID, { positionName }) {
+
+        let obj = {
+            employeePositionID: employeePositionID,
+            positionName: positionName
+        };
+
+        let ret = await EmployeePositionModel.modifyEmployeePosition(obj);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true, data: ret.insertId }
+        }
+
+    }
+
+    /**
+     * get all employeePosition rows
+     * @param {Object} obj - An object.
+     * @param {String} [obj.employeePosition] current page, must be greater than 0
+     * @param {String} [obj.limit] limit count of rows, greater than 0
+     * @param {String} [obj.sortBy] column used for sort
+     * @param {String} [obj.order] ASC or DESC
+     * @return employeePositionArr all rows of employeePosition
+     */
+    static async getAllEmployeePositions({ page, limit, sortBy, order, filter }) {
+
+        if ((!!page && page > 0) && (!limit || !(limit > 0))) {
+            return { status: false }
+        } else if ((!!limit && limit > 0) && (!page || !(page > 0))) {
+            return { status: false }
+        }
+
+        let isPaged = (!!page && page > 0) && (!!limit && limit > 0); // for pagination
+
+        const startIndex = isPaged ? (page - 1) * limit : false;
+
+        if (sortBy) {
+            if (order === "DESC") {
+                order = "DESC";
+            } else {
+                order = "ASC";
+            }
+        }
+
+        let employeePositionArr = await EmployeePositionModel.getAll({
+            startIndex: startIndex,
+            limit: limit,
+            sortBy: sortBy,
+            order: order,
+            filter: filter
+        });
+
+        if (employeePositionArr) {
+
+            return { status: true, data: employeePositionArr }
+
+        } else {
+            return { status: false }
+        }
+
+    }
+
+    /**
+     * get employeePosition info by employeePosition id
+     * @param {String} id employeePosition id
+     * @return one row of employeePosition
+     */
+    static async getEmployeePositionById(id) {
+        let ret = await EmployeePositionModel.getById(id);
+
+        if (ret.length) {
+            return { status: true, data: ret[0] }
+
+        } else {
+            return { status: false }
+        }
+
+    }
+
+    /**
+     * get total count of employeePosition rows
+     * @return count of all rows
+     */
+    static async getAllEmployeePositionCount({ filter }) {
+
+        const employeePositionCount = await EmployeePositionModel.getAllCount({ filter });
+
+        if (employeePositionCount.length) {
+            return { status: true, data: employeePositionCount[0] }
+        } else {
+            return { status: false }
+        }
+
+
+    }
+
+
+    /*************************** Employee Department *************************************/
+
+    /**
+     * deleted employeeDepartment rows in the database
+     * @param {String} employeeDepartmentID id of the employeeDepartment
+     */
+    static async deleteEmployeeDepartment(employeeDepartmentID) {
+
+        let ret = await EmployeeDepartmentModel.deleteEmployeeDepartment(employeeDepartmentID);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
+   * inserts new employeeDepartment in the database
+   * @param {Object} obj - An object.
+   * @param {String} obj.departmentName name of the  employeeDepartment
+   * @return {Object} result
+   * @return {Number} result.insertId role id of last inserted
+   */
+    static async insertEmployeeDepartment({ departmentName }) {
+        let obj = {
+            departmentName: departmentName
+        };
+        let ret = await EmployeeDepartmentModel.insertEmployeeDepartment(obj);
+
+        if (ret === false) {
+
+            return { status: false }
+        } else {
+            return { status: true, data: ret.insertId }
+        }
+
+    }
+
+    /**
+    * modify employeeDepartment information to the database, doesn't have sort because its handled differently
+    * @param {String} employeeDepartmentID id of the employeeDepartment
+    * @param {Object} obj - An object.
+    * @param {String} obj.departmentName name of the employeeDepartment
+    * @return {Object} result
+    * @return {Number} result.insertId employeeDepartment id of last inserted
+    */
+    static async modifyEmployeeDepartment(employeeDepartmentID, { departmentName, employeeDepartmentPath }) {
+
+        let obj = {
+            employeeDepartmentID: employeeDepartmentID,
+            departmentName: departmentName
+        };
+
+        let ret = await EmployeeDepartmentModel.modifyEmployeeDepartment(obj);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true, data: ret.insertId }
+        }
+
+    }
+
+    /**
+     * get all employeeDepartment rows
+     * @param {Object} obj - An object.
+     * @param {String} [obj.employeeDepartment] current page, must be greater than 0
+     * @param {String} [obj.limit] limit count of rows, greater than 0
+     * @param {String} [obj.sortBy] column used for sort
+     * @param {String} [obj.order] ASC or DESC
+     * @return employeeDepartmentArr all rows of employeeDepartment
+     */
+    static async getAllEmployeeDepartments({ page, limit, sortBy, order, filter }) {
+
+        if ((!!page && page > 0) && (!limit || !(limit > 0))) {
+            return { status: false }
+        } else if ((!!limit && limit > 0) && (!page || !(page > 0))) {
+            return { status: false }
+        }
+
+        let isPaged = (!!page && page > 0) && (!!limit && limit > 0); // for pagination
+
+        const startIndex = isPaged ? (page - 1) * limit : false;
+
+        if (sortBy) {
+            if (order === "DESC") {
+                order = "DESC";
+            } else {
+                order = "ASC";
+            }
+        }
+
+        let employeeDepartmentArr = await EmployeeDepartmentModel.getAll({
+            startIndex: startIndex,
+            limit: limit,
+            sortBy: sortBy,
+            order: order,
+            filter: filter
+        });
+
+        if (employeeDepartmentArr) {
+
+            return { status: true, data: employeeDepartmentArr }
+
+        } else {
+            return { status: false }
+        }
+
+    }
+
+    /**
+     * get employeeDepartment info by employeeDepartment id
+     * @param {String} id employeeDepartment id
+     * @return one row of employeeDepartment
+     */
+    static async getEmployeeDepartmentById(id) {
+        let ret = await EmployeeDepartmentModel.getById(id);
+
+        if (ret.length) {
+            return { status: true, data: ret[0] }
+
+        } else {
+            return { status: false }
+        }
+
+    }
+
+    /**
+     * get total count of employeeDepartment rows
+     * @return count of all rows
+     */
+    static async getAllEmployeeDepartmentCount({ filter }) {
+
+        const employeeDepartmentCount = await EmployeeDepartmentModel.getAllCount({ filter });
+
+        if (employeeDepartmentCount.length) {
+            return { status: true, data: employeeDepartmentCount[0] }
+        } else {
+            return { status: false }
+        }
+
+
+    }
     /*************************** Employee Salaries *************************************/
     /**
      * deleted employeeSalary rows in the database
@@ -188,14 +481,44 @@ class EmployeeService {
     /**
      * inserts new employee in the database
      * @param {Object} obj - An object.
-     * @param {String} obj.employeeName name of the employee
+     * @param {String} obj.employeeNo employee identification number
+     * @param {String} obj.firstName first name of the employee
+     * @param {String} obj.middleName middle name of the employee
+     * @param {String} obj.lastName last name of the employee
+     * @param {String} obj.sex sex of the employee (m or f)
+     * @param {Number} obj.contactNo contact number of the employee
+     * @param {Date} obj.hireDate hire of the employee
+     * @param {Date} obj.birthDate birthdate of the employee
+     * @param {Number} obj.employeePositionID position id of the employee
+     * @param {Number} obj.employeeDepartmentID department id of the employee
      * @return {Object} result
      * @return {Number} result.insertId role id of last inserted
      */
-    static async insertEmployee({ employeeName }) {
+    static async insertEmployee({
+        employeeNo,
+        firstName,
+        middleName,
+        lastName,
+        sex,
+        contactNo,
+        hireDate,
+        birthDate,
+        employeePositionID,
+        employeeDepartmentID
+
+    }) {
 
         const obj = {
-            employeeName: employeeName
+            employeeNo,
+            firstName,
+            middleName,
+            lastName,
+            sex,
+            contactNo,
+            hireDate,
+            birthDate,
+            employeePositionID,
+            employeeDepartmentID
         }
         let ret = await EmployeeModel.insertEmployee(obj);
 
@@ -211,15 +534,43 @@ class EmployeeService {
     * modify employee information to the database, doesn't have sort because its handled differently
     * @param {String} employeeID id of the employee
     * @param {Object} obj - An object.
-    * @param {String} [obj.employeeName] name of the employee
+    * @param {String} obj.employeeNo employee identification number
+     * @param {String} obj.firstName first name of the employee
+     * @param {String} obj.middleName middle name of the employee
+     * @param {String} obj.lastName last name of the employee
+     * @param {String} obj.sex sex of the employee (m or f)
+     * @param {Number} obj.contactNo contact number of the employee
+     * @param {Date} obj.hireDate hire of the employee
+     * @param {Date} obj.birthDate birthdate of the employee
+     * @param {Number} obj.employeePositionID position id of the employee
+     * @param {Number} obj.employeeDepartmentID department id of the employee
     * @return {Object} result
     * @return {Number} result.insertId employee id of last inserted
     */
-    static async modifyEmployee(employeeID, { employeeName }) {
+    static async modifyEmployee(employeeID, {
+        employeeNo,
+        firstName,
+        middleName,
+        lastName,
+        sex,
+        contactNo,
+        hireDate,
+        birthDate,
+        employeePositionID,
+        employeeDepartmentID }) {
 
         let obj = {
-            employeeID: employeeID,
-            employeeName: employeeName
+            employeeID,
+            employeeNo,
+            firstName,
+            middleName,
+            lastName,
+            sex,
+            contactNo,
+            hireDate,
+            birthDate,
+            employeePositionID,
+            employeeDepartmentID
         };
 
         let ret = await EmployeeModel.modifyEmployee(obj);

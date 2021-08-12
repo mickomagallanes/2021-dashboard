@@ -34,7 +34,7 @@ function FormHelper(props, ref) {
     useImperativeHandle(ref, () => _formikProps);
 
     return (
-        <Formik {...props}>
+        <Formik {...props} innerRef={ref}>
             {(formikProps) => {
                 _formikProps = formikProps;
                 return props.children(formikProps);

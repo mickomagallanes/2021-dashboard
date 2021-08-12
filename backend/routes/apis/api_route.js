@@ -44,7 +44,7 @@ router.put('/modify/:id', [checkSession, routeModifySchema, authorizeWriteRoute]
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed modification" });
     } else {
-        res.json({ "status": true, "msg": "Successful modification", "id": result.data });
+        res.json({ "status": true, "msg": "Successful modification" });
     }
 });
 

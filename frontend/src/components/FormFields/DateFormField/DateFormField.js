@@ -3,6 +3,7 @@ import './DateFormField.css';
 import { getIn } from "formik";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Form } from 'react-bootstrap';
 
 /**
   * creates a date picker
@@ -18,24 +19,36 @@ export default function DateFormField({
   setStartDate,
   ...props
 }) {
-  // const errorText =
-  //   getIn(form.touched, field.name) && getIn(form.errors, field.name);
+  const errorText =
+    getIn(form.touched, field.name) && getIn(form.errors, field.name);
 
   return (
     <>
-      {label && <label htmlFor={field.name}>{label}</label>}
-      <div>
-        <DatePicker
-          {...field}
-          {...props}
-          className="form-control"
-          dateFormat="yyyy-MM-dd"
-          id={field.name}
-          selected={(field.value && new Date(field.value)) || null}
-          onChange={(date) => setStartDate(date)}
 
-        />
-      </div>
+      <Form.Group>
+        {label && <Form.Label htmlFor={field.name}>{label}</Form.Label>}
+
+        <div>
+          <Form.Control as={DatePicker}
+            {...field}
+            {...props}
+            isInvalid={!!errorText}
+            className="form-control"
+            dateFormat="yyyy-MM-dd"
+            id={field.name}
+            selected={(field.value && new Date(field.value)) || null}
+            onChange={(date) => setStartDate(date)}
+            wrapperClassName="is-invalid"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+          />
+
+          <Form.Control.Feedback type="invalid">
+            {errorText}
+          </Form.Control.Feedback>
+        </div>
+      </Form.Group>
 
     </>
   );

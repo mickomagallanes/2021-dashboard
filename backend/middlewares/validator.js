@@ -1,5 +1,5 @@
 const Joi = require('joi')
-    .extend(require('@joi/date'));
+    .extend(require('@joi/date')).extend(require('joi-phone-number'));
 
 
 /**************** USER ****************/
@@ -367,8 +367,8 @@ function employeeInsertSchema(req, res, next) {
         firstName: Joi.string().max(60).required(),
         middleName: Joi.string().max(60).required(),
         lastName: Joi.string().max(60).required(),
-        sex: Joi.string().max(10).required(),
-        contactNo: Joi.string().max(20).required(),
+        sex: Joi.string().valid('F', 'M').required(),
+        contactNo: Joi.string().phoneNumber({ defaultCountry: 'PH' }).max(60).required(),
         hireDate: Joi.date().format('YYYY-MM-DD').required(),
         birthDate: Joi.date().format('YYYY-MM-DD').required(),
         employeePositionID: Joi.number().required(),
@@ -384,8 +384,8 @@ function employeeModifySchema(req, res, next) {
         firstName: Joi.string().max(60).required(),
         middleName: Joi.string().max(60).required(),
         lastName: Joi.string().max(60).required(),
-        sex: Joi.string().max(10).required(),
-        contactNo: Joi.string().max(20).required(),
+        sex: Joi.string().valid('F', 'M').required(),
+        contactNo: Joi.string().phoneNumber({ defaultCountry: 'PH' }).max(60).required(),
         hireDate: Joi.date().format('YYYY-MM-DD').required(),
         birthDate: Joi.date().format('YYYY-MM-DD').required(),
         employeePositionID: Joi.number().required(),
@@ -416,7 +416,7 @@ function employeeSalaryDeleteSchema(req, res, next) {
 function employeeSalaryInsertSchema(req, res, next) {
 
     const schema = Joi.object({
-        salary: Joi.string().max(30).required(),
+        salary: Joi.number().min(0).max(1000000 * 1000000).required(),
         startedDate: Joi.date().format('YYYY-MM-DD').required(),
         untilDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
         employeeID: Joi.number().required()
@@ -427,7 +427,7 @@ function employeeSalaryInsertSchema(req, res, next) {
 function employeeSalaryModifySchema(req, res, next) {
 
     const schemaBody = Joi.object({
-        salary: Joi.string().max(30).required(),
+        salary: Joi.number().min(0).max(1000000 * 1000000).required(),
         startedDate: Joi.date().format('YYYY-MM-DD').required(),
         untilDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required()),
         employeeID: Joi.number().required()
@@ -441,6 +441,78 @@ function employeeSalaryModifySchema(req, res, next) {
         params: schemaID,
         body: schemaBody
     }).unknown(true);
+    validateRequest(req, res, next, wholeSchema);
+}
+
+/*********** 3. Employee Department************/
+function employeeDepartmentDeleteSchema(req, res, next) {
+
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequestParams(req, res, next, schema);
+}
+
+function employeeDepartmentInsertSchema(req, res, next) {
+
+    const schema = Joi.object({
+        departmentName: Joi.string().max(45).required()
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function employeeDepartmentModifySchema(req, res, next) {
+
+    const schemaBody = Joi.object({
+        departmentName: Joi.string().max(45).required()
+    });
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+
+    validateRequest(req, res, next, wholeSchema);
+}
+
+
+
+/*********** 4. Employee Position************/
+function employeePositionDeleteSchema(req, res, next) {
+
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequestParams(req, res, next, schema);
+}
+
+function employeePositionInsertSchema(req, res, next) {
+
+    const schema = Joi.object({
+        positionName: Joi.string().max(45).required(),
+        employeePositionPath: Joi.string().max(30).required()
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function employeePositionModifySchema(req, res, next) {
+
+    const schemaBody = Joi.object({
+        positionName: Joi.string().max(45).required(),
+        employeePositionPath: Joi.string().max(30).required()
+    });
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+
     validateRequest(req, res, next, wholeSchema);
 }
 
@@ -539,6 +611,12 @@ module.exports = {
     employeeSalaryModifySchema,
     employeeSalaryInsertSchema,
     employeeSalaryDeleteSchema,
+    employeePositionModifySchema,
+    employeePositionInsertSchema,
+    employeePositionDeleteSchema,
+    employeeDepartmentModifySchema,
+    employeeDepartmentInsertSchema,
+    employeeDepartmentDeleteSchema,
     getAllCountGeneralSchema,
     getAllGeneralSchema
 }

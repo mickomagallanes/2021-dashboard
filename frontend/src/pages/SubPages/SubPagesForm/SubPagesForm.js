@@ -9,7 +9,6 @@ import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
-import { equalTo } from '../../../helpers/utils';
 import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
@@ -21,7 +20,6 @@ const pageAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all`;
 const addSubPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/insert`;
 const editSubPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/modify/`;
 
-yup.addMethod(yup.string, 'equalTo', equalTo);
 
 const schema = yup.object().shape({
   subPageName: yup.string().max(30, 'Must be 30 characters or less').required('Required'),

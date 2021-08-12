@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useRef } from 'react'
 import ReactDOM from "react-dom";
-import './PagesForm.css';
+import './EmployeeDepartmentsForm.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import useAlert from '../../../components/useAlert';
 import useFetch from '../../../components/useFetch';
@@ -13,53 +13,48 @@ import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
 
-const pageByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/`;
-const addPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/insert`;
-const editPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/modify/`;
+const employeeDepartmentByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/department/get/by/`;
+const addEmployeeDepartmentURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/department/insert`;
+const editEmployeeDepartmentURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/department/modify/`;
 
 const schema = yup.object().shape({
-  pageName: yup.string().max(30, 'Must be 30 characters or less').required('Required'),
-  pagePath: yup.string().max(30, 'Must be 30 characters or less').required('Required')
+  departmentName: yup.string().max(30, 'Must be 30 characters or less').required('Required')
 });
 
 
-const pageReducer = (state, action) => {
+const employeeDepartmentReducer = (state, action) => {
   switch (action.type) {
-    case 'changePageName':
-      return { ...state, pageName: action.payload };
-    case 'changePagePath':
-      return { ...state, pagePath: action.payload };
+    case 'changeDepartmentName':
+      return { ...state, departmentName: action.payload };
     default:
       return state;
   }
 }
 
 const mapDispatch = dispatch => ({
-  changePageName: (payload) => dispatch({ type: 'changePageName', payload: payload }),
-  changePagePath: (payload) => dispatch({ type: 'changePagePath', payload: payload })
+  changeDepartmentName: (payload) => dispatch({ type: 'changeDepartmentName', payload: payload })
 
 })
 
-const pageFormInitialState = {
-  pageName: "",
-  pagePath: ""
+const employeeDepartmentFormInitialState = {
+  departmentName: ""
 };
 
-function PagesForm({ priv }) {
+function EmployeeDepartmentsForm({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
 
-  const [pageFormData, dispatchPage] = useReducer(pageReducer, pageFormInitialState);
-  const actionsPageData = mapDispatch(dispatchPage);
+  const [employeeDepartmentFormData, dispatchEmployeeDepartment] = useReducer(employeeDepartmentReducer, employeeDepartmentFormInitialState);
+  const actionsEmployeeDepartmentData = mapDispatch(dispatchEmployeeDepartment);
 
   const urlParamObj = useParams();
   const urlParam = urlParamObj.id;
 
-  const [submitEdit, editData] = usePut(editPageURL + urlParam);
-  const [submitAdd, addData] = usePost(addPageURL);
+  const [submitEdit, editData] = usePut(editEmployeeDepartmentURL + urlParam);
+  const [submitAdd, addData] = usePost(addEmployeeDepartmentURL);
 
-  const [dataPage, loadingPage] = useFetch(pageByIdURL + urlParam);
+  const [dataEmployeeDepartment, loadingEmployeeDepartment] = useFetch(employeeDepartmentByIdURL + urlParam);
 
   const { current: isAddMode } = useRef(urlParam === "add");
 
@@ -79,8 +74,7 @@ function PagesForm({ priv }) {
   const handleSubmitForm = async (fields) => {
 
     const param = {
-      "pageName": fields.pageName,
-      "pagePath": fields.pagePath
+      "departmentName": fields.departmentName
     }
 
     if (isAddMode) {
@@ -100,7 +94,7 @@ function PagesForm({ priv }) {
       successArr.push(respData.msg);
 
       history.push({
-        pathname: '/pages',
+        pathname: '/employee/departments',
         successMsg: successArr,
         search: location.search
       });
@@ -113,7 +107,7 @@ function PagesForm({ priv }) {
   useEffect(() => {
     if (isAddMode && priv === PRIVILEGES.read) {
       history.push({
-        pathname: '/pages',
+        pathname: '/employee/departments',
         errorMsg: [ERRORMSG.noPrivilege],
         search: location.search
       });
@@ -124,21 +118,20 @@ function PagesForm({ priv }) {
 
     if (!isAddMode) {
 
-      if (dataPage.status) {
-        const { data } = dataPage;
+      if (dataEmployeeDepartment.status) {
+        const { data } = dataEmployeeDepartment;
 
         ReactDOM.unstable_batchedUpdates(() => {
-          actionsPageData.changePageName(data.PageName);
-          actionsPageData.changePagePath(data.PagePath);
+          actionsEmployeeDepartmentData.changeDepartmentName(data.DepartmentName);
         });
 
 
-      } else if (!dataPage.status) {
-        passErrorMsg(`${dataPage.msg}`);
+      } else if (!dataEmployeeDepartment.status) {
+        passErrorMsg(`${dataEmployeeDepartment.msg}`);
       }
     }
 
-  }, [dataPage]);
+  }, [dataEmployeeDepartment]);
 
   useDidUpdateEffect(() => {
 
@@ -158,7 +151,7 @@ function PagesForm({ priv }) {
     <>
       <div>
         <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/pages${location.search}`}>
+          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/employee/departments${location.search}`}>
             <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
             <span className="d-inline-block text-left">
               Back
@@ -166,41 +159,31 @@ function PagesForm({ priv }) {
           </Link>
 
         </div>
-        <div className="row w-100 mx-0" data-testid="PagesForm">
+        <div className="row w-100 mx-0" data-testid="EmployeeDepartmentsForm">
           <div className="col-lg-8 col-xlg-9 col-md-12">
             <div className="card px-4 px-sm-5">
 
               <div className="card-body">
-                <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} Page</h4>
+                <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} EmployeeDepartment</h4>
                 <div className="row mb-4">
                   <div className="col mt-3">
                     <Formik
                       validationSchema={schema}
-                      initialValues={pageFormData}
+                      initialValues={employeeDepartmentFormData}
                       onSubmit={handleSubmitForm}
                       enableReinitialize
                     >
                       {() => (
                         <Form>
                           <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
-                          {loadingPage ? <Spinner /> :
+                          {loadingEmployeeDepartment ? <Spinner /> :
                             <>
                               <div>
                                 <Field
-                                  label="Page Name"
+                                  label="Employee Department Name"
                                   type="text"
-                                  name="pageName"
-                                  placeholder="Page Name"
-                                  disabled={!isWriteable}
-                                  component={TextFormField}
-                                />
-                              </div>
-                              <div>
-                                <Field
-                                  label="Page Path"
-                                  type="text"
-                                  name="pagePath"
-                                  placeholder="Page Path"
+                                  name="departmentName"
+                                  placeholder="Employee Department Name"
                                   disabled={!isWriteable}
                                   component={TextFormField}
                                 />
@@ -226,4 +209,4 @@ function PagesForm({ priv }) {
   );
 }
 
-export default PagesForm;
+export default EmployeeDepartmentsForm;

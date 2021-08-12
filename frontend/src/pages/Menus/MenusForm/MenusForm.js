@@ -9,7 +9,6 @@ import { Field } from 'formik';
 import * as yup from 'yup';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
-import { equalTo } from '../../../helpers/utils';
 import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
@@ -22,8 +21,6 @@ const parentMenuAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent
 const pageAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all`;
 const addMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/insert`;
 const editMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/modify/`;
-
-yup.addMethod(yup.string, 'equalTo', equalTo);
 
 const schema = yup.object().shape({
   menuName: yup.string().max(30, 'Must be 30 characters or less').required('Required')
@@ -60,9 +57,8 @@ export const menuFormInitialState = {
  * @param {String} obj.priv Privilege of logged-in user to MenusForm
  * @param {String} [obj.customMenuURL] replaces url of menu get by id, added if component is rendered as child from other form
  * @param {React useRef} [obj.parentFormRef] add ref for formik, so parent component can fetch the form value
- * @param {Object} [obj.parentMemoData] saved form value in parent, passed when parent component rerenders so menu form value persists
  */
-function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
+function MenusForm({ priv, customMenuURL, parentFormRef }) {
 
   // if this component is used as child
   const isRenderedAsChild = customMenuURL !== undefined;
@@ -83,7 +79,6 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
   const [dataMenu, loadingMenu] = useFetch(menuURL + urlParam);
   const [dataParentMenus, loadingParentMenus, extractedDataParentMenus] = useFetch(parentMenuAllURL, { initialData: List([]) });
   const [dataPages, loadingPages, extractedDataPages] = useFetch(pageAllURL, { initialData: List([]) });
-
 
   const { current: isAddMode } = useRef(urlParam === "add");
 
@@ -174,18 +169,6 @@ function MenusForm({ priv, customMenuURL, parentFormRef, parentMemoData }) {
       });
     }
   }, [history, isAddMode, location.search, priv])
-
-  useDidUpdateEffect(() => {
-    if (parentMemoData) {
-      ReactDOM.unstable_batchedUpdates(() => {
-        actionsMenuData.changeMenuName(parentMemoData.menuName);
-        actionsMenuData.changeParentMenuID(parentMemoData.parentMenuID);
-        actionsMenuData.changePageID(parentMemoData.pageID);
-      });
-
-    }
-
-  }, [parentMemoData])
 
   useDidUpdateEffect(() => {
     if (dataPages) {

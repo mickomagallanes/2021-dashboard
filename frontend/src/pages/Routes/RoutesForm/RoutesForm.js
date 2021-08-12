@@ -9,7 +9,6 @@ import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
-import { equalTo } from '../../../helpers/utils';
 import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
@@ -17,8 +16,6 @@ import usePut from '../../../components/usePut';
 const routeByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/route/get/by/`;
 const addRouteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/route/insert`;
 const editRouteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/route/modify/`;
-
-yup.addMethod(yup.string, 'equalTo', equalTo);
 
 const schema = yup.object().shape({
   routeName: yup.string().max(30, 'Must be 30 characters or less').required('Required'),

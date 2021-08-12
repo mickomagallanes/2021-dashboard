@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useReducer, useRef } from 'react'
+import React, { useEffect, useReducer, useRef } from 'react'
 import ReactDOM from "react-dom";
 import './PagesFormBulk.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
@@ -9,7 +9,6 @@ import { Field } from 'formik';
 import * as yup from 'yup';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
-import { equalTo } from '../../../helpers/utils';
 import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
@@ -25,8 +24,6 @@ const addPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/insert/bulk/b
 const editPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/modify/bulk/by/session/`;
 const privUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/privilege/get/all`;
 const pagesRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/get/by/session/and/page/`;
-
-yup.addMethod(yup.string, 'equalTo', equalTo);
 
 const schema = yup.object().shape({
   pageName: yup.string().max(30, 'Must be 30 characters or less').required('Required'),
@@ -81,8 +78,6 @@ function PagesFormBulk({ priv }) {
 
   const [dataMenu, loadingDataMenu] = useFetch(menuByIdURL + urlParam);
 
-  const menuFormInitState = useRef(null);
-
   const { current: isAddMode } = useRef(urlParam === "add");
 
   const history = useHistory();
@@ -92,24 +87,7 @@ function PagesFormBulk({ priv }) {
   // Then inside the component body
   const formRef = useRef();
 
-  // const menuFormRef = useRef();
-  const menuFormRef = useCallback(node => {
-
-    if (node === null) {
-      // DOM node referenced by ref has been unmounted
-
-    } else {
-      const { values } = node;
-
-      menuFormInitState.current = {
-        menuName: values.menuName,
-        pageID: values.pageID,
-        parentMenuID: values.parentMenuID
-      };
-
-      // DOM node referenced by ref has changed and exists
-    }
-  }, []); // adjust deps();
+  const menuFormRef = useRef();
 
   const {
     passErrorMsg,
@@ -129,7 +107,7 @@ function PagesFormBulk({ priv }) {
 
   const handleSubmit = async (fields) => {
 
-    const menuObj = menuFormInitState.current;
+    const menuObj = menuFormRef.current.values;
 
     const param = {
       "menuName": menuObj.menuName,
@@ -324,7 +302,7 @@ function PagesFormBulk({ priv }) {
 
                     </FormikWithRef>
                     {!isAddMode && loadingDataMenu ? <Spinner /> : <div className="mt-5">
-                      <MemoMenusForm parentFormRef={menuFormRef} priv={priv} customMenuURL={menuByIdURL} parentMemoData={menuFormInitState.current} />
+                      <MemoMenusForm parentFormRef={menuFormRef} priv={priv} customMenuURL={menuByIdURL} />
                     </div>}
 
 

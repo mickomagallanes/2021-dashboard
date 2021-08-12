@@ -5,7 +5,6 @@ import * as yup from 'yup';
 import Spinner from '../../../components/Spinner/Spinner';
 import { PRIVILEGES, ERRORMSG } from "../../../helpers/constants";
 import TextFormField from '../../../components/FormFields/TextFormField/TextFormField'
-import { equalTo } from '../../../helpers/utils';
 import useDidUpdateEffect from '../../../components/useDidUpdateEffect';
 import ReactDOM from "react-dom";
 import usePost from '../../../components/usePost';
@@ -17,8 +16,6 @@ import useFetch from '../../../components/useFetch';
 const parentMenuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/by/`;
 const addParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/insert`;
 const editParentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/modify/`;
-
-yup.addMethod(yup.string, 'equalTo', equalTo);
 
 const schema = yup.object().shape({
   parentMenuName: yup.string().max(30, 'Must be 30 characters or less').required('Required')

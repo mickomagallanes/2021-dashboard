@@ -1,7 +1,7 @@
 import React from 'react';
 import './RolesForm.css';
 import axios from 'axios';
-import { axiosConfig, equalTo } from "../../../helpers/utils";
+import { axiosConfig } from "../../../helpers/utils";
 import { Alert } from 'react-bootstrap';
 import { Formik, Form, Field } from "formik";
 import * as yup from 'yup';
@@ -31,8 +31,6 @@ export async function fetchRoleData(urlParam) {
     return { status: false, msg: error }
   }
 }
-
-yup.addMethod(yup.string, 'equalTo', equalTo);
 
 const schema = yup.object().shape({
   rolename: yup.string().max(45, 'Must be 45 characters or less').required('Required')

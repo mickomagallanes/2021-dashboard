@@ -158,7 +158,7 @@ function EmployeesSalaries({ priv }) {
   const actionButtons = (employeeSalaryID) => {
     return (
       <>
-        <Link to={`/employee/salary/form/${employeeSalaryID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+        <Link to={`/employee/salaries/form/${employeeSalaryID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
           {isWriteable ? "Edit" : "Read"} Employee Salary
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
@@ -181,7 +181,7 @@ function EmployeesSalaries({ priv }) {
       <>
         {isWriteable &&
           <>
-            <Link to={`/employee/salary/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
+            <Link to={`/employee/salaries/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
               <i className="mdi mdi-account-plus"> </i>
               Add Employee Salary
             </Link>

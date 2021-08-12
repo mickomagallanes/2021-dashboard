@@ -57,7 +57,6 @@ class GettersModel {
             });
             return this.currPromise;
         } else {
-            console.log(_self.currPromise)
             return _self.currPromise
         }
 
