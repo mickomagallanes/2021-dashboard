@@ -28,7 +28,6 @@ const schema = yup.object().shape({
   startedDate: yup.date().required('Required')
 });
 
-// TODO: Employees, and Routes.... Fix DateFormField
 const employeeSalaryReducer = (state, action) => {
   switch (action.type) {
     case 'changeSalary':
@@ -55,7 +54,7 @@ export const employeeSalaryFormInitialState = {
   salary: "",
   employeeID: "",
   startedDate: formatDate(false, "YYYY-MM-DD"),
-  untilDate: ""
+  untilDate: null
 };
 
 const idKeySelect = "EmployeeID";
@@ -68,7 +67,7 @@ const valueKeySelect = ["EmployeeNo", "FirstName", "LastName"];
  * @param {String} [obj.customEmployeeSalaryURL] replaces url of employeeSalary get by id, added if component is rendered as child from other form
  * @param {React useRef} [obj.parentFormRef] add ref for formik, so parent component can fetch the form value
  */
-function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef }) {
+function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pagePath }) {
 
   // if this component is used as child
   const { current: isRenderedAsChild } = useRef(customEmployeeSalaryURL !== undefined);
@@ -136,12 +135,12 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef }) 
   }, [isAddMode, isRenderedAsChild])
 
   const handleSubmitForm = async (fields) => {
-
+    console.log(fields)
     const param = {
       "salary": fields.salary,
       "employeeID": fields.employeeID,
       "startedDate": formatDate(fields.startedDate, "YYYY-MM-DD"),
-      "untilDate": fields.untilDate === "" ? null : formatDate(fields.untilDate, "YYYY-MM-DD")
+      "untilDate": fields.untilDate === null ? null : formatDate(fields.untilDate, "YYYY-MM-DD")
     }
 
     if (isAddMode) {
@@ -161,7 +160,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef }) 
       successArr.push(respData.msg);
 
       history.push({
-        pathname: '/employee/salaries',
+        pathname: pagePath,
         successMsg: successArr,
         search: location.search
       });
@@ -175,12 +174,12 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef }) 
   useEffect(() => {
     if (isAddMode && priv === PRIVILEGES.read) {
       history.push({
-        pathname: '/employee/salaries',
+        pathname: pagePath,
         errorMsg: [ERRORMSG.noPrivilege],
         search: location.search
       });
     }
-  }, [history, isAddMode, location.search, priv])
+  }, [history, isAddMode, location.search, pagePath, priv])
 
   useDidUpdateEffect(() => {
     if (dataEmployees) {
@@ -241,7 +240,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef }) 
       <div>
         {!isRenderedAsChild &&
           <div className="page-header">
-            <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/employee/salaries${location.search}`}>
+            <Link className="btn btn-outline-light btn-icon-text btn-md" to={`${pagePath}${location.search}`}>
               <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
               <span className="d-inline-block text-left">
                 Back

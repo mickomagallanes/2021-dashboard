@@ -19,7 +19,7 @@ class PageRoleModel {
     static async getPagePrivByUser(userId, pagePath) {
         const stmt = `SELECT a.PageRolesID, d.PrivilegeName FROM PageRoles as a INNER JOIN Pages as b ON a.PageID = b.PageID 
         INNER JOIN Users as c ON a.RoleID = c.RoleID INNER JOIN Privileges as d ON a.PrivilegeID = d.PrivilegeID 
-         WHERE UserID = ? AND PagePath = ? AND (d.PrivilegeName = ? OR d.PrivilegeName = ?);`;
+         WHERE UserID = ? AND PagePath = TRIM(TRAILING  '/' FROM ? ) AND (d.PrivilegeName = ? OR d.PrivilegeName = ?);`;
 
         try {
             const result = await mysql_conn.query(stmt, [userId, pagePath, PRIVILEGES.readWrite, PRIVILEGES.read]);

@@ -61,6 +61,7 @@ function Table({
 
   const SortTH = filterFunc ? SortedTHNoBorder : SortedTH;
 
+  // TODO: delete bulk by checkbox each row
   return (
 
     <div className="table-responsive">

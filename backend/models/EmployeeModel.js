@@ -7,7 +7,16 @@ const tableName = "Employees";
 const primaryKey = "EmployeeID";
 const secondaryTables = [
     { id: "EmployeeDepartmentID", name: "EmployeeDepartments", relation: " INNER JOIN " },
-    { id: "EmployeePositionID", name: "EmployeePositions", relation: " INNER JOIN " }
+    { id: "EmployeePositionID", name: "EmployeePositions", relation: " INNER JOIN " },
+    {
+        id: "EmployeeID",
+        name: "EmployeeSalaries",
+        relation: " LEFT JOIN ",
+        whereClause: ` AND EmployeeSalaries.EmployeeSalaryID = 
+        (SELECT MAX(EmployeeSalaryID) FROM EmployeeSalaries WHERE EmployeeID = Employees.EmployeeID
+         AND StartedDate <= CURDATE() AND (UntilDate > CURDATE() OR ISNULL(UntilDate))) `
+    },
+
 ];
 const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
 

@@ -45,7 +45,7 @@ const routeFormInitialState = {
   routePath: ""
 };
 
-function RoutesForm({ priv }) {
+function RoutesForm({ priv, pagePath }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
@@ -100,7 +100,7 @@ function RoutesForm({ priv }) {
       successArr.push(respData.msg);
 
       history.push({
-        pathname: '/routes',
+        pathname: pagePath,
         successMsg: successArr,
         search: location.search
       });
@@ -113,12 +113,12 @@ function RoutesForm({ priv }) {
   useEffect(() => {
     if (isAddMode && priv === PRIVILEGES.read) {
       history.push({
-        pathname: '/routes',
+        pathname: pagePath,
         errorMsg: [ERRORMSG.noPrivilege],
         search: location.search
       });
     }
-  }, [history, isAddMode, location.search, priv])
+  }, [history, isAddMode, location.search, pagePath, priv])
 
   useDidUpdateEffect(() => {
 
@@ -158,7 +158,7 @@ function RoutesForm({ priv }) {
     <>
       <div>
         <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/routes${location.search}`}>
+          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`${pagePath}${location.search}`}>
             <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
             <span className="d-inline-block text-left">
               Back

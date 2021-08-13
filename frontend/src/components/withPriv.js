@@ -47,7 +47,8 @@ const withPriv = (Component, apiURL = false) => {
                     this.setState({ isLoading: false, priv: resp.data.data });
                 } else {
                     // TODO: find a way to not reload the page, but reload sidebar data
-                    window.location.reload();
+                    window.location.href = "/home";
+                    // window.location.reload();
                 }
 
             } catch (error) {
@@ -62,7 +63,7 @@ const withPriv = (Component, apiURL = false) => {
             if (isLoading) {
                 return <Spinner />
             } else if (!isLoading && priv !== null) {
-                return <Component priv={priv} {...this.props} />
+                return <Component priv={priv} {...this.props} pagePath={apiURL} />
             }
 
         }

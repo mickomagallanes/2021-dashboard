@@ -299,8 +299,8 @@ export default class PageRolesForm extends React.Component {
                                         checked={isChecked}
                                         onChange={() => this.handlePrivSelect(priv.PrivilegeID, pageRole.PageID, pageRole.RoleID)}
                                         value={priv.PrivilegeID}
-                                        key={`priv${pageRole.PageID}${priv.PrivilegeID}`}
-                                        name={`priv${pageRole.PageID}`}
+                                        key={`page${pageRole.PageID}${priv.PrivilegeID}`}
+                                        name={`page${pageRole.PageID}`}
                                         type="radio"
                                         disabled={this.isReadPriv}
                                       />

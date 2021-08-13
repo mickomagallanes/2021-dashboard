@@ -299,8 +299,8 @@ export default class RouteRolesForm extends React.Component {
                                         checked={isChecked}
                                         onChange={() => this.handlePrivSelect(priv.PrivilegeID, routeRole.RouteID, routeRole.RoleID)}
                                         value={priv.PrivilegeID}
-                                        key={`priv${routeRole.RouteID}${priv.PrivilegeID}`}
-                                        name={`priv${routeRole.RouteID}`}
+                                        key={`route${routeRole.RouteID}${priv.PrivilegeID}`}
+                                        name={`route${routeRole.RouteID}`}
                                         type="radio"
                                         disabled={this.isReadPriv}
                                       />

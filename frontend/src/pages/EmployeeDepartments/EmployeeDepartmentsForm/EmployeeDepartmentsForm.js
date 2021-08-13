@@ -18,7 +18,7 @@ const addEmployeeDepartmentURL = `${process.env.REACT_APP_BACKEND_HOST}/API/empl
 const editEmployeeDepartmentURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/department/modify/`;
 
 const schema = yup.object().shape({
-  departmentName: yup.string().max(30, 'Must be 30 characters or less').required('Required')
+  departmentName: yup.string().max(45, 'Must be 45 characters or less').required('Required')
 });
 
 
@@ -40,7 +40,7 @@ const employeeDepartmentFormInitialState = {
   departmentName: ""
 };
 
-function EmployeeDepartmentsForm({ priv }) {
+function EmployeeDepartmentsForm({ priv, pagePath }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
@@ -94,7 +94,7 @@ function EmployeeDepartmentsForm({ priv }) {
       successArr.push(respData.msg);
 
       history.push({
-        pathname: '/employee/departments',
+        pathname: pagePath,
         successMsg: successArr,
         search: location.search
       });
@@ -107,12 +107,12 @@ function EmployeeDepartmentsForm({ priv }) {
   useEffect(() => {
     if (isAddMode && priv === PRIVILEGES.read) {
       history.push({
-        pathname: '/employee/departments',
+        pathname: pagePath,
         errorMsg: [ERRORMSG.noPrivilege],
         search: location.search
       });
     }
-  }, [history, isAddMode, location.search, priv])
+  }, [history, isAddMode, location.search, pagePath, priv])
 
   useDidUpdateEffect(() => {
 
@@ -151,7 +151,7 @@ function EmployeeDepartmentsForm({ priv }) {
     <>
       <div>
         <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/employee/departments${location.search}`}>
+          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`${pagePath}${location.search}`}>
             <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
             <span className="d-inline-block text-left">
               Back

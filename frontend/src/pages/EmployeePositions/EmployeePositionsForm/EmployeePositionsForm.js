@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useRef } from 'react'
 import ReactDOM from "react-dom";
-import './SubPagesForm.css';
+import './EmployeePositionsForm.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import useAlert from '../../../components/useAlert';
 import useFetch from '../../../components/useFetch';
@@ -12,63 +12,49 @@ import TextFormField from '../../../components/FormFields/TextFormField/TextForm
 import usePost from '../../../components/usePost';
 import Spinner from '../../../components/Spinner/Spinner';
 import usePut from '../../../components/usePut';
-import SelectFormField from '../../../components/FormFields/SelectFormField/SelectFormField';
-import { List } from 'immutable';
 
-const subPageByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/by/`;
-const pageAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all`;
-const addSubPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/insert`;
-const editSubPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/modify/`;
-
+const employeePositionByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/position/get/by/`;
+const addEmployeePositionURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/position/insert`;
+const editEmployeePositionURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/position/modify/`;
 
 const schema = yup.object().shape({
-  subPageName: yup.string().max(30, 'Must be 30 characters or less').required('Required'),
-  subPagePath: yup.string().max(30, 'Must be 30 characters or less').required('Required')
+  positionName: yup.string().max(45, 'Must be 45 characters or less').required('Required')
 });
 
-const subPageReducer = (state, action) => {
+
+const employeePositionReducer = (state, action) => {
   switch (action.type) {
-    case 'changeSubPageName':
-      return { ...state, subPageName: action.payload };
-    case 'changeSubPagePath':
-      return { ...state, subPagePath: action.payload };
-    case 'changePageID':
-      return { ...state, pageID: action.payload };
+    case 'changePositionName':
+      return { ...state, positionName: action.payload };
     default:
       return state;
   }
 }
 
 const mapDispatch = dispatch => ({
-  changeSubPageName: (payload) => dispatch({ type: 'changeSubPageName', payload: payload }),
-  changeSubPagePath: (payload) => dispatch({ type: 'changeSubPagePath', payload: payload }),
-  changePageID: (payload) => dispatch({ type: 'changePageID', payload: payload })
+  changePositionName: (payload) => dispatch({ type: 'changePositionName', payload: payload })
 
 })
 
-const subPageFormInitialState = {
-  subPageName: "",
-  subPagePath: "",
-  pageID: ""
-
+const employeePositionFormInitialState = {
+  positionName: ""
 };
 
-function SubPagesForm({ priv, pagePath }) {
+function EmployeePositionsForm({ priv, pagePath }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
 
-  const [subPageFormData, dispatchSubPage] = useReducer(subPageReducer, subPageFormInitialState);
-  const actionsSubPageData = mapDispatch(dispatchSubPage);
+  const [employeePositionFormData, dispatchEmployeePosition] = useReducer(employeePositionReducer, employeePositionFormInitialState);
+  const actionsEmployeePositionData = mapDispatch(dispatchEmployeePosition);
 
   const urlParamObj = useParams();
   const urlParam = urlParamObj.id;
 
-  const [submitEdit, editData] = usePut(editSubPageURL + urlParam);
-  const [submitAdd, addData] = usePost(addSubPageURL);
+  const [submitEdit, editData] = usePut(editEmployeePositionURL + urlParam);
+  const [submitAdd, addData] = usePost(addEmployeePositionURL);
 
-  const [dataSubPage, loadingSubPage] = useFetch(subPageByIdURL + urlParam);
-  const [dataPages, loadingPages, extractedDataPages] = useFetch(pageAllURL, { initialData: List([]) });
+  const [dataEmployeePosition, loadingEmployeePosition] = useFetch(employeePositionByIdURL + urlParam);
 
   const { current: isAddMode } = useRef(urlParam === "add");
 
@@ -88,9 +74,7 @@ function SubPagesForm({ priv, pagePath }) {
   const handleSubmitForm = async (fields) => {
 
     const param = {
-      "subPageName": fields.subPageName,
-      "pageID": fields.pageID,
-      "subPagePath": fields.subPagePath
+      "positionName": fields.positionName
     }
 
     if (isAddMode) {
@@ -131,41 +115,23 @@ function SubPagesForm({ priv, pagePath }) {
   }, [history, isAddMode, location.search, pagePath, priv])
 
   useDidUpdateEffect(() => {
-    if (dataPages) {
-
-      if (dataPages.status === true) {
-        // set first option as default value if it has no value
-        if (subPageFormData.pageID === null || subPageFormData.pageID === "") {
-          actionsSubPageData.changePageID(dataPages.data[0].PageID);
-        }
-      } else {
-        passErrorMsg(`${dataPages.msg}`);
-      }
-
-
-    }
-  }, [dataPages])
-
-  useDidUpdateEffect(() => {
 
     if (!isAddMode) {
 
-      if (dataSubPage.status) {
-        const { data } = dataSubPage;
+      if (dataEmployeePosition.status) {
+        const { data } = dataEmployeePosition;
 
         ReactDOM.unstable_batchedUpdates(() => {
-          actionsSubPageData.changeSubPageName(data.SubPageName);
-          actionsSubPageData.changeSubPagePath(data.SubPagePath);
-          actionsSubPageData.changePageID(data.PageID);
+          actionsEmployeePositionData.changePositionName(data.PositionName);
         });
 
 
-      } else if (!dataSubPage.status) {
-        passErrorMsg(`${dataSubPage.msg}`);
+      } else if (!dataEmployeePosition.status) {
+        passErrorMsg(`${dataEmployeePosition.msg}`);
       }
     }
 
-  }, [dataSubPage]);
+  }, [dataEmployeePosition]);
 
   useDidUpdateEffect(() => {
 
@@ -193,56 +159,36 @@ function SubPagesForm({ priv, pagePath }) {
           </Link>
 
         </div>
-        <div className="row w-100 mx-0" data-testid="SubPagesForm">
+        <div className="row w-100 mx-0" data-testid="EmployeePositionsForm">
           <div className="col-lg-8 col-xlg-9 col-md-12">
             <div className="card px-4 px-sm-5">
 
               <div className="card-body">
-                <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} SubPage</h4>
+                <h4 className="card-title">{isAddMode ? 'Add' : 'Edit'} EmployeePosition</h4>
                 <div className="row mb-4">
                   <div className="col mt-3">
                     <Formik
                       validationSchema={schema}
-                      initialValues={subPageFormData}
+                      initialValues={employeePositionFormData}
                       onSubmit={handleSubmitForm}
                       enableReinitialize
                     >
                       {() => (
                         <Form>
                           <AlertElements errorMsg={errorMsg} successMsg={successMsg} />
-                          {loadingSubPage && loadingPages ? <Spinner /> :
+                          {loadingEmployeePosition ? <Spinner /> :
                             <>
                               <div>
                                 <Field
-                                  label="SubPage Name"
+                                  label="Employee Position Name"
                                   type="text"
-                                  name="subPageName"
-                                  placeholder="SubPage Name"
+                                  name="positionName"
+                                  placeholder="Employee Position Name"
                                   disabled={!isWriteable}
                                   component={TextFormField}
                                 />
                               </div>
-                              <div>
-                                <Field
-                                  label="Subpage Path"
-                                  type="text"
-                                  name="subPagePath"
-                                  placeholder="Subpage Path"
-                                  disabled={!isWriteable}
-                                  component={TextFormField}
-                                />
-                              </div>
-                              <div>
-                                <Field
-                                  label="Page"
-                                  options={extractedDataPages}
-                                  idKey="PageID"
-                                  valueKey="PageName"
-                                  name="pageID"
-                                  component={SelectFormField}
-                                  disabled={!isWriteable}
-                                />
-                              </div>
+
                               <div className="mt-3">
                                 {priv === PRIVILEGES.readWrite && <button type="submit" className="btn btn-primary mr-2">Submit</button>}
                               </div>
@@ -263,4 +209,4 @@ function SubPagesForm({ priv, pagePath }) {
   );
 }
 
-export default SubPagesForm;
+export default EmployeePositionsForm;

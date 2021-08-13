@@ -62,7 +62,7 @@ function Roles({ priv }) {
     errorMsg,
     successMsg,
     errorTimerValue
-  } = useAlert();
+  } = useAlert({ showLocationMsg: true });
 
   const isWriteable = priv === PRIVILEGES.readWrite;
 

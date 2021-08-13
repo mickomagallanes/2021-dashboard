@@ -36,6 +36,8 @@ import Employees from './Employees/Employees';
 import EmployeesForm from './Employees/EmployeesForm/EmployeesForm';
 import EmployeeDepartments from './EmployeeDepartments/EmployeeDepartments';
 import EmployeeDepartmentsForm from './EmployeeDepartments/EmployeeDepartmentsForm/EmployeeDepartmentsForm';
+import EmployeePositions from './EmployeePositions/EmployeePositions';
+import EmployeePositionsForm from './EmployeePositions/EmployeePositionsForm/EmployeePositionsForm';
 
 
 const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/session`;
@@ -152,8 +154,6 @@ function DefaultContainer() {
   );
 }
 
-// TODO: subpage and page connection on db is useless, make it work by passing the path of subpage to its conencted page through HOC
-// TODO: when url is like this: "employee/departments/", it is producing infinite loop. please fix
 function matchComponentName(name) {
 
   switch (name) {
@@ -181,6 +181,8 @@ function matchComponentName(name) {
     case "EmployeesForm": return EmployeesForm;
     case "EmployeeDepartments": return EmployeeDepartments;
     case "EmployeeDepartmentsForm": return EmployeeDepartmentsForm;
+    case "EmployeePositions": return EmployeePositions;
+    case "EmployeePositionsForm": return EmployeePositionsForm;
 
     default: return undefined;
   }

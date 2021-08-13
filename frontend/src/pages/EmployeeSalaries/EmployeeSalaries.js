@@ -22,14 +22,15 @@ const modalBody = "This row will be deleted in the database, do you want to proc
 const colData = [
   { "id": "EmployeeSalaryID", "name": "Employee Salary ID" },
   { "id": "Salary", "name": "Salary" },
-  { "id": "EmployeeID", "name": "Employee ID" },
+  { "id": "EmployeeNo", "name": "Employee Number" },
+  { "id": "FirstName", "name": "Employee First Name" },
+  { "id": "LastName", "name": "Employee Last Name" },
   { "id": "StartedDate", "name": "Started Date" },
   { "id": "UntilDate", "name": "Until Date" },
 ];
 
 const idKey = "EmployeeSalaryID";
 
-// TODO: employeedepartment and positions, then employee 
 function EmployeesSalaries({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES

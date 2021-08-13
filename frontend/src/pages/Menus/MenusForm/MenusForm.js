@@ -58,7 +58,7 @@ export const menuFormInitialState = {
  * @param {String} [obj.customMenuURL] replaces url of menu get by id, added if component is rendered as child from other form
  * @param {React useRef} [obj.parentFormRef] add ref for formik, so parent component can fetch the form value
  */
-function MenusForm({ priv, customMenuURL, parentFormRef }) {
+function MenusForm({ priv, customMenuURL, parentFormRef, pagePath }) {
 
   // if this component is used as child
   const isRenderedAsChild = customMenuURL !== undefined;
@@ -149,7 +149,7 @@ function MenusForm({ priv, customMenuURL, parentFormRef }) {
       successArr.push(respData.msg);
 
       history.push({
-        pathname: '/menus',
+        pathname: pagePath,
         successMsg: successArr,
         search: location.search
       });
@@ -163,12 +163,12 @@ function MenusForm({ priv, customMenuURL, parentFormRef }) {
   useEffect(() => {
     if (isAddMode && priv === PRIVILEGES.read) {
       history.push({
-        pathname: '/menus',
+        pathname: pagePath,
         errorMsg: [ERRORMSG.noPrivilege],
         search: location.search
       });
     }
-  }, [history, isAddMode, location.search, priv])
+  }, [history, isAddMode, location.search, pagePath, priv])
 
   useDidUpdateEffect(() => {
     if (dataPages) {
@@ -237,7 +237,7 @@ function MenusForm({ priv, customMenuURL, parentFormRef }) {
       <div>
         {!isRenderedAsChild &&
           <div className="page-header">
-            <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/menus${location.search}`}>
+            <Link className="btn btn-outline-light btn-icon-text btn-md" to={`${pagePath}${location.search}`}>
               <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
               <span className="d-inline-block text-left">
                 Back

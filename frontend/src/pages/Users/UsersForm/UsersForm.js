@@ -27,14 +27,14 @@ yup.addMethod(yup.string, 'equalTo', equalTo);
 
 const schemaAdd = yup.object().shape({
   username: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
-  password: yup.string().min(12, 'Must be longer than 12'),
-  confirmPassword: yup.string().equalTo(yup.ref('password'), "Passwords don't match!")
+  password: yup.string().min(12, 'Must be longer than 12').required('Required'),
+  confirmPassword: yup.string().equalTo(yup.ref('password'), "Passwords don't match!").required('Required')
 });
 
 const schemaEdit = yup.object().shape({
   username: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
-  password: yup.string().min(12, 'Must be longer than 12').required('Required'),
-  confirmPassword: yup.string().equalTo(yup.ref('password'), "Passwords don't match!").required('Required')
+  password: yup.string().min(12, 'Must be longer than 12'),
+  confirmPassword: yup.string().equalTo(yup.ref('password'), "Passwords don't match!")
 });
 
 const userReducer = (state, action) => {
@@ -65,7 +65,7 @@ const userFormInitialState = {
   userImg: ""
 }
 
-function UsersForm({ priv }) {
+function UsersForm({ priv, pagePath }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
@@ -128,7 +128,7 @@ function UsersForm({ priv }) {
       successRef.current.push(respData.msg);
 
       history.push({
-        pathname: '/users',
+        pathname: pagePath,
         successMsg: successRef.current,
         search: location.search
       });
@@ -160,12 +160,12 @@ function UsersForm({ priv }) {
   useEffect(() => {
     if (isAddMode && priv === PRIVILEGES.read) {
       history.push({
-        pathname: '/users',
+        pathname: pagePath,
         errorMsg: [ERRORMSG.noPrivilege],
         search: location.search
       });
     }
-  }, [history, isAddMode, location.search, priv])
+  }, [history, isAddMode, location.search, pagePath, priv])
 
   useDidUpdateEffect(() => {
     if (dataRoles) {
@@ -241,7 +241,7 @@ function UsersForm({ priv }) {
     <>
       <div>
         <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/users${location.search}`}>
+          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`${pagePath}${location.search}`}>
             <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
             <span className="d-inline-block text-left">
               Back

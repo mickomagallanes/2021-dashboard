@@ -23,6 +23,7 @@ class GettersModel {
 
         this.allTblStrFrom = `${this.tableName}`;
         this.allTblStrIn = `('${this.tableName}'`;
+        this.whereClauseSecondary = "";
     }
 
     // executed on all functions that needed allTblStr
@@ -37,16 +38,17 @@ class GettersModel {
 
                 } else {
                     await loopArr(_self.secondaryTables, (indx) => {
-                        let secondTbl = _self.secondaryTables[indx].name;
-                        let secondTblKey = _self.secondaryTables[indx].id;
-                        let relationTbl = _self.secondaryTables[indx].relation;
+                        let secondTbl = _self.secondaryTables[indx].name || "";
+                        let secondTblKey = _self.secondaryTables[indx].id || "";
+                        let relationTbl = _self.secondaryTables[indx].relation || "";
+                        let whereStmtTbl = _self.secondaryTables[indx].whereClause || "";
 
-                        _self.allTblStrFrom += ` ${relationTbl} ${secondTbl} ON ${_self.tableName}.${secondTblKey} = ${secondTbl}.${secondTblKey} `
-                    });
+                        _self.allTblStrFrom += ` ${relationTbl} ${secondTbl} USING (${secondTblKey})`
 
-                    await loopArr(_self.secondaryTables, (indx) => {
                         _self.allTblStrIn += `, '${_self.secondaryTables[indx].name}'`
-                    })
+
+                        _self.whereClauseSecondary += whereStmtTbl;
+                    });
 
                     _self.allTblStrIn += `)`;
 
@@ -69,6 +71,8 @@ class GettersModel {
      */
     async getAllCount({ filter = undefined }) {
 
+        await this.init();
+
         let filterStmt = "";
 
         if (filter && filter.length) {
@@ -83,7 +87,7 @@ class GettersModel {
         const stmt = `SELECT 
                    count(1) as count
                 FROM
-                    ${this.allTblStrFrom} ${filterStmt}`;
+                    ${this.allTblStrFrom} WHERE 1 ${this.whereClauseSecondary}  ${filterStmt}`;
         try {
             const result = await mysql_conn.query(stmt);
             return result;
@@ -138,7 +142,7 @@ class GettersModel {
 
         }
 
-        const stmt = `SELECT * from ${this.allTblStrFrom} ${filterStmt} ${sortStmt} ${limitClause}`;
+        const stmt = `SELECT * from ${this.allTblStrFrom} WHERE 1 ${this.whereClauseSecondary} ${filterStmt} ${sortStmt} ${limitClause}`;
 
         try {
             const result = await mysql_conn.query(stmt);
@@ -158,9 +162,11 @@ class GettersModel {
     * @return {Array} result, length = 1
     */
     async getById(id) {
-        const stmt = `SELECT * from ${this.tableName}
-            WHERE
-                CAST(${this.primaryKey} AS CHAR) = ?;`;
+        await this.init();
+
+        const stmt = `SELECT * from ${this.allTblStrFrom} WHERE 1 ${this.whereClauseSecondary}
+            AND
+                CAST(${this.tableName}.${this.primaryKey} AS CHAR) = ?;`;
 
         try {
             const result = await mysql_conn.query(stmt, [id]);
@@ -208,15 +214,16 @@ class GettersModel {
             let likeStmt = "";
             let colArrNames = [];
 
-            let filterStmt = " WHERE ";
+            let filterStmt = " ";
 
+            // added the likeStmt and filterStmt to save time for looping
             await loopArr(columnArrObj, (indx) => {
                 if (indx === columnArrObj.length - 1) {
                     likeStmt += ` COLUMN_NAME LIKE ?`;
-                    filterStmt += ` ${columnArrObj[indx].id} LIKE '${columnArrObj[indx].value}%' `;
+                    filterStmt += ` AND ${columnArrObj[indx].id} LIKE '${columnArrObj[indx].value}%' `;
                 } else {
                     likeStmt += ` COLUMN_NAME LIKE ? OR `;
-                    filterStmt += ` ${columnArrObj[indx].id} LIKE '${columnArrObj[indx].value}%' AND `;
+                    filterStmt += ` AND ${columnArrObj[indx].id} LIKE '${columnArrObj[indx].value}%' AND `;
                 }
                 colArrNames.push(columnArrObj[indx].id);
 

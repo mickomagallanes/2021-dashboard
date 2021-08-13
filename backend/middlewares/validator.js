@@ -492,8 +492,7 @@ function employeePositionDeleteSchema(req, res, next) {
 function employeePositionInsertSchema(req, res, next) {
 
     const schema = Joi.object({
-        positionName: Joi.string().max(45).required(),
-        employeePositionPath: Joi.string().max(30).required()
+        positionName: Joi.string().max(45).required()
     });
     validateRequestBody(req, res, next, schema);
 }
@@ -501,8 +500,7 @@ function employeePositionInsertSchema(req, res, next) {
 function employeePositionModifySchema(req, res, next) {
 
     const schemaBody = Joi.object({
-        positionName: Joi.string().max(45).required(),
-        employeePositionPath: Joi.string().max(30).required()
+        positionName: Joi.string().max(45).required()
     });
     const schemaID = Joi.object({
         id: Joi.number().required()

@@ -91,7 +91,7 @@ const employeeFormInitialState = {
 
 };
 
-function EmployeesForm({ priv }) {
+function EmployeesForm({ priv, pagePath }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
@@ -157,7 +157,7 @@ function EmployeesForm({ priv }) {
       successArr.push(respData.msg);
 
       history.push({
-        pathname: '/employees',
+        pathname: pagePath,
         successMsg: successArr,
         search: location.search
       });
@@ -170,12 +170,12 @@ function EmployeesForm({ priv }) {
   useEffect(() => {
     if (isAddMode && priv === PRIVILEGES.read) {
       history.push({
-        pathname: '/employees',
+        pathname: pagePath,
         errorMsg: [ERRORMSG.noPrivilege],
         search: location.search
       });
     }
-  }, [history, isAddMode, location.search, priv])
+  }, [history, isAddMode, location.search, pagePath, priv])
 
   useDidUpdateEffect(() => {
 
@@ -258,7 +258,7 @@ function EmployeesForm({ priv }) {
     <>
       <div>
         <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/employees${location.search}`}>
+          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`${pagePath}${location.search}`}>
             <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
             <span className="d-inline-block text-left">
               Back
