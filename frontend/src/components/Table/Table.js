@@ -16,11 +16,13 @@ function Table({
   currentSortCol,
   sortFunc,
   filterFunc,
-  currentFilter
+  currentFilter,
+  bulkDeleteFunc
 }) {
 
   const [order, setOrder] = useState(currentOrder ? currentOrder : defaultOrder);
   const [sortedCol, setSortedCol] = useState(currentSortCol ? currentSortCol : null);
+  const [checkedRows, setCheckedRows] = useState([]);
 
   const handleSortClick = (colId) => {
 
@@ -34,6 +36,29 @@ function Table({
     } else {
       setOrder(flipOrder(order));
       sortFunc(colId, flipOrder(order));
+    }
+
+  }
+
+  const handleCheck = (checked, rowID) => {
+    const index = checkedRows.indexOf(rowID);
+
+    if (!checked) {
+      setCheckedRows(prev => [...prev].filter(o => o !== rowID));
+    } else if (index === -1) {
+      setCheckedRows(prev => [...prev, rowID]);
+
+    }
+
+  }
+
+  // TODO: fix bug when checked and sorted, the checked boxes disappear
+  const handleBulkDelete = () => {
+
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm("Do you want to delete these rows?")) {
+      console.log(bulkDeleteFunc)
+      bulkDeleteFunc(checkedRows);
     }
 
   }
@@ -59,6 +84,13 @@ function Table({
     {order === "ASC" ? <i className="mdi mdi-arrow-up-bold"> </i> : <i className="mdi mdi-arrow-down-bold"> </i>}
   </>)
 
+  const deleteBulkNoFilter = checkedRows.length && !filterFunc
+    ? <THNoBorder> <i className="mdi mdi-delete-forever h2 cursor-pointer" onClick={handleBulkDelete}> </i> </THNoBorder>
+    : <THNoBorder />;
+
+  const deleteBulkFilter = checkedRows.length
+    ? <FilterTH><i className="mdi mdi-delete-forever h2 cursor-pointer" onClick={handleBulkDelete}> </i></FilterTH>
+    : <FilterTH />;
   const SortTH = filterFunc ? SortedTHNoBorder : SortedTH;
 
   // TODO: delete bulk by checkbox each row
@@ -68,19 +100,27 @@ function Table({
       <table data-testid="Table" className={`table ${tblClass}`}>
         <thead>
           <tr>
+            {!!bulkDeleteFunc && deleteBulkNoFilter}
+
             {sortFunc
-              ? colData.map(x => (
+              ? <>
 
-                <SortTH key={`th${x.id}`} onClick={() => handleSortClick(x.id)}>
-                  {x.name}
-                  {
-                    matchSortedCol(x.id)
-                      ? sortIcon
-                      : <i className="mdi mdi-sort"></i>}
-                </SortTH>
+                {colData.map(x => (
 
-              ))
-              : colData.map(x => <THNoBorder key={`th${x.id}`}>{x.name}</THNoBorder>)
+                  <SortTH key={`th${x.id}`} onClick={() => handleSortClick(x.id)}>
+                    {x.name}
+                    {
+                      matchSortedCol(x.id)
+                        ? sortIcon
+                        : <i className="mdi mdi-sort"></i>}
+                  </SortTH>
+
+                ))}
+              </>
+              : <>
+
+                {colData.map(x => <THNoBorder key={`th${x.id}`}>{x.name}</THNoBorder>)}
+              </>
             }
 
             {!actionDisabled && <THNoBorder>Action/s</THNoBorder>}
@@ -89,6 +129,8 @@ function Table({
 
           {filterFunc &&
             <tr>
+              {!!bulkDeleteFunc && deleteBulkFilter}
+
               {colData.map(x => {
                 const matchedFilterObj = currentFilter.find(o => o.id === x.id);
                 const filterVal = matchedFilterObj !== undefined ? matchedFilterObj.value : "";
@@ -119,6 +161,10 @@ function Table({
             // e.g: "rname2" where "rname" is hardcoded id and "2" is the row id from db
             !!data.length && data.map(x =>
               <tr key={`tr${x[idKey]}`}>
+                {!!bulkDeleteFunc &&
+                  <td>
+                    <input type="checkbox" onClick={(e) => handleCheck(e.target.checked, x[idKey])}></input>
+                  </td>}
 
                 {colData.map(y => <td key={`td${x[idKey]}-${y.id}`}>{x[y.id]}</td>)}
 

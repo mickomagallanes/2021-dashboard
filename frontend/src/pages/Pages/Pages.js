@@ -15,6 +15,7 @@ const pageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all`;
 const pageCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all/count`;
 
 const pageDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/delete/`;
+const pageBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/delete/bulk`;
 
 const colData = [
   { "id": "PageID", "name": "Page ID" },
@@ -48,21 +49,23 @@ function Pages({ priv }) {
     },
     tableProps,
     filteringProps,
+    bulkDeleteProps,
+    bulkDeleteProps: {
+      deleteBulkData
+    },
     BundledTable
-  } = useBundledTable({ data: pageData, dataCount: totalPages });
+  } = useBundledTable({ data: pageData, dataCount: totalPages, bulkDeleteUrl: pageBulkDeleteURL });
 
   // to determine if initial fetch of data is done
 
   const [deletePage, deletePageResult] = useDelete(pageDeleteURL);
 
-  const fetchDepsCount = [currentEntries, currentPage, deletePageResult];
-  const fetchDepsPages = [deletePageResult];
+  const fetchDepsCount = [currentEntries, currentPage, deletePageResult, deleteBulkData];
+  const fetchDepsPages = [deletePageResult, deleteBulkData];
 
   const [dataCount, loadingCount] = useFetch(pageCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
   const [dataPages, loadingPages] = useFetch(pageURL + searchParamQuery, { customDeps: fetchDepsPages });
-
-
 
   const confirmDelete = useRef();
 
@@ -88,7 +91,7 @@ function Pages({ priv }) {
 
   // FUNCTIONS AND EVENT HANDLERS
 
-
+  // TODO: use modal in bulk
   const handleDelete = (pageId) => {
     handleShow();
     confirmDelete.current = () => {
@@ -145,6 +148,16 @@ function Pages({ priv }) {
     }
 
   }, [deletePageResult]);
+
+  useDidUpdateEffect(() => {
+
+    if (deleteBulkData.status) {
+      timerSuccessAlert([deleteBulkData.msg]);
+    } else {
+      timerErrorAlert([deleteBulkData.msg]);
+    }
+
+  }, [deleteBulkData]);
 
 
   // UI
@@ -218,6 +231,7 @@ function Pages({ priv }) {
                   actionButtons={actionButtons}
                   addButtons={addButtons}
                   filteringProps={filteringProps}
+                  bulkDeleteProps={bulkDeleteProps}
                 />
 
 

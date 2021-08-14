@@ -562,6 +562,17 @@ function getAllGeneralSchema(req, res, next) {
     validateRequestQuery(req, res, next, schema);
 }
 
+function deleteBulkGeneralSchema(req, res, next) {
+
+    const schema = Joi.object({
+        idArray: Joi.array().items(
+            Joi.number()
+        )
+    })
+    validateRequestBody(req, res, next, schema);
+}
+
+// TODO: remove redundancy in delete schemas
 function validate(req, res, next, schema) {
     const options = {
         abortEarly: false // include all errors
@@ -616,5 +627,6 @@ module.exports = {
     employeeDepartmentInsertSchema,
     employeeDepartmentDeleteSchema,
     getAllCountGeneralSchema,
-    getAllGeneralSchema
+    getAllGeneralSchema,
+    deleteBulkGeneralSchema
 }

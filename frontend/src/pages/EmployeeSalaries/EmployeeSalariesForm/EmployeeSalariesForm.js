@@ -135,7 +135,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
   }, [isAddMode, isRenderedAsChild])
 
   const handleSubmitForm = async (fields) => {
-    console.log(fields)
+
     const param = {
       "salary": fields.salary,
       "employeeID": fields.employeeID,

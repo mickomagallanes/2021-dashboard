@@ -27,6 +27,22 @@ class PageService {
     }
 
     /**
+    * delete bulk id array
+    * @param {Array} idArray array containing ids of row
+    */
+    static async deleteBulkPage(idArray) {
+
+        let ret = await PageModel.deleteBulkPage(idArray);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
      * inserts new page in the database
      * @param {String} roleID role id
      * @param {Object} obj - An object.

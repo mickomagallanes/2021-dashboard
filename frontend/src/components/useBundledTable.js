@@ -6,6 +6,7 @@ import Table from './Table/Table';
 import { useHistory, useLocation } from 'react-router-dom';
 import ReactDOM from "react-dom";
 import useDidUpdateEffect from './useDidUpdateEffect';
+import usePost from './usePost';
 
 const initPageValue = 1;
 const initEntryValue = 5;
@@ -59,6 +60,7 @@ URLSearchParams.prototype.toArrayOfObjects = function () {
  * @param {Boolean} [isPaginated] default: true, determines if table will have pagination
  * @param {Boolean} [isSorted] default: true, determines if table will have sorting functionality
  * @param {Boolean} [enabledSearchParam] default: true. If true, pushes all parameters of table to history url
+ * @param {String} [bulkDeleteUrl] url of delete bulk
  * @returns obj
  * @returns obj.searchparamQuery added to the fetch url, contains page, entry, sortBy and order parameter
  * @returns obj.sortParam sort query parameter string
@@ -68,6 +70,7 @@ URLSearchParams.prototype.toArrayOfObjects = function () {
  * @returns obj.entryProps props for entry, returns differently by the isPaginated value
  * @returns obj.tableProps props for table, returns differently by the isSorted value
  * @returns obj.paginationProps props for pagination, returns differently by the isPaginated value
+ * @returns obj.bulkDeleteProps props for bulk deletion, returns differently by the bulkDeleteUrl
  */
 function useBundledTable({
     data,
@@ -75,7 +78,8 @@ function useBundledTable({
     isPaginated = true,
     isSorted = true,
     enabledSearchParam = true,
-    isFiltered = true
+    isFiltered = true,
+    bulkDeleteUrl
 }) {
 
     const location = useLocation();
@@ -103,6 +107,9 @@ function useBundledTable({
 
     const [currentFilter, setCurrentFilter] = useState(filterParamsValue ? filterParamsValue : initFilterValue);
 
+    // BULK DELETE FUNCTIONALITY
+    const [deleteBulk, deleteBulkData] = usePost(bulkDeleteUrl);
+    console.log(deleteBulk)
     ///////////////////////////////////////
     const sortParam = (isSorted && currentSortCol && currentSortOrder) ? `sortBy=${currentSortCol}&order=${currentSortOrder}` : "";
     const pageAndEntryParam = isPaginated ? `page=${currentPage}&limit=${currentEntries}` : "";
@@ -189,7 +196,14 @@ function useBundledTable({
         }
         : null;
 
-
+    const bulkDeleteProps = bulkDeleteUrl
+        ? {
+            deleteBulkData,
+            handleBulkDelete: (arr) => {
+                deleteBulk({ idArray: arr });
+            }
+        }
+        : null;
 
     // LIFECYCLES
     useDidUpdateEffect(() => {
@@ -230,7 +244,8 @@ function useBundledTable({
         entryProps,
         tableProps,
         paginationProps,
-        filteringProps
+        filteringProps,
+        bulkDeleteProps
     }
 }
 
@@ -239,6 +254,7 @@ function BundledTable({
     entryProps,
     paginationProps,
     filteringProps,
+    bulkDeleteProps,
     colData,
     idKey,
     actionButtons,
@@ -248,6 +264,7 @@ function BundledTable({
     const sortFunc = tableProps.handleSort ? tableProps.handleSort : null;
     const filterFunc = filteringProps && filteringProps.handleFilter ? filteringProps.handleFilter : null;
     const currentFilter = filteringProps && filteringProps.currentFilter ? filteringProps.currentFilter : null;
+    const bulkDeleteFunc = bulkDeleteProps.handleBulkDelete ? bulkDeleteProps.handleBulkDelete : null;
 
     return (
         <>
@@ -286,6 +303,7 @@ function BundledTable({
                 currentSortCol={tableProps.currentSortCol}
                 filterFunc={filterFunc}
                 currentFilter={currentFilter}
+                bulkDeleteFunc={bulkDeleteFunc}
             />
 
         </>
