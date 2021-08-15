@@ -10,10 +10,9 @@ const {
     getAllGeneralSchema,
     menuInsertSchema,
     menuModifySchema,
-    menuDeleteSchema,
-    parentMenuDeleteSchema,
     parentMenuSortSchema,
-    getAllCountGeneralSchema
+    getAllCountGeneralSchema,
+    deleteGeneralSchema
 } = require('../../middlewares/validator.js');
 
 /******************************** Menu ***************************************/
@@ -129,7 +128,7 @@ router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (re
 });
 
 // delete menu, also deletes children data
-router.delete('/delete/:id', [checkSession, menuDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await MenusService.deleteMenu(req.params.id);
 
     if (result.status === false) {
@@ -141,7 +140,7 @@ router.delete('/delete/:id', [checkSession, menuDeleteSchema, authorizeWriteRout
 
 /*************************** Parent Menu *************************************/
 // delete menu, also deletes children data
-router.delete('/parent/delete/:id', [checkSession, parentMenuDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/parent/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await MenusService.deleteParentMenu(req.params.id);
 
     if (result.status === false) {

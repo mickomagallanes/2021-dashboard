@@ -8,13 +8,13 @@ const {
     routeInsertSchema,
     routeModifySchema,
     getAllGeneralSchema,
-    routeDeleteSchema,
+    deleteGeneralSchema,
     getAllCountGeneralSchema
 } = require('../../middlewares/validator.js');
 
 /*************************** Routes *************************************/
 // delete route, also deletes children data
-router.delete('/delete/:id', [checkSession, routeDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await RouteService.deleteRoute(req.params.id);
 
     if (result.status === false) {

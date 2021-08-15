@@ -11,7 +11,7 @@ const {
     pageModifySchema,
     pageInsertBulkSchema,
     pageModifyBulkSchema,
-    pageDeleteSchema,
+    deleteGeneralSchema,
     getAllCountGeneralSchema,
     deleteBulkGeneralSchema
 } = require('../../middlewares/validator.js');
@@ -140,7 +140,7 @@ router.put('/modify/:id', [checkSession, pageModifySchema, authorizeWriteRoute],
 
 
 // delete page, also deletes children data
-router.delete('/delete/:id', [checkSession, pageDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await PageService.deletePage(req.params.id);
 
     if (result.status === false) {
@@ -154,9 +154,9 @@ router.post('/delete/bulk', [checkSession, deleteBulkGeneralSchema, authorizeWri
     let result = await PageService.deleteBulkPage(req.body.idArray);
 
     if (result.status === false) {
-        res.json({ "status": false, "msg": "Failed deleting page" });
+        res.json({ "status": false, "msg": "Failed deleting bulk pages" });
     } else {
-        res.json({ "status": true, "msg": "Deleted page successfully" });
+        res.json({ "status": true, "msg": "Deleted bulk pages successfully" });
     }
 });
 

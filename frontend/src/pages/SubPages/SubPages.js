@@ -17,6 +17,7 @@ const modalBody = "This row will be deleted in the database, do you want to proc
 const subPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/all`;
 const subPageCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/get/all/count`;
 const subPageDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/delete/`;
+const subPageBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/subpage/delete/bulk`;
 
 const colData = [
   { "id": "SubPageID", "name": "SubPage ID" },
@@ -26,6 +27,7 @@ const colData = [
 
 const idKey = "SubPageID";
 
+// TODO: apply all deletion checkbox functions, and the reset when after delete checkbox
 function SubPages({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
@@ -48,15 +50,20 @@ function SubPages({ priv }) {
     },
     tableProps,
     filteringProps,
+    bulkDeleteProps,
+    bulkDeleteProps: {
+      deleteBulkData,
+      setCurrentDeleteRows
+    },
     BundledTable
-  } = useBundledTable({ data: subPageData, dataCount: totalSubPages });
+  } = useBundledTable({ data: subPageData, dataCount: totalSubPages, bulkDeleteUrl: subPageBulkDeleteURL });
 
   const [deleteSubPage, deleteSubPageResult] = useDelete(subPageDeleteURL);
 
   // to determine if initial fetch of data is done
 
-  const fetchDepsCount = [currentEntries, currentPage, deleteSubPageResult];
-  const fetchDepsSubPages = [deleteSubPageResult];
+  const fetchDepsCount = [currentEntries, currentPage, deleteSubPageResult, deleteBulkData];
+  const fetchDepsSubPages = [deleteSubPageResult, deleteBulkData];
 
   const [dataCount, loadingCount] = useFetch(subPageCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
@@ -92,6 +99,7 @@ function SubPages({ priv }) {
     handleShow();
     confirmDelete.current = () => {
       deleteSubPage(subPageId);
+      setCurrentDeleteRows(prev => [...prev].filter(o => o !== subPageId));
       handleClose();
     }
 
@@ -145,6 +153,15 @@ function SubPages({ priv }) {
 
   }, [deleteSubPageResult]);
 
+  useDidUpdateEffect(() => {
+
+    if (deleteBulkData.status) {
+      timerSuccessAlert([deleteBulkData.msg]);
+    } else {
+      timerErrorAlert([deleteBulkData.msg]);
+    }
+
+  }, [deleteBulkData]);
 
   // UI
   const actionButtons = (subPageID) => {
@@ -204,6 +221,7 @@ function SubPages({ priv }) {
                   actionButtons={actionButtons}
                   addButtons={addButtons}
                   filteringProps={filteringProps}
+                  bulkDeleteProps={bulkDeleteProps}
                 />
 
               </div>

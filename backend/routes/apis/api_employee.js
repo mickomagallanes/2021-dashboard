@@ -8,16 +8,13 @@ const {
     getAllGeneralSchema,
     employeeSalaryModifySchema,
     employeeSalaryInsertSchema,
-    employeeSalaryDeleteSchema,
     employeeModifySchema,
     employeeInsertSchema,
-    employeeDeleteSchema,
     employeePositionModifySchema,
     employeePositionInsertSchema,
-    employeePositionDeleteSchema,
+    deleteGeneralSchema,
     employeeDepartmentModifySchema,
     employeeDepartmentInsertSchema,
-    employeeDepartmentDeleteSchema,
     getAllCountGeneralSchema
 } = require('../../middlewares/validator.js');
 
@@ -26,7 +23,7 @@ const {
 /******************************** EMPLOYEE POSITIONS ***************************************/
 
 // delete position, also deletes children data
-router.delete('/position/delete/:id', [checkSession, employeePositionDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/position/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await EmployeeService.deleteEmployeePosition(req.params.id);
 
     if (result.status === false) {
@@ -110,7 +107,7 @@ router.get('/position/get/by/:id', [checkSession, authorizeReadRoute], async fun
 /******************************** EMPLOYEE DEPARTMENTS ***************************************/
 
 // delete department, also deletes children data
-router.delete('/department/delete/:id', [checkSession, employeeDepartmentDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/department/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await EmployeeService.deleteEmployeeDepartment(req.params.id);
 
     if (result.status === false) {
@@ -192,7 +189,7 @@ router.get('/department/get/by/:id', [checkSession, authorizeReadRoute], async f
 /******************************** EMPLOYEE SALARIES ***************************************/
 
 // delete salary, also deletes children data
-router.delete('/salary/delete/:id', [checkSession, employeeSalaryDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/salary/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await EmployeeService.deleteEmployeeSalary(req.params.id);
 
     if (result.status === false) {
@@ -369,7 +366,7 @@ router.put('/modify/:id', [checkSession, employeeModifySchema, authorizeWriteRou
 
 
 // delete employee, also deletes children data
-router.delete('/delete/:id', [checkSession, employeeDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await EmployeeService.deleteEmployee(req.params.id);
 
     if (result.status === false) {

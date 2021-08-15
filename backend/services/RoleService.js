@@ -14,7 +14,7 @@ class RoleService {
      */
     static async deleteRole(roleID) {
 
-        let ret = await RoleModel.deleteRole(roleID);
+        let ret = await RoleModel.deleteModel.deleteRow(roleID);
 
         if (ret == false) {
             return { status: false }
@@ -78,7 +78,7 @@ class RoleService {
      */
 
     static async getRoleById(id) {
-        let ret = await RoleModel.getRoleById(id);
+        let ret = await RoleModel.getterModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -93,7 +93,7 @@ class RoleService {
     * get all roles
     */
     static async getAllRoles() {
-        let roleArr = await RoleModel.getAllRoles();
+        let roleArr = await RoleModel.getterModel.getAll();
         if (roleArr) {
             return { status: true, data: roleArr }
         } else {
@@ -106,7 +106,7 @@ class RoleService {
     * get all roles count
     */
     static async getAllCount({ filter }) {
-        let roleArr = await RoleModel.getAllCount({ filter });
+        let roleArr = await RoleModel.getterModel.getAllCount({ filter });
         if (roleArr.length) {
             return { status: true, data: roleArr[0] }
         } else {

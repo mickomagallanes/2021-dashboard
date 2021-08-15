@@ -318,8 +318,8 @@ function UsersForm({ priv, pagePath }) {
                                 <Field
                                   label="Role"
                                   options={extractedDataRoles}
-                                  idKey="id"
-                                  valueKey="rname"
+                                  idKey="RoleID"
+                                  valueKey="RoleName"
                                   name="roleID"
                                   disabled={!isWriteable}
                                   component={SelectFormField}

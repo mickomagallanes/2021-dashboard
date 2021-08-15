@@ -2,7 +2,7 @@
 const RoleService = require('../../services/RoleService.js');
 
 const { checkSession, authorizeReadRoute, authorizeWriteRoute } = require('../../middlewares/routesauth.js');
-const { roleInsertSchema, roleModifySchema, roleDeleteSchema, getAllCountGeneralSchema } = require('../../middlewares/validator.js');
+const { roleInsertSchema, roleModifySchema, deleteGeneralSchema, getAllCountGeneralSchema } = require('../../middlewares/validator.js');
 const express = require('express');
 const router = express.Router();
 
@@ -76,7 +76,7 @@ router.put('/modify/:id', [checkSession, roleModifySchema, authorizeWriteRoute],
 
 
 // delete role, also deletes children data
-router.delete('/delete/:id', [checkSession, roleDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await RoleService.deleteRole(req.params.id);
 
     if (result.status === false) {

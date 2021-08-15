@@ -2,60 +2,19 @@ const mysql_conn = require("./db.js");
 const { PRIVILEGES } = require('../utils/constants.js');
 const GettersModel = require("./GettersModel.js");
 const { loopArr } = require('../utils/looping.js');
+const DeleteModel = require("./DeleteModel.js");
 
 "use strict";
 
 const tableName = "Pages";
 const primaryKey = "PageID";
 const getterModel = new GettersModel(tableName, primaryKey);
+const deleteModel = new DeleteModel(tableName, primaryKey);
 
 class PageModel {
 
     constructor() {
 
-    }
-
-    /**
-      * deleted page rows in the database
-      * @param {String} pageID id of the page
-      */
-    static async deletePage(pageID) {
-
-        try {
-            const result = await mysql_conn.delete("Pages", "where PageID=?", [pageID]);
-            return result;
-
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
-
-    /**
-  * delete bulk id array
-  * @param {Array} idArray array containing ids of row
-  */
-    static async deleteBulkPage(idArray) {
-        let whereClause = " WHERE PageID IN ("
-
-        await loopArr(idArray, (indx) => {
-            if (indx === 0) {
-                whereClause += ` ? `;
-            } else {
-                whereClause += ` , ? `;
-            }
-        });
-
-        whereClause += `)`;
-
-        try {
-            const result = await mysql_conn.delete("Pages", whereClause, idArray);
-            return result;
-
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
     }
 
     /**
@@ -132,7 +91,7 @@ class PageModel {
 
 
 }
+PageModel.deleteModel = deleteModel;
+PageModel.getterModel = getterModel;
 
-
-Object.setPrototypeOf(PageModel, getterModel);
 module.exports = PageModel;

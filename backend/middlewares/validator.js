@@ -40,14 +40,6 @@ function userLoginSchema(req, res, next) {
     validateRequestBody(req, res, next, schema);
 }
 
-function userDeleteSchema(req, res, next) {
-
-    const schema = Joi.object({
-        id: Joi.number().required()
-    });
-    validateRequestParams(req, res, next, schema);
-}
-
 /**************** PAGE-ROLE ****************/
 function pageRolePostSchema(req, res, next) {
     const pageRolesArr = Joi.object({
@@ -107,23 +99,7 @@ function roleModifySchema(req, res, next) {
     validateRequest(req, res, next, wholeSchema);
 }
 
-function roleDeleteSchema(req, res, next) {
-
-    const schema = Joi.object({
-        id: Joi.number().required()
-    });
-    validateRequestParams(req, res, next, schema);
-}
-
 /*********** ROUTES ************/
-function routeDeleteSchema(req, res, next) {
-
-    const schema = Joi.object({
-        id: Joi.number().required()
-    });
-    validateRequestParams(req, res, next, schema);
-}
-
 function routeInsertSchema(req, res, next) {
 
     const schema = Joi.object({
@@ -162,14 +138,6 @@ function parentMenuSortSchema(req, res, next) {
     validateRequestBody(req, res, next, schema);
 }
 
-function parentMenuDeleteSchema(req, res, next) {
-
-    const schema = Joi.object({
-        id: Joi.number().required()
-    });
-    validateRequestParams(req, res, next, schema);
-}
-
 function parentMenuInsertSchema(req, res, next) {
 
     const schema = Joi.object({
@@ -196,14 +164,6 @@ function parentMenuModifySchema(req, res, next) {
 }
 
 /*********** 2. MENU ************/
-
-function menuDeleteSchema(req, res, next) {
-
-    const schema = Joi.object({
-        id: Joi.number().required()
-    });
-    validateRequestParams(req, res, next, schema);
-}
 
 function menuInsertSchema(req, res, next) {
 
@@ -235,13 +195,6 @@ function menuModifySchema(req, res, next) {
 }
 
 /**************** PAGE ****************/
-function pageDeleteSchema(req, res, next) {
-
-    const schema = Joi.object({
-        id: Joi.number().required()
-    });
-    validateRequestParams(req, res, next, schema);
-}
 
 function pageInsertSchema(req, res, next) {
 
@@ -309,13 +262,6 @@ function pageModifyBulkSchema(req, res, next) {
 }
 
 /**************** SUB PAGE ****************/
-function subPageDeleteSchema(req, res, next) {
-
-    const schema = Joi.object({
-        id: Joi.number().required()
-    });
-    validateRequestParams(req, res, next, schema);
-}
 
 function subPageInsertSchema(req, res, next) {
 
@@ -351,14 +297,6 @@ function subPageModifySchema(req, res, next) {
 /**************** EMPLOYEES ****************/
 
 /*********** 1. Employee ************/
-
-function employeeDeleteSchema(req, res, next) {
-
-    const schema = Joi.object({
-        id: Joi.number().required()
-    });
-    validateRequestParams(req, res, next, schema);
-}
 
 function employeeInsertSchema(req, res, next) {
 
@@ -405,13 +343,6 @@ function employeeModifySchema(req, res, next) {
 
 
 /*********** 2. Employee Salary************/
-function employeeSalaryDeleteSchema(req, res, next) {
-
-    const schema = Joi.object({
-        id: Joi.number().required()
-    });
-    validateRequestParams(req, res, next, schema);
-}
 
 function employeeSalaryInsertSchema(req, res, next) {
 
@@ -445,13 +376,6 @@ function employeeSalaryModifySchema(req, res, next) {
 }
 
 /*********** 3. Employee Department************/
-function employeeDepartmentDeleteSchema(req, res, next) {
-
-    const schema = Joi.object({
-        id: Joi.number().required()
-    });
-    validateRequestParams(req, res, next, schema);
-}
 
 function employeeDepartmentInsertSchema(req, res, next) {
 
@@ -481,13 +405,6 @@ function employeeDepartmentModifySchema(req, res, next) {
 
 
 /*********** 4. Employee Position************/
-function employeePositionDeleteSchema(req, res, next) {
-
-    const schema = Joi.object({
-        id: Joi.number().required()
-    });
-    validateRequestParams(req, res, next, schema);
-}
 
 function employeePositionInsertSchema(req, res, next) {
 
@@ -562,6 +479,14 @@ function getAllGeneralSchema(req, res, next) {
     validateRequestQuery(req, res, next, schema);
 }
 
+function deleteGeneralSchema(req, res, next) {
+
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequestParams(req, res, next, schema);
+}
+
 function deleteBulkGeneralSchema(req, res, next) {
 
     const schema = Joi.object({
@@ -572,7 +497,6 @@ function deleteBulkGeneralSchema(req, res, next) {
     validateRequestBody(req, res, next, schema);
 }
 
-// TODO: remove redundancy in delete schemas
 function validate(req, res, next, schema) {
     const options = {
         abortEarly: false // include all errors
@@ -590,43 +514,33 @@ module.exports = {
     userInsertSchema,
     userLoginSchema,
     userModifySchema,
-    userDeleteSchema,
     routeRolePostSchema,
     pageRolePostSchema,
     roleInsertSchema,
     roleModifySchema,
-    roleDeleteSchema,
     routeInsertSchema,
     routeModifySchema,
-    routeDeleteSchema,
     parentMenuInsertSchema,
     parentMenuModifySchema,
-    parentMenuDeleteSchema,
     parentMenuSortSchema,
     menuInsertSchema,
     menuModifySchema,
-    menuDeleteSchema,
     pageInsertSchema,
     pageInsertBulkSchema,
     pageModifyBulkSchema,
     pageModifySchema,
-    pageDeleteSchema,
     subPageInsertSchema,
     subPageModifySchema,
-    subPageDeleteSchema,
     employeeModifySchema,
     employeeInsertSchema,
-    employeeDeleteSchema,
     employeeSalaryModifySchema,
     employeeSalaryInsertSchema,
-    employeeSalaryDeleteSchema,
     employeePositionModifySchema,
     employeePositionInsertSchema,
-    employeePositionDeleteSchema,
     employeeDepartmentModifySchema,
     employeeDepartmentInsertSchema,
-    employeeDepartmentDeleteSchema,
     getAllCountGeneralSchema,
     getAllGeneralSchema,
-    deleteBulkGeneralSchema
+    deleteBulkGeneralSchema,
+    deleteGeneralSchema
 }

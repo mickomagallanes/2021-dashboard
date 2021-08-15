@@ -104,7 +104,7 @@ export default class RolesForm extends React.Component {
   saveRoleData = async (roleData) => {
     if (roleData.status === true) {
       this.setState({
-        formData: { rolename: roleData.data.rname },
+        formData: { rolename: roleData.data.RoleName },
         isLoading: false
       });
     } else {

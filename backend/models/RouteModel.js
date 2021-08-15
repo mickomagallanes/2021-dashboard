@@ -1,33 +1,19 @@
 const mysql_conn = require("./db.js");
 const { PRIVILEGES } = require('../utils/constants.js');
 const GettersModel = require("./GettersModel.js");
+const DeleteModel = require("./DeleteModel.js");
 
 "use strict";
 
 const tableName = "Routes";
 const primaryKey = "RouteID";
 const getterModel = new GettersModel(tableName, primaryKey);
+const deleteModel = new DeleteModel(tableName, primaryKey);
 
 class RouteModel {
 
     constructor() {
 
-    }
-
-    /**
-      * deleted route rows in the database
-      * @param {String} routeID id of the route
-      */
-    static async deleteRoute(routeID) {
-
-        try {
-            const result = await mysql_conn.delete("Routes", "where RouteID=?", [routeID]);
-            return result;
-
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
     }
 
     /**
@@ -85,5 +71,7 @@ class RouteModel {
 }
 
 
-Object.setPrototypeOf(RouteModel, getterModel);
+RouteModel.deleteModel = deleteModel;
+RouteModel.getterModel = getterModel;
+
 module.exports = RouteModel;

@@ -1,4 +1,5 @@
 const mysql_conn = require("./db.js");
+const DeleteModel = require("./DeleteModel.js");
 const GettersModel = require("./GettersModel.js");
 
 "use strict";
@@ -7,27 +8,12 @@ const tableName = "Users";
 const primaryKey = "UserID";
 const secondaryTables = [{ id: "RoleID", name: "Roles", relation: " INNER JOIN " }];
 const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
+const deleteModel = new DeleteModel(tableName, primaryKey);
 
 class UserModel {
 
     constructor() {
 
-    }
-
-    /**
-     * deleted user rows in the database
-     * @param {String} userID id of the user
-     */
-    static async deleteUser(userID) {
-
-        try {
-            const result = await mysql_conn.delete("Users", "where UserID=?", [userID]);
-            return result;
-
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
     }
 
     /**
@@ -94,23 +80,22 @@ class UserModel {
             return false;
         }
     }
-
     /**
-    * get a row using by user id
-    * @param {Number} id id of the user
-    * @return {Array} result, length = 1
-    */
+      * get a row using by user id
+      * @param {Number} id id of the user
+      * @return {Array} result, length = 1
+      */
     static async getUserById(id) {
         const stmt = `SELECT 
-                b.RoleID as rid,
-                b.RoleName as rname,
-                a.Username as uname,
-                a.UserID as id,
-                a.Image as img
-            FROM
-                Users as a INNER JOIN Roles as b ON a.RoleID = b.RoleID
-            WHERE
-                CAST(a.UserID AS CHAR) = ?;`;
+            b.RoleID as rid,
+            b.RoleName as rname,
+            a.Username as uname,
+            a.UserID as id,
+            a.Image as img
+        FROM
+            Users as a INNER JOIN Roles as b ON a.RoleID = b.RoleID
+        WHERE
+            CAST(a.UserID AS CHAR) = ?;`;
 
         try {
             const result = await mysql_conn.query(stmt, [id]);
@@ -150,5 +135,7 @@ class UserModel {
 
 }
 
-Object.setPrototypeOf(UserModel, getterModel);
+UserModel.deleteModel = deleteModel;
+UserModel.getterModel = getterModel;
+
 module.exports = UserModel;

@@ -109,7 +109,8 @@ function useBundledTable({
 
     // BULK DELETE FUNCTIONALITY
     const [deleteBulk, deleteBulkData] = usePost(bulkDeleteUrl);
-    console.log(deleteBulk)
+    let [currentDeleteRows, setCurrentDeleteRows] = useState([]);
+
     ///////////////////////////////////////
     const sortParam = (isSorted && currentSortCol && currentSortOrder) ? `sortBy=${currentSortCol}&order=${currentSortOrder}` : "";
     const pageAndEntryParam = isPaginated ? `page=${currentPage}&limit=${currentEntries}` : "";
@@ -199,8 +200,11 @@ function useBundledTable({
     const bulkDeleteProps = bulkDeleteUrl
         ? {
             deleteBulkData,
+            currentDeleteRows,
+            setCurrentDeleteRows,
             handleBulkDelete: (arr) => {
                 deleteBulk({ idArray: arr });
+                setCurrentDeleteRows([]);
             }
         }
         : null;
@@ -264,7 +268,26 @@ function BundledTable({
     const sortFunc = tableProps.handleSort ? tableProps.handleSort : null;
     const filterFunc = filteringProps && filteringProps.handleFilter ? filteringProps.handleFilter : null;
     const currentFilter = filteringProps && filteringProps.currentFilter ? filteringProps.currentFilter : null;
-    const bulkDeleteFunc = bulkDeleteProps.handleBulkDelete ? bulkDeleteProps.handleBulkDelete : null;
+    const bulkDeleteFunc = bulkDeleteProps && bulkDeleteProps.handleBulkDelete ? bulkDeleteProps.handleBulkDelete : null;
+    const currentDeleteRows = bulkDeleteProps && bulkDeleteProps.currentDeleteRows ? bulkDeleteProps.currentDeleteRows : null;
+    const setCurrentDeleteRows = bulkDeleteProps && bulkDeleteProps.setCurrentDeleteRows ? bulkDeleteProps.setCurrentDeleteRows : null;
+
+    const tblFilterObj = filteringProps ? {
+        currentFilter,
+        filterFunc
+    } : {};
+
+    const tblSortObj = tableProps ? {
+        sortFunc,
+        currentOrder: tableProps.currentSortOrder,
+        currentSortCol: tableProps.currentSortCol
+    } : {};
+
+    const tblDeleteObj = bulkDeleteProps ? {
+        bulkDeleteFunc,
+        currentDeleteRows,
+        setCurrentDeleteRows
+    } : {};
 
     return (
         <>
@@ -298,12 +321,9 @@ function BundledTable({
                 colData={colData}
                 idKey={idKey}
                 actionButtons={actionButtons}
-                sortFunc={sortFunc}
-                currentOrder={tableProps.currentSortOrder}
-                currentSortCol={tableProps.currentSortCol}
-                filterFunc={filterFunc}
-                currentFilter={currentFilter}
-                bulkDeleteFunc={bulkDeleteFunc}
+                tblDeleteObj={tblDeleteObj}
+                tblSortObj={tblSortObj}
+                tblFilterObj={tblFilterObj}
             />
 
         </>

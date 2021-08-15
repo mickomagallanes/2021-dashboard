@@ -16,7 +16,23 @@ class UserService {
      */
     static async deleteUser(userID) {
 
-        let ret = await UserModel.deleteUser(userID);
+        let ret = await UserModel.deleteModel.deleteRow(userID);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
+       * delete bulk id array
+       * @param {Array} idArray array containing ids of row
+       */
+    static async deleteBulkUser(idArray) {
+
+        let ret = await UserModel.deleteModel.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
@@ -55,7 +71,7 @@ class UserService {
             }
         }
 
-        let userData = await UserModel.getAll({
+        let userData = await UserModel.getterModel.getAll({
             startIndex: startIndex,
             limit: limit,
             sortBy: sortBy,
@@ -98,7 +114,7 @@ class UserService {
 
     static async getAllCount({ filter }) {
 
-        const userCount = await UserModel.getAllCount({ filter });
+        const userCount = await UserModel.getterModel.getAllCount({ filter });
         if (userCount.length) {
             return { status: true, data: userCount[0] }
         } else {

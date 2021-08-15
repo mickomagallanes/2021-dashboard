@@ -1,4 +1,5 @@
 const mysql_conn = require("./db.js");
+const DeleteModel = require("./DeleteModel.js");
 const GettersModel = require("./GettersModel.js");
 
 "use strict";
@@ -7,28 +8,13 @@ const tableName = "ParentMenus";
 const primaryKey = "ParentMenuID";
 
 const getterModel = new GettersModel(tableName, primaryKey);
+const deleteModel = new DeleteModel(tableName, primaryKey);
 
 // LESSON: One model per table
 class ParentMenuModel {
 
     constructor() {
 
-    }
-
-    /**
-     * deleted parent menu rows in the database
-     * @param {String} parentMenuID id of the menu
-     */
-    static async deleteParentMenu(parentMenuID) {
-
-        try {
-            const result = await mysql_conn.delete("ParentMenus", "where ParentMenuID=?", [parentMenuID]);
-            return result;
-
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
     }
 
 
@@ -161,6 +147,7 @@ class ParentMenuModel {
 
 }
 
+ParentMenuModel.deleteModel = deleteModel;
+ParentMenuModel.getterModel = getterModel;
 
-Object.setPrototypeOf(ParentMenuModel, getterModel);
 module.exports = ParentMenuModel;

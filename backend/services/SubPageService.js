@@ -14,7 +14,7 @@ class SubPageService {
      */
     static async deleteSubPage(subPageID) {
 
-        let ret = await SubPageModel.deleteMenu(subPageID);
+        let ret = await SubPageModel.deleteModel.deleteRow(subPageID);
 
         if (ret == false) {
             return { status: false }
@@ -24,6 +24,22 @@ class SubPageService {
 
     }
 
+
+    /**
+     * delete bulk id array
+     * @param {Array} idArray array containing ids of row
+     */
+    static async deleteBulkSubPage(idArray) {
+
+        let ret = await SubPageModel.deleteModel.deleteBulkRows(idArray);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
 
     /**
      *  get pages based on logged-in user role
@@ -123,7 +139,7 @@ class SubPageService {
             }
         }
 
-        let subPageArr = await SubPageModel.getAll({
+        let subPageArr = await SubPageModel.getterModel.getAll({
             startIndex: startIndex,
             limit: limit,
             sortBy: sortBy,
@@ -147,7 +163,7 @@ class SubPageService {
      * @return one row of subPage
      */
     static async getSubPageById(id) {
-        let ret = await SubPageModel.getById(id);
+        let ret = await SubPageModel.getterModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -164,7 +180,7 @@ class SubPageService {
      */
     static async getAllSubPageCount({ filter }) {
 
-        const subPageCount = await SubPageModel.getAllCount({ filter });
+        const subPageCount = await SubPageModel.getterModel.getAllCount({ filter });
 
         if (subPageCount.length) {
             return { status: true, data: subPageCount[0] }

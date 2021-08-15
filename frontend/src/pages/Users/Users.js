@@ -16,6 +16,7 @@ const userURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/all`;
 const userCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/get/all/count`;
 
 const userDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/delete/`;
+const userBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/user/delete/bulk`;
 
 const modalTitle = "Do you want to delete this user?";
 const modalBody = "This row will be deleted in the database, do you want to proceed?";
@@ -50,14 +51,19 @@ function Users({ priv }) {
     },
     tableProps,
     filteringProps,
+    bulkDeleteProps,
+    bulkDeleteProps: {
+      deleteBulkData,
+      setCurrentDeleteRows
+    },
     BundledTable
-  } = useBundledTable({ data: userData, dataCount: totalUsers });
+  } = useBundledTable({ data: userData, dataCount: totalUsers, bulkDeleteUrl: userBulkDeleteURL });
 
   // to determine if initial fetch of data is done
   const [deleteUser, deleteUserResult] = useDelete(userDeleteURL);
 
-  const fetchDepsCount = [currentEntries, currentPage, deleteUserResult];
-  const fetchDepsUsers = [deleteUserResult];
+  const fetchDepsCount = [currentEntries, currentPage, deleteUserResult, deleteBulkData];
+  const fetchDepsUsers = [deleteUserResult, deleteBulkData];
 
   const [dataCount, loadingCount] = useFetch(userCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
@@ -92,6 +98,8 @@ function Users({ priv }) {
     handleShow();
     confirmDelete.current = () => {
       deleteUser(userId);
+      // remove row from the checkbox delete rows
+      setCurrentDeleteRows(prev => [...prev].filter(o => o !== userId));
       handleClose();
     }
 
@@ -145,6 +153,16 @@ function Users({ priv }) {
     }
 
   }, [deleteUserResult]);
+
+  useDidUpdateEffect(() => {
+
+    if (deleteBulkData.status) {
+      timerSuccessAlert([deleteBulkData.msg]);
+    } else {
+      timerErrorAlert([deleteBulkData.msg]);
+    }
+
+  }, [deleteBulkData]);
 
 
   // UI
@@ -204,6 +222,7 @@ function Users({ priv }) {
                   actionButtons={actionButtons}
                   addButtons={addButtons}
                   filteringProps={filteringProps}
+                  bulkDeleteProps={bulkDeleteProps}
                 />
 
               </div>

@@ -8,8 +8,9 @@ const {
     getAllGeneralSchema,
     subPageInsertSchema,
     subPageModifySchema,
-    subPageDeleteSchema,
-    getAllCountGeneralSchema
+    deleteGeneralSchema,
+    getAllCountGeneralSchema,
+    deleteBulkGeneralSchema
 } = require('../../middlewares/validator.js');
 
 /**
@@ -105,7 +106,7 @@ router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (re
 });
 
 // delete menu, also deletes children data
-router.delete('/delete/:id', [checkSession, subPageDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await SubPageService.deleteSubPage(req.params.id);
 
     if (result.status === false) {
@@ -114,5 +115,16 @@ router.delete('/delete/:id', [checkSession, subPageDeleteSchema, authorizeWriteR
         res.json({ "status": true, "msg": "Deleted sub page successfully" });
     }
 });
+
+router.post('/delete/bulk', [checkSession, deleteBulkGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await SubPageService.deleteBulkSubPage(req.body.idArray);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting bulk sub pages" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted bulk sub pages successfully" });
+    }
+});
+
 
 module.exports = router;

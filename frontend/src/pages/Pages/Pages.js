@@ -51,7 +51,8 @@ function Pages({ priv }) {
     filteringProps,
     bulkDeleteProps,
     bulkDeleteProps: {
-      deleteBulkData
+      deleteBulkData,
+      setCurrentDeleteRows
     },
     BundledTable
   } = useBundledTable({ data: pageData, dataCount: totalPages, bulkDeleteUrl: pageBulkDeleteURL });
@@ -96,6 +97,7 @@ function Pages({ priv }) {
     handleShow();
     confirmDelete.current = () => {
       deletePage(pageId);
+      setCurrentDeleteRows(prev => [...prev].filter(o => o !== pageId));
       handleClose();
     }
   }

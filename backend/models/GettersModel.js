@@ -23,7 +23,6 @@ class GettersModel {
 
         this.allTblStrFrom = `${this.tableName}`;
         this.allTblStrIn = `('${this.tableName}'`;
-        this.whereClauseSecondary = "";
     }
 
     // executed on all functions that needed allTblStr
@@ -41,13 +40,11 @@ class GettersModel {
                         let secondTbl = _self.secondaryTables[indx].name || "";
                         let secondTblKey = _self.secondaryTables[indx].id || "";
                         let relationTbl = _self.secondaryTables[indx].relation || "";
-                        let whereStmtTbl = _self.secondaryTables[indx].whereClause || "";
 
                         _self.allTblStrFrom += ` ${relationTbl} ${secondTbl} USING (${secondTblKey})`
 
                         _self.allTblStrIn += `, '${_self.secondaryTables[indx].name}'`
 
-                        _self.whereClauseSecondary += whereStmtTbl;
                     });
 
                     _self.allTblStrIn += `)`;
@@ -69,7 +66,7 @@ class GettersModel {
      * get count of all menu for pagination
      * @return {Array} result, length = 1
      */
-    async getAllCount({ filter = undefined }) {
+    async getAllCount({ filter = undefined } = {}) {
 
         await this.init();
 
@@ -87,7 +84,7 @@ class GettersModel {
         const stmt = `SELECT 
                    count(1) as count
                 FROM
-                    ${this.allTblStrFrom} WHERE 1 ${this.whereClauseSecondary}  ${filterStmt}`;
+                    ${this.allTblStrFrom} WHERE 1 ${filterStmt}`;
         try {
             const result = await mysql_conn.query(stmt);
             return result;
@@ -109,7 +106,7 @@ class GettersModel {
      * @param {Array} obj.filter filter arrays
      * @return {Array} result
      */
-    async getAll({ startIndex, limit, sortBy, order, filter }) {
+    async getAll({ startIndex, limit, sortBy, order, filter } = {}) {
 
         await this.init();
 
@@ -135,14 +132,13 @@ class GettersModel {
 
         }
 
-
         let limitClause = "";
-        if (startIndex !== false) {
+        if (startIndex !== false && startIndex !== undefined) {
             limitClause = ` LIMIT ${mysql_conn.pool.escape(startIndex)}, ${mysql_conn.pool.escape(Number.parseInt(limit))}`;
 
         }
 
-        const stmt = `SELECT * from ${this.allTblStrFrom} WHERE 1 ${this.whereClauseSecondary} ${filterStmt} ${sortStmt} ${limitClause}`;
+        const stmt = `SELECT * from ${this.allTblStrFrom} WHERE 1 ${filterStmt} ${sortStmt} ${limitClause}`;
 
         try {
             const result = await mysql_conn.query(stmt);
@@ -164,7 +160,7 @@ class GettersModel {
     async getById(id) {
         await this.init();
 
-        const stmt = `SELECT * from ${this.allTblStrFrom} WHERE 1 ${this.whereClauseSecondary}
+        const stmt = `SELECT * from ${this.allTblStrFrom} WHERE 1 
             AND
                 CAST(${this.tableName}.${this.primaryKey} AS CHAR) = ?;`;
 

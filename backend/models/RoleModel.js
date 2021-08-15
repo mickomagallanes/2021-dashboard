@@ -1,6 +1,13 @@
 const mysql_conn = require("./db.js");
+const DeleteModel = require("./DeleteModel.js");
+const GettersModel = require("./GettersModel.js");
 
 "use strict";
+
+const tableName = "Roles";
+const primaryKey = "RoleID";
+const getterModel = new GettersModel(tableName, primaryKey);
+const deleteModel = new DeleteModel(tableName, primaryKey);
 
 class RoleModel {
 
@@ -8,21 +15,6 @@ class RoleModel {
 
     }
 
-    /**
-     * deleted role rows in the database
-     * @param {String} roleID id of the menu
-     */
-    static async deleteRole(roleID) {
-
-        try {
-            const result = await mysql_conn.delete("Roles", "where RoleID=?", [roleID]);
-            return result;
-
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
 
     /**
     * inserts new role in the database
@@ -71,63 +63,10 @@ class RoleModel {
         }
     }
 
-    /**
-     * get a row using by role id
-     * @param {Number} id id of the role
-     * @return {Array} result, length = 1
-     */
-    static async getRoleById(id) {
-        const stmt = `SELECT 
-                RoleID as rid,
-                RoleName as rname
-            FROM
-                Roles
-            WHERE
-                CAST(RoleID AS CHAR) = ?;`;
-
-        try {
-            const result = await mysql_conn.query(stmt, [id]);
-            return result;
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
-
-    /**
-     * get all roles
-     * @return {Array} result
-     */
-    static async getAllRoles() {
-        const stmt = `SELECT RoleID as id, RoleName as rname FROM Roles`;
-        try {
-            const result = await mysql_conn.query(stmt);
-            return result;
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
-
-    /**
-    * get count of all role for pagination
-    * @return {Array} result, length = 1
-    */
-    static async getAllCount() {
-        const stmt = `SELECT 
-               count(RoleID) as count
-            FROM
-                Roles`;
-        try {
-            const result = await mysql_conn.query(stmt);
-            return result;
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
-
 }
 
+
+RoleModel.deleteModel = deleteModel;
+RoleModel.getterModel = getterModel;
 
 module.exports = RoleModel;

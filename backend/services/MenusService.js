@@ -17,7 +17,7 @@ class MenusService {
      */
     static async deleteMenu(menuID) {
 
-        let ret = await MenuModel.deleteMenu(menuID);
+        let ret = await MenuModel.deleteModel.deleteRow(menuID);
 
         if (ret == false) {
             return { status: false }
@@ -125,7 +125,7 @@ class MenusService {
             }
         }
 
-        let menuArr = await MenuModel.getAll({
+        let menuArr = await MenuModel.getterModel.getAll({
             startIndex,
             limit,
             sortBy,
@@ -149,7 +149,7 @@ class MenusService {
      * @return one row of menu
      */
     static async getMenuById(id) {
-        let ret = await MenuModel.getById(id);
+        let ret = await MenuModel.getterModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -183,7 +183,7 @@ class MenusService {
      */
     static async getAllMenuCount({ filter }) {
 
-        const menuCount = await MenuModel.getAllCount({ filter });
+        const menuCount = await MenuModel.getterModel.getAllCount({ filter });
 
         if (menuCount.length) {
             return { status: true, data: menuCount[0] }
@@ -201,7 +201,7 @@ class MenusService {
      */
     static async deleteParentMenu(parentMenuID) {
 
-        let ret = await ParentMenuModel.deleteParentMenu(parentMenuID);
+        let ret = await ParentMenuModel.deleteModel.deleteRow(parentMenuID);
 
         if (ret == false) {
             return { status: false }
@@ -299,7 +299,7 @@ class MenusService {
 
         const startIndex = isPaged ? (page - 1) * limit : false;
 
-        let parentMenuArr = await ParentMenuModel.getAll({
+        let parentMenuArr = await ParentMenuModel.getterModel.getAll({
             startIndex: startIndex,
             limit: limit,
             sortBy: sortBy,
@@ -323,7 +323,7 @@ class MenusService {
      * @return one row of parent menu
      */
     static async getParentMenuById(id) {
-        let ret = await ParentMenuModel.getById(id);
+        let ret = await ParentMenuModel.getterModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -340,7 +340,7 @@ class MenusService {
      */
     static async getAllParentMenuCount({ filter }) {
 
-        const parentMenuCount = await ParentMenuModel.getAllCount({ filter });
+        const parentMenuCount = await ParentMenuModel.getterModel.getAllCount({ filter });
 
         if (parentMenuCount.length) {
             return { status: true, data: parentMenuCount[0] }

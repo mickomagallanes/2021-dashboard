@@ -1,4 +1,5 @@
 const mysql_conn = require("./db.js");
+const DeleteModel = require("./DeleteModel.js");
 const GettersModel = require("./GettersModel.js");
 
 "use strict";
@@ -7,6 +8,7 @@ const tableName = "EmployeeSalaries";
 const primaryKey = "EmployeeSalaryID";
 const secondaryTables = [{ id: "EmployeeID", name: "Employees", relation: " INNER JOIN " }]; // TODO: add fields specifically for faster query
 const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
+const deleteModel = new DeleteModel(tableName, primaryKey);
 
 // LESSON: One model per table
 class EmployeeSalaryModel {
@@ -14,23 +16,6 @@ class EmployeeSalaryModel {
     constructor() {
 
     }
-
-    /**
-     * deleted employeeSalary rows in the database
-     * @param {String} employeeSalaryID id of the menu
-     */
-    static async deleteEmployeeSalary(employeeSalaryID) {
-
-        try {
-            const result = await mysql_conn.delete("EmployeeSalaries", "where EmployeeSalaryID=?", [employeeSalaryID]);
-            return result;
-
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
-
 
     /**
      * inserts new employeeSalary in the database
@@ -98,6 +83,7 @@ class EmployeeSalaryModel {
 
 }
 
+EmployeeSalaryModel.deleteModel = deleteModel;
+EmployeeSalaryModel.getterModel = getterModel;
 
-Object.setPrototypeOf(EmployeeSalaryModel, getterModel);
 module.exports = EmployeeSalaryModel;

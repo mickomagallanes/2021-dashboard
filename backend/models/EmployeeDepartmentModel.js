@@ -1,12 +1,14 @@
 const mysql_conn = require("./db.js");
 const { PRIVILEGES } = require('../utils/constants.js');
 const GettersModel = require("./GettersModel.js");
+const DeleteModel = require("./DeleteModel.js");
 
 "use strict";
 
 const tableName = "EmployeeDepartments";
 const primaryKey = "EmployeeDepartmentID";
 const getterModel = new GettersModel(tableName, primaryKey);
+const deleteModel = new DeleteModel(tableName, primaryKey);
 
 class EmployeeDepartmentModel {
 
@@ -14,21 +16,6 @@ class EmployeeDepartmentModel {
 
     }
 
-    /**
-      * deleted employeeDepartment rows in the database
-      * @param {String} employeeDepartmentID id of the employeeDepartment
-      */
-    static async deleteEmployeeDepartment(employeeDepartmentID) {
-
-        try {
-            const result = await mysql_conn.delete("EmployeeDepartments", "where EmployeeDepartmentID=?", [employeeDepartmentID]);
-            return result;
-
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
 
     /**
        * inserts new employeeDepartment in the database
@@ -79,5 +66,7 @@ class EmployeeDepartmentModel {
 }
 
 
-Object.setPrototypeOf(EmployeeDepartmentModel, getterModel);
+EmployeeDepartmentModel.deleteModel = deleteModel;
+EmployeeDepartmentModel.getterModel = getterModel;
+
 module.exports = EmployeeDepartmentModel;

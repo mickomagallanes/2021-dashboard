@@ -1,4 +1,5 @@
 const mysql_conn = require("./db.js");
+const DeleteModel = require("./DeleteModel.js");
 const GettersModel = require("./GettersModel.js");
 
 "use strict";
@@ -7,18 +8,11 @@ const tableName = "Employees";
 const primaryKey = "EmployeeID";
 const secondaryTables = [
     { id: "EmployeeDepartmentID", name: "EmployeeDepartments", relation: " INNER JOIN " },
-    { id: "EmployeePositionID", name: "EmployeePositions", relation: " INNER JOIN " },
-    {
-        id: "EmployeeID",
-        name: "EmployeeSalaries",
-        relation: " LEFT JOIN ",
-        whereClause: ` AND EmployeeSalaries.EmployeeSalaryID = 
-        (SELECT MAX(EmployeeSalaryID) FROM EmployeeSalaries WHERE EmployeeID = Employees.EmployeeID
-         AND StartedDate <= CURDATE() AND (UntilDate > CURDATE() OR ISNULL(UntilDate))) `
-    },
+    { id: "EmployeePositionID", name: "EmployeePositions", relation: " INNER JOIN " }
 
 ];
 const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
+const deleteModel = new DeleteModel(tableName, primaryKey);
 
 // LESSON: One model per table
 class EmployeeModel {
@@ -27,16 +21,19 @@ class EmployeeModel {
 
     }
 
-    /**
-     * deleted employee rows in the database
-     * @param {String} employeeID id of the menu
-     */
-    static async deleteEmployee(employeeID) {
+    static async getByIdJoinSalary(id) {
+
+        const stmt = `SELECT * from Employees a LEFT JOIN EmployeeSalaries b ON 
+        a.EmployeeID = b.EmployeeID AND 
+        b.EmployeeSalaryID IN 
+        (SELECT MAX(EmployeeSalaryID) FROM EmployeeSalaries WHERE EmployeeID = a.EmployeeID
+         AND StartedDate <= CURDATE() AND (UntilDate > CURDATE() OR ISNULL(UntilDate)))
+            WHERE
+                CAST(a.EmployeeID AS CHAR) = ?;`;
 
         try {
-            const result = await mysql_conn.delete("Employees", "where EmployeeID=?", [employeeID]);
+            const result = await mysql_conn.query(stmt, [id]);
             return result;
-
         } catch (err) {
             console.error(err);
             return false;
@@ -190,6 +187,6 @@ class EmployeeModel {
 
 }
 
-
-Object.setPrototypeOf(EmployeeModel, getterModel);
+EmployeeModel.deleteModel = deleteModel;
+EmployeeModel.getterModel = getterModel;
 module.exports = EmployeeModel;

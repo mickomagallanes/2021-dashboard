@@ -1,14 +1,21 @@
 "use strict";
 const UserService = require('../../services/UserService.js');
 
+const express = require('express');
+const router = express.Router();
 const utils = require('../../utils/session.js');
 const { createSingleImageUpload } = require('../../utils/imageupload.js');
 const { checkSession, authorizeWriteRoute, authorizeReadRoute } = require('../../middlewares/routesauth.js');
-const { userInsertSchema, userLoginSchema, getAllGeneralSchema, userModifySchema, userDeleteSchema, getAllCountGeneralSchema } = require('../../middlewares/validator.js');
-const express = require('express');
-const router = express.Router();
-const path = require('path');
-const fs = require('fs');
+const {
+    userInsertSchema,
+    userLoginSchema,
+    getAllGeneralSchema,
+    userModifySchema,
+    deleteGeneralSchema,
+    getAllCountGeneralSchema,
+    deleteBulkGeneralSchema } = require('../../middlewares/validator.js');
+
+
 
 /**
  * get all user rows
@@ -50,13 +57,24 @@ router.get('/get/all/count', [checkSession, getAllCountGeneralSchema, authorizeR
 });
 
 // delete user, also deletes children data
-router.delete('/delete/:id', [checkSession, userDeleteSchema, authorizeWriteRoute], async function (req, res, next) {
+router.delete('/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
     let result = await UserService.deleteUser(req.params.id);
 
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed deleting user" });
     } else {
         res.json({ "status": true, "msg": "Deleted user successfully" });
+    }
+});
+
+router.post('/delete/bulk', [checkSession, deleteBulkGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
+
+    let result = await UserService.deleteBulkUser(req.body.idArray);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting bulk users" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted bulk users successfully" });
     }
 });
 

@@ -15,14 +15,14 @@ const roleURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/get/all`;
 const roleDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/role/delete/`;
 
 const colData = [
-  { "id": "id", "name": "Role ID" },
-  { "id": "rname", "name": "Role name" }
+  { "id": "RoleID", "name": "Role ID" },
+  { "id": "RoleName", "name": "Role name" }
 ];
 
 const modalTitle = "Do you want to delete this role?";
 const modalBody = "This row will be deleted in the database, do you want to proceed?";
 
-const idKey = "id";
+const idKey = "RoleID";
 
 function Roles({ priv }) {
 

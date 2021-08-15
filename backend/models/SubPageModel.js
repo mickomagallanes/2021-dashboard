@@ -1,6 +1,7 @@
 const mysql_conn = require("./db.js");
 const { PRIVILEGES } = require('../utils/constants.js');
 const GettersModel = require("./GettersModel.js");
+const DeleteModel = require("./DeleteModel.js");
 
 "use strict";
 
@@ -8,27 +9,12 @@ const tableName = "SubPages";
 const primaryKey = "SubPageID";
 const secondaryTables = [{ id: "PageID", name: "Pages", relation: " INNER JOIN " }];
 const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
+const deleteModel = new DeleteModel(tableName, primaryKey);
 
 class SubPageModel {
 
     constructor() {
 
-    }
-
-    /**
-     * deleted sub page rows in the database
-     * @param {String} subPageID id of the sub page
-     */
-    static async deleteMenu(subPageID) {
-
-        try {
-            const result = await mysql_conn.delete("SubPages", "where SubPageID=?", [subPageID]);
-            return result;
-
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
     }
 
     /**
@@ -112,5 +98,7 @@ class SubPageModel {
 
 }
 
-Object.setPrototypeOf(SubPageModel, getterModel);
+SubPageModel.deleteModel = deleteModel;
+SubPageModel.getterModel = getterModel;
+
 module.exports = SubPageModel;

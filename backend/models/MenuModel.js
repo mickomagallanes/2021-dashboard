@@ -1,6 +1,7 @@
 const mysql_conn = require("./db.js");
 const { PRIVILEGES } = require('../utils/constants.js');
 const GettersModel = require("./GettersModel.js");
+const DeleteModel = require("./DeleteModel.js");
 
 "use strict";
 
@@ -11,26 +12,11 @@ const secondaryTables = [
     { id: "PageID", name: "Pages", relation: " INNER JOIN " }
 ];
 const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
+const deleteModel = new DeleteModel(tableName, primaryKey);
 
 class MenusModel {
     constructor() {
 
-    }
-
-    /**
-     * deleted menu rows in the database
-     * @param {String} menuID id of the menu
-     */
-    static async deleteMenu(menuID) {
-
-        try {
-            const result = await mysql_conn.delete("Menus", "where MenuID=?", [menuID]);
-            return result;
-
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
     }
 
     /**
@@ -136,5 +122,7 @@ class MenusModel {
 
 }
 
-Object.setPrototypeOf(MenusModel, getterModel);
+MenusModel.deleteModel = deleteModel;
+MenusModel.getterModel = getterModel;
+
 module.exports = MenusModel;
