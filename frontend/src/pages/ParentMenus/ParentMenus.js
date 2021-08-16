@@ -18,6 +18,7 @@ const sortUpURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/sort/u
 const sortDownURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/sort/down`;
 
 const parentMenuDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/delete/`;
+const parentMenuBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/delete/bulk`;
 
 const modalTitle = "Do you want to delete this parent menu?";
 const modalBody = "This row will be deleted in the database, do you want to proceed?";
@@ -51,16 +52,21 @@ function ParentMenus({ priv }) {
       currentPage
     },
     filteringProps,
+    bulkDeleteProps,
+    bulkDeleteProps: {
+      deleteBulkData,
+      setCurrentDeleteRows
+    },
     tableProps,
     BundledTable
-  } = useBundledTable({ data: parentMenuData, dataCount: totalParentMenus });
+  } = useBundledTable({ data: parentMenuData, dataCount: totalParentMenus, bulkDeleteUrl: parentMenuBulkDeleteURL });
 
   const [deleteParentMenu, deleteParentMenuResult] = useDelete(parentMenuDeleteURL);
 
   // to determine if initial fetch of data is done
 
-  const fetchDepsCount = [currentEntries, currentPage, deleteParentMenuResult];
-  const fetchDepsMenus = [deleteParentMenuResult];
+  const fetchDepsCount = [currentEntries, currentPage, deleteParentMenuResult, deleteBulkData];
+  const fetchDepsMenus = [deleteParentMenuResult, deleteBulkData];
 
   const [dataCount, loadingCount] = useFetch(parentMenuCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
@@ -100,6 +106,7 @@ function ParentMenus({ priv }) {
     handleShow();
     confirmDelete.current = () => {
       deleteParentMenu(parentMenuId);
+      setCurrentDeleteRows(prev => [...prev].filter(o => o !== parentMenuId));
       handleClose();
     }
   }
@@ -169,6 +176,16 @@ function ParentMenus({ priv }) {
     postAfterCallback(sortUpResult);
 
   }, [sortUpResult]);
+
+  useDidUpdateEffect(() => {
+
+    if (deleteBulkData.status) {
+      timerSuccessAlert([deleteBulkData.msg]);
+    } else {
+      timerErrorAlert([deleteBulkData.msg]);
+    }
+
+  }, [deleteBulkData]);
 
   // UI
   const actionButtons = (parentMenuID) => {
@@ -241,6 +258,7 @@ function ParentMenus({ priv }) {
                   actionButtons={actionButtons}
                   addButtons={addButtons}
                   filteringProps={filteringProps}
+                  bulkDeleteProps={bulkDeleteProps}
                 />
 
 

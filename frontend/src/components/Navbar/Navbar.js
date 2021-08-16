@@ -252,7 +252,7 @@ class Navbar extends React.Component {
               <Dropdown.Menu className="navbar-dropdown preview-list navbar-profile-dropdown-menu">
                 <h6 className="p-3 mb-0"> Profile </h6>
                 <Dropdown.Divider />
-                <Dropdown.Item href="!#" onClick={evt => evt.preventDefault()} className="preview-item">
+                <Dropdown.Item onClick={evt => evt.preventDefault()} className="preview-item">
                   <div className="preview-thumbnail">
                     <div className="preview-icon bg-dark rounded-circle">
                       <i className="mdi mdi-settings text-success"></i>
@@ -263,7 +263,7 @@ class Navbar extends React.Component {
                   </div>
                 </Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item href="!#" onClick={this.logout} className="preview-item">
+                <Dropdown.Item onClick={this.logout} className="preview-item">
                   <div className="preview-thumbnail">
                     <div className="preview-icon bg-dark rounded-circle">
                       <i className="mdi mdi-logout text-danger"></i>

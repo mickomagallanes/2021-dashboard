@@ -1,5 +1,4 @@
 const multer = require("multer");
-const multer2 = require("multer");
 const path = require('path');
 const FileType = require('file-type');
 const fs = require('fs')

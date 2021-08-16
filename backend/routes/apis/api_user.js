@@ -127,6 +127,7 @@ router.post('/login', userLoginSchema, async function (req, res, next) {
 });
 
 router.post('/logout', async function (req, res, next) {
+
     if (req.session.userData) {
         req.session.destroy();
         utils.clearCookie(res);

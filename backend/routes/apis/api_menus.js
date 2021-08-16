@@ -12,7 +12,8 @@ const {
     menuModifySchema,
     parentMenuSortSchema,
     getAllCountGeneralSchema,
-    deleteGeneralSchema
+    deleteGeneralSchema,
+    deleteBulkGeneralSchema
 } = require('../../middlewares/validator.js');
 
 /******************************** Menu ***************************************/
@@ -138,6 +139,17 @@ router.delete('/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteR
     }
 });
 
+router.post('/delete/bulk', [checkSession, deleteBulkGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await MenusService.deleteBulkMenu(req.body.idArray);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting bulk menus" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted bulk menus successfully" });
+    }
+});
+
+
 /*************************** Parent Menu *************************************/
 // delete menu, also deletes children data
 router.delete('/parent/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
@@ -149,6 +161,17 @@ router.delete('/parent/delete/:id', [checkSession, deleteGeneralSchema, authoriz
         res.json({ "status": true, "msg": "Deleted menu successfully" });
     }
 });
+
+router.post('/parent/delete/bulk', [checkSession, deleteBulkGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await MenusService.deleteBulkParentMenu(req.body.idArray);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting bulk parent menu" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted bulk parent menu successfully" });
+    }
+});
+
 
 // insert new parent menu
 // returns insertId of parent menu

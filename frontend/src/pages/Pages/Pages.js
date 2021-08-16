@@ -92,7 +92,6 @@ function Pages({ priv }) {
 
   // FUNCTIONS AND EVENT HANDLERS
 
-  // TODO: use modal in bulk
   const handleDelete = (pageId) => {
     handleShow();
     confirmDelete.current = () => {

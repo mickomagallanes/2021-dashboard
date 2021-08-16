@@ -28,6 +28,22 @@ class MenusService {
     }
 
     /**
+     * delete bulk id array
+     * @param {Array} idArray array containing ids of row
+     */
+    static async deleteBulkMenu(idArray) {
+
+        let ret = await MenuModel.deleteModel.deleteBulkRows(idArray);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
      * inserts new menu in the database
      * @param {Object} obj - An object.
      * @param {String} obj.menuName name of the  menu
@@ -202,6 +218,22 @@ class MenusService {
     static async deleteParentMenu(parentMenuID) {
 
         let ret = await ParentMenuModel.deleteModel.deleteRow(parentMenuID);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
+     * delete bulk id array
+     * @param {Array} idArray array containing ids of row
+     */
+    static async deleteBulkParentMenu(idArray) {
+
+        let ret = await ParentMenuModel.deleteModel.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
