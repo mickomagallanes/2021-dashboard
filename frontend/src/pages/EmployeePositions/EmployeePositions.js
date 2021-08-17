@@ -15,6 +15,7 @@ const employeePositionURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/
 const employeePositionCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/position/get/all/count`;
 
 const employeePositionDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/position/delete/`;
+const employeePositionBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/position/delete/bulk`;
 
 const colData = [
   { "id": "EmployeePositionID", "name": "Employee Position ID" },
@@ -48,15 +49,20 @@ function EmployeePositions({ priv }) {
     },
     filteringProps,
     tableProps,
+    bulkDeleteProps,
+    bulkDeleteProps: {
+      deleteBulkData,
+      setCurrentDeleteRows
+    },
     BundledTable
-  } = useBundledTable({ data: employeePositionData, dataCount: totalEmployeePositions });
+  } = useBundledTable({ data: employeePositionData, dataCount: totalEmployeePositions, bulkDeleteUrl: employeePositionBulkDeleteURL });
 
   // to determine if initial fetch of data is done
 
   const [deleteEmployeePosition, deleteEmployeePositionResult] = useDelete(employeePositionDeleteURL);
 
-  const fetchDepsCount = [currentEntries, currentEmployeePosition, deleteEmployeePositionResult];
-  const fetchDepsEmployeePositions = [deleteEmployeePositionResult];
+  const fetchDepsCount = [currentEntries, currentEmployeePosition, deleteEmployeePositionResult, deleteBulkData];
+  const fetchDepsEmployeePositions = [deleteEmployeePositionResult, deleteBulkData];
 
   const [dataCount, loadingCount] = useFetch(employeePositionCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
@@ -91,6 +97,7 @@ function EmployeePositions({ priv }) {
     handleShow();
     confirmDelete.current = () => {
       deleteEmployeePosition(employeePositionId);
+      setCurrentDeleteRows(prev => [...prev].filter(o => o !== employeePositionId));
       handleClose();
     }
   }
@@ -143,6 +150,16 @@ function EmployeePositions({ priv }) {
     }
 
   }, [deleteEmployeePositionResult]);
+
+  useDidUpdateEffect(() => {
+
+    if (deleteBulkData.status) {
+      timerSuccessAlert([deleteBulkData.msg]);
+    } else {
+      timerErrorAlert([deleteBulkData.msg]);
+    }
+
+  }, [deleteBulkData]);
 
 
   // UI
@@ -207,6 +224,7 @@ function EmployeePositions({ priv }) {
                   actionButtons={actionButtons}
                   addButtons={addButtons}
                   filteringProps={filteringProps}
+                  bulkDeleteProps={bulkDeleteProps}
                 />
 
 

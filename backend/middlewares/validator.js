@@ -341,6 +341,57 @@ function employeeModifySchema(req, res, next) {
     validateRequest(req, res, next, wholeSchema);
 }
 
+function employeeInsertBulkSchema(req, res, next) {
+
+    const schema = Joi.object({
+        employeeNo: Joi.string().max(45).required(),
+        firstName: Joi.string().max(60).required(),
+        middleName: Joi.string().max(60).required(),
+        lastName: Joi.string().max(60).required(),
+        sex: Joi.string().valid('F', 'M').required(),
+        contactNo: Joi.string().phoneNumber({ defaultCountry: 'PH' }).max(60).required(),
+        hireDate: Joi.date().format('YYYY-MM-DD').required(),
+        birthDate: Joi.date().format('YYYY-MM-DD').required(),
+        employeePositionID: Joi.number().required(),
+        employeeDepartmentID: Joi.number().required(),
+        salary: Joi.number().min(0).max(1000000 * 1000000).required(),
+        startedDate: Joi.date().format('YYYY-MM-DD').required(),
+        untilDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required())
+    });
+    validateRequestBody(req, res, next, schema);
+}
+
+function employeeModifyBulkSchema(req, res, next) {
+
+    const schemaBody = Joi.object({
+        employeeSalaryID: Joi.number().required(),
+        employeeNo: Joi.string().max(45).required(),
+        firstName: Joi.string().max(60).required(),
+        middleName: Joi.string().max(60).required(),
+        lastName: Joi.string().max(60).required(),
+        sex: Joi.string().valid('F', 'M').required(),
+        contactNo: Joi.string().phoneNumber({ defaultCountry: 'PH' }).max(60).required(),
+        hireDate: Joi.date().format('YYYY-MM-DD').required(),
+        birthDate: Joi.date().format('YYYY-MM-DD').required(),
+        employeePositionID: Joi.number().required(),
+        employeeDepartmentID: Joi.number().required(),
+        salary: Joi.number().min(0).max(1000000 * 1000000).required(),
+        startedDate: Joi.date().format('YYYY-MM-DD').required(),
+        untilDate: Joi.alternatives().try(Joi.date().format('YYYY-MM-DD').required(), Joi.string().allow(null).required())
+    });
+
+    const schemaID = Joi.object({
+        id: Joi.number().required()
+    })
+
+    const wholeSchema = Joi.object({
+        params: schemaID,
+        body: schemaBody
+    }).unknown(true);
+
+    validateRequest(req, res, next, wholeSchema);
+
+}
 
 /*********** 2. Employee Salary************/
 
@@ -533,6 +584,8 @@ module.exports = {
     subPageModifySchema,
     employeeModifySchema,
     employeeInsertSchema,
+    employeeInsertBulkSchema,
+    employeeModifyBulkSchema,
     employeeSalaryModifySchema,
     employeeSalaryInsertSchema,
     employeePositionModifySchema,

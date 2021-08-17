@@ -38,6 +38,7 @@ import EmployeeDepartments from './EmployeeDepartments/EmployeeDepartments';
 import EmployeeDepartmentsForm from './EmployeeDepartments/EmployeeDepartmentsForm/EmployeeDepartmentsForm';
 import EmployeePositions from './EmployeePositions/EmployeePositions';
 import EmployeePositionsForm from './EmployeePositions/EmployeePositionsForm/EmployeePositionsForm';
+import EmployeesFormBulk from './Employees/EmployeesFormBulk/EmployeesFormBulk';
 
 
 const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/session`;
@@ -183,6 +184,7 @@ function matchComponentName(name) {
     case "EmployeeDepartmentsForm": return EmployeeDepartmentsForm;
     case "EmployeePositions": return EmployeePositions;
     case "EmployeePositionsForm": return EmployeePositionsForm;
+    case "EmployeesFormBulk": return EmployeesFormBulk;
 
     default: return undefined;
   }

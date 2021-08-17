@@ -17,6 +17,7 @@ const modalBody = "This row will be deleted in the database, do you want to proc
 const employeeURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/get/all`;
 const employeeCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/get/all/count`;
 const employeeDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/delete/`;
+const employeeBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/delete/bulk`;
 
 const colData = [
   { "id": "EmployeeID", "name": "Employee ID" },
@@ -51,15 +52,20 @@ function Employees({ priv }) {
     },
     tableProps,
     filteringProps,
+    bulkDeleteProps,
+    bulkDeleteProps: {
+      deleteBulkData,
+      setCurrentDeleteRows
+    },
     BundledTable
-  } = useBundledTable({ data: employeeData, dataCount: totalEmployees });
+  } = useBundledTable({ data: employeeData, dataCount: totalEmployees, bulkDeleteUrl: employeeBulkDeleteURL });
 
   const [deleteEmployee, deleteEmployeeResult] = useDelete(employeeDeleteURL);
 
   // to determine if initial fetch of data is done
 
-  const fetchDepsCount = [currentEntries, currentPage, deleteEmployeeResult];
-  const fetchDepsEmployees = [deleteEmployeeResult];
+  const fetchDepsCount = [currentEntries, currentPage, deleteEmployeeResult, deleteBulkData];
+  const fetchDepsEmployees = [deleteEmployeeResult, deleteBulkData];
 
   const [dataCount, loadingCount] = useFetch(employeeCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
@@ -95,6 +101,7 @@ function Employees({ priv }) {
     handleShow();
     confirmDelete.current = () => {
       deleteEmployee(employeeId);
+      setCurrentDeleteRows(prev => [...prev].filter(o => o !== employeeId));
       handleClose();
     }
 
@@ -149,12 +156,27 @@ function Employees({ priv }) {
   }, [deleteEmployeeResult]);
 
 
+  useDidUpdateEffect(() => {
+
+    if (deleteBulkData.status) {
+      timerSuccessAlert([deleteBulkData.msg]);
+    } else {
+      timerErrorAlert([deleteBulkData.msg]);
+    }
+
+  }, [deleteBulkData]);
+
   // UI
   const actionButtons = (employeeID) => {
     return (
       <>
         <Link to={`/employees/form/${employeeID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
           {isWriteable ? "Edit" : "Read"} Employee
+          <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
+        </Link>
+
+        <Link to={`/employees/bulk/form/${employeeID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+          {isWriteable ? "Edit" : "Read"} Employee (Bulk)
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
 
@@ -171,10 +193,23 @@ function Employees({ priv }) {
       <>
         {isWriteable &&
           <>
-            <Link to={`/employees/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
-              <i className="mdi mdi-account-plus"> </i>
-              Add Employee
-            </Link>
+            <div className="row justify-content-center">
+              <div className="col-8">
+
+                <Link to={`/employees/form/add${location.search}`} className="btn btn-outline-secondary d-block mb-2">
+                  <i className="mdi mdi-account-plus"> </i>
+                  Add Employee
+                </Link>
+              </div>
+
+              <div className="col-8">
+                <Link to={`/employees/bulk/form/add${location.search}`} className="btn btn-outline-secondary d-block">
+                  <i className="mdi mdi-account-plus"> </i>
+                  Add Employee (Bulk)
+                </Link>
+
+              </div>
+            </div>
           </>
         }
 
@@ -207,6 +242,7 @@ function Employees({ priv }) {
                   actionButtons={actionButtons}
                   addButtons={addButtons}
                   filteringProps={filteringProps}
+                  bulkDeleteProps={bulkDeleteProps}
                 />
 
               </div>

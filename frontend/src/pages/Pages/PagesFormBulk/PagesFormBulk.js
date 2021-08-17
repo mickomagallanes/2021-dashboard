@@ -58,7 +58,7 @@ const pageFormInitialState = {
 
 const menuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/by/page/`;
 
-function PagesFormBulk({ priv }) {
+function PagesFormBulk({ priv, pagePath }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
@@ -139,7 +139,7 @@ function PagesFormBulk({ priv }) {
       successArr.push(respData.msg);
 
       history.push({
-        pathname: '/pages',
+        pathname: pagePath,
         successMsg: successArr,
         search: location.search
       });
@@ -152,13 +152,13 @@ function PagesFormBulk({ priv }) {
   useEffect(() => {
     if (isAddMode && priv === PRIVILEGES.read) {
       history.push({
-        pathname: '/pages',
+        pathname: pagePath,
         errorMsg: [ERRORMSG.noPrivilege],
         search: location.search
       });
     }
 
-  }, [history, isAddMode, location.search, priv])
+  }, [history, isAddMode, location.search, pagePath, priv])
 
   useDidUpdateEffect(() => {
 
@@ -227,7 +227,7 @@ function PagesFormBulk({ priv }) {
     <>
       <div>
         <div className="page-header">
-          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`/pages${location.search}`}>
+          <Link className="btn btn-outline-light btn-icon-text btn-md" to={`${pagePath}${location.search}`}>
             <i className="mdi mdi-keyboard-backspace btn-icon-prepend mdi-18px"></i>
             <span className="d-inline-block text-left">
               Back

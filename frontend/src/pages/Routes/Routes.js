@@ -15,6 +15,7 @@ const routeURL = `${process.env.REACT_APP_BACKEND_HOST}/API/route/get/all`;
 const routeCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/route/get/all/count`;
 
 const routeDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/route/delete/`;
+const routeBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/route/delete/bulk`;
 
 const colData = [
   { "id": "RouteID", "name": "Route ID" },
@@ -48,15 +49,20 @@ function Routes({ priv }) {
     },
     filteringProps,
     tableProps,
+    bulkDeleteProps,
+    bulkDeleteProps: {
+      deleteBulkData,
+      setCurrentDeleteRows
+    },
     BundledTable
-  } = useBundledTable({ data: routeData, dataCount: totalRoutes });
+  } = useBundledTable({ data: routeData, dataCount: totalRoutes, bulkDeleteUrl: routeBulkDeleteURL });
 
   // to determine if initial fetch of data is done
 
   const [deleteRoute, deleteRouteResult] = useDelete(routeDeleteURL);
 
-  const fetchDepsCount = [currentEntries, currentRoute, deleteRouteResult];
-  const fetchDepsRoutes = [deleteRouteResult];
+  const fetchDepsCount = [currentEntries, currentRoute, deleteRouteResult, deleteBulkData];
+  const fetchDepsRoutes = [deleteRouteResult, deleteBulkData];
 
   const [dataCount, loadingCount] = useFetch(routeCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
@@ -91,6 +97,7 @@ function Routes({ priv }) {
     handleShow();
     confirmDelete.current = () => {
       deleteRoute(routeId);
+      setCurrentDeleteRows(prev => [...prev].filter(o => o !== routeId));
       handleClose();
     }
   }
@@ -143,6 +150,17 @@ function Routes({ priv }) {
     }
 
   }, [deleteRouteResult]);
+
+  useDidUpdateEffect(() => {
+
+    if (deleteBulkData.status) {
+      timerSuccessAlert([deleteBulkData.msg]);
+    } else {
+      timerErrorAlert([deleteBulkData.msg]);
+    }
+
+  }, [deleteBulkData]);
+
 
 
   // UI
@@ -207,6 +225,7 @@ function Routes({ priv }) {
                   actionButtons={actionButtons}
                   addButtons={addButtons}
                   filteringProps={filteringProps}
+                  bulkDeleteProps={bulkDeleteProps}
                 />
 
 

@@ -27,7 +27,6 @@ const colData = [
 
 const idKey = "SubPageID";
 
-// TODO: apply all deletion checkbox functions, and the reset when after delete checkbox
 function SubPages({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES

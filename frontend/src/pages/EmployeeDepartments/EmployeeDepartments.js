@@ -15,6 +15,7 @@ const employeeDepartmentURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employe
 const employeeDepartmentCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/department/get/all/count`;
 
 const employeeDepartmentDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/department/delete/`;
+const employeeDepartmentBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/department/delete/bulk`;
 
 const colData = [
   { "id": "EmployeeDepartmentID", "name": "Employee Department ID" },
@@ -48,15 +49,20 @@ function EmployeeDepartments({ priv }) {
     },
     filteringProps,
     tableProps,
+    bulkDeleteProps,
+    bulkDeleteProps: {
+      deleteBulkData,
+      setCurrentDeleteRows
+    },
     BundledTable
-  } = useBundledTable({ data: employeeDepartmentData, dataCount: totalEmployeeDepartments });
+  } = useBundledTable({ data: employeeDepartmentData, dataCount: totalEmployeeDepartments, bulkDeleteUrl: employeeDepartmentBulkDeleteURL });
 
   // to determine if initial fetch of data is done
 
   const [deleteEmployeeDepartment, deleteEmployeeDepartmentResult] = useDelete(employeeDepartmentDeleteURL);
 
-  const fetchDepsCount = [currentEntries, currentEmployeeDepartment, deleteEmployeeDepartmentResult];
-  const fetchDepsEmployeeDepartments = [deleteEmployeeDepartmentResult];
+  const fetchDepsCount = [currentEntries, currentEmployeeDepartment, deleteEmployeeDepartmentResult, deleteBulkData];
+  const fetchDepsEmployeeDepartments = [deleteEmployeeDepartmentResult, deleteBulkData];
 
   const [dataCount, loadingCount] = useFetch(employeeDepartmentCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
@@ -91,6 +97,7 @@ function EmployeeDepartments({ priv }) {
     handleShow();
     confirmDelete.current = () => {
       deleteEmployeeDepartment(employeeDepartmentId);
+      setCurrentDeleteRows(prev => [...prev].filter(o => o !== employeeDepartmentId));
       handleClose();
     }
   }
@@ -144,6 +151,15 @@ function EmployeeDepartments({ priv }) {
 
   }, [deleteEmployeeDepartmentResult]);
 
+  useDidUpdateEffect(() => {
+
+    if (deleteBulkData.status) {
+      timerSuccessAlert([deleteBulkData.msg]);
+    } else {
+      timerErrorAlert([deleteBulkData.msg]);
+    }
+
+  }, [deleteBulkData]);
 
   // UI
   const actionButtons = (employeeDepartmentID) => {
@@ -207,6 +223,7 @@ function EmployeeDepartments({ priv }) {
                   actionButtons={actionButtons}
                   addButtons={addButtons}
                   filteringProps={filteringProps}
+                  bulkDeleteProps={bulkDeleteProps}
                 />
 
 

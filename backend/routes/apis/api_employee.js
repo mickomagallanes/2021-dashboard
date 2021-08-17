@@ -15,7 +15,10 @@ const {
     deleteGeneralSchema,
     employeeDepartmentModifySchema,
     employeeDepartmentInsertSchema,
-    getAllCountGeneralSchema
+    getAllCountGeneralSchema,
+    deleteBulkGeneralSchema,
+    employeeInsertBulkSchema,
+    employeeModifyBulkSchema
 } = require('../../middlewares/validator.js');
 
 
@@ -30,6 +33,16 @@ router.delete('/position/delete/:id', [checkSession, deleteGeneralSchema, author
         res.json({ "status": false, "msg": "Failed deleting position" });
     } else {
         res.json({ "status": true, "msg": "Deleted position successfully" });
+    }
+});
+
+router.post('/position/delete/bulk', [checkSession, deleteBulkGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await EmployeeService.deleteBulkEmployeePosition(req.body.idArray);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting bulk positions" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted bulk positions successfully" });
     }
 });
 
@@ -117,6 +130,16 @@ router.delete('/department/delete/:id', [checkSession, deleteGeneralSchema, auth
     }
 });
 
+router.post('/department/delete/bulk', [checkSession, deleteBulkGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await EmployeeService.deleteBulkEmployeeDepartment(req.body.idArray);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting bulk departments" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted bulk departments successfully" });
+    }
+});
+
 // insert new employee department
 // returns insertId of employee department
 router.post('/department/insert', [checkSession, employeeDepartmentInsertSchema, authorizeWriteRoute], async function (req, res, next) {
@@ -199,6 +222,16 @@ router.delete('/salary/delete/:id', [checkSession, deleteGeneralSchema, authoriz
     }
 });
 
+router.post('/salary/delete/bulk', [checkSession, deleteBulkGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await EmployeeService.deleteBulkEmployeeSalary(req.body.idArray);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting bulk salaries" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted bulk salaries successfully" });
+    }
+});
+
 // insert new employee salary
 // returns insertId of employee salary
 router.post('/salary/insert', [checkSession, employeeSalaryInsertSchema, authorizeWriteRoute], async function (req, res, next) {
@@ -268,7 +301,20 @@ router.get('/salary/get/by/:id', [checkSession, authorizeReadRoute], async funct
     }
 });
 
+/**
+ * get salary row by employee id
+ * @param {number} req.params.id id of employee
+ */
+router.get('/salary/get/by/employee/:id', [checkSession, authorizeReadRoute], async function (req, res, next) {
 
+    let result = await EmployeeService.getEmployeeSalaryByEmployeeId(req.params.id);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed getting row by employee id" });
+    } else {
+        res.json({ "status": true, "msg": "Successful getting row by employee id", "data": result.data });
+    }
+});
 
 /******************************** EMPLOYEES ***************************************/
 
@@ -364,6 +410,31 @@ router.put('/modify/:id', [checkSession, employeeModifySchema, authorizeWriteRou
     }
 });
 
+// insert new employee by bulk: employee + salary
+// returns insertId of employee
+router.post('/insert/bulk', [checkSession, employeeInsertBulkSchema, authorizeWriteRoute], async function (req, res, next) {
+
+    // insert employee information
+    let result = await EmployeeService.insertEmployeeBulk(req.body);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed inserting employee by bulk" });
+    } else {
+        res.json({ "status": true, "msg": "Successful inserting employee by bulk", "id": result.data });
+    }
+});
+
+// edit employee by bulk: employee + salary
+router.put('/modify/bulk/:id', [checkSession, employeeModifyBulkSchema, authorizeWriteRoute], async function (req, res, next) {
+
+    let result = await EmployeeService.modifyEmployeeBulk(req.params.id, req.body);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed modification of employee by bulk" });
+    } else {
+        res.json({ "status": true, "msg": "Successful modification of employee by bulk", "id": result.data });
+    }
+});
 
 // delete employee, also deletes children data
 router.delete('/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
@@ -373,6 +444,16 @@ router.delete('/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteR
         res.json({ "status": false, "msg": "Failed deleting employee" });
     } else {
         res.json({ "status": true, "msg": "Deleted employee successfully" });
+    }
+});
+
+router.post('/delete/bulk', [checkSession, deleteBulkGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await EmployeeService.deleteBulkEmployee(req.body.idArray);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting bulk employees" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted bulk employees successfully" });
     }
 });
 

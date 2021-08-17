@@ -18,6 +18,26 @@ class EmployeeSalaryModel {
     }
 
     /**
+     * get a row using by employee id
+     * @param {Number} id id of employee
+     * @return {Array} result, length = 1
+     */
+    static async getSalaryByEmployeeId(id) {
+        const stmt = `SELECT * from EmployeeSalaries
+            WHERE
+                CAST(EmployeeID AS CHAR) = ?;`;
+
+        try {
+            const result = await mysql_conn.query(stmt, [id]);
+            return result;
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
+
+    /**
      * inserts new employeeSalary in the database
      * @param {Object} obj - An object.
      * @param {String} obj.salary value of salary per month

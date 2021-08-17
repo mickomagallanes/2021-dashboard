@@ -9,7 +9,8 @@ const {
     routeModifySchema,
     getAllGeneralSchema,
     deleteGeneralSchema,
-    getAllCountGeneralSchema
+    getAllCountGeneralSchema,
+    deleteBulkGeneralSchema
 } = require('../../middlewares/validator.js');
 
 /*************************** Routes *************************************/
@@ -23,6 +24,17 @@ router.delete('/delete/:id', [checkSession, deleteGeneralSchema, authorizeWriteR
         res.json({ "status": true, "msg": "Deleted route successfully" });
     }
 });
+
+router.post('/delete/bulk', [checkSession, deleteBulkGeneralSchema, authorizeWriteRoute], async function (req, res, next) {
+    let result = await RouteService.deleteBulkRoute(req.body.idArray);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed deleting bulk routes" });
+    } else {
+        res.json({ "status": true, "msg": "Deleted bulk routes successfully" });
+    }
+});
+
 
 // insert new route
 // returns insertId of route

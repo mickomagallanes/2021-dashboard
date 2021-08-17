@@ -190,15 +190,22 @@ function Pages({ priv }) {
       <>
         {isWriteable &&
           <>
-            <Link to={`/pages/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
-              <i className="mdi mdi-account-plus"> </i>
-              Add Page
-            </Link>
+            <div className="row justify-content-center">
+              <div className="col-8">
+                <Link to={`/pages/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block mb-2">
+                  <i className="mdi mdi-account-plus"> </i>
+                  Add Page
+                </Link>
+              </div>
 
-            <Link to={`/pages/bulk/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block mr-3">
-              <i className="mdi mdi-account-plus"> </i>
-              Add Page (Bulk)
-            </Link>
+              <div className="col-8">
+                <Link to={`/pages/bulk/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
+                  <i className="mdi mdi-account-plus"> </i>
+                  Add Page (Bulk)
+                </Link>
+
+              </div>
+            </div>
           </>
         }
 

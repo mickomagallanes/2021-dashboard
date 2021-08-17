@@ -25,13 +25,29 @@ class RouteService {
     }
 
     /**
-   * inserts new route in the database
-   * @param {Object} obj - An object.
-   * @param {String} obj.routeName name of the  route
-   * @param {String} obj.routePath path of route
-   * @return {Object} result
-   * @return {Number} result.insertId role id of last inserted
-   */
+     * delete bulk id array
+     * @param {Array} idArray array containing ids of row
+     */
+    static async deleteBulkRoute(idArray) {
+
+        let ret = await RouteModel.deleteModel.deleteBulkRows(idArray);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
+     * inserts new route in the database
+     * @param {Object} obj - An object.
+     * @param {String} obj.routeName name of the  route
+     * @param {String} obj.routePath path of route
+     * @return {Object} result
+     * @return {Number} result.insertId role id of last inserted
+     */
     static async insertRoute({ routeName, routePath }) {
         let obj = {
             routeName: routeName,

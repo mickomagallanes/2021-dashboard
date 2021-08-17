@@ -29,12 +29,28 @@ class EmployeeService {
     }
 
     /**
-   * inserts new employeePosition in the database
-   * @param {Object} obj - An object.
-   * @param {String} obj.positionName name of the  employeePosition
-   * @return {Object} result
-   * @return {Number} result.insertId role id of last inserted
-   */
+     * delete bulk id array
+     * @param {Array} idArray array containing ids of row
+     */
+    static async deleteBulkEmployeePosition(idArray) {
+
+        let ret = await EmployeePositionModel.deleteModel.deleteBulkRows(idArray);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
+     * inserts new employeePosition in the database
+     * @param {Object} obj - An object.
+     * @param {String} obj.positionName name of the  employeePosition
+     * @return {Object} result
+     * @return {Number} result.insertId role id of last inserted
+     */
     static async insertEmployeePosition({ positionName }) {
         let obj = {
             positionName: positionName
@@ -176,12 +192,28 @@ class EmployeeService {
     }
 
     /**
-   * inserts new employeeDepartment in the database
-   * @param {Object} obj - An object.
-   * @param {String} obj.departmentName name of the  employeeDepartment
-   * @return {Object} result
-   * @return {Number} result.insertId role id of last inserted
-   */
+     * delete bulk id array
+     * @param {Array} idArray array containing ids of row
+     */
+    static async deleteBulkEmployeeDepartment(idArray) {
+
+        let ret = await EmployeeDepartmentModel.deleteModel.deleteBulkRows(idArray);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
+     * inserts new employeeDepartment in the database
+     * @param {Object} obj - An object.
+     * @param {String} obj.departmentName name of the  employeeDepartment
+     * @return {Object} result
+     * @return {Number} result.insertId role id of last inserted
+     */
     static async insertEmployeeDepartment({ departmentName }) {
         let obj = {
             departmentName: departmentName
@@ -320,6 +352,22 @@ class EmployeeService {
     }
 
     /**
+     * delete bulk id array
+     * @param {Array} idArray array containing ids of row
+     */
+    static async deleteBulkEmployeeSalary(idArray) {
+
+        let ret = await EmployeeSalaryModel.deleteModel.deleteBulkRows(idArray);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
      * inserts new employeeSalary in the database
      * @param {Object} obj - An object.
      * @param {String} obj.salary value of salary per month
@@ -443,6 +491,24 @@ class EmployeeService {
 
     }
 
+
+    /**
+     * get salary info by employee id
+     * @param {String} id employee id
+     * @return one row of salary
+     */
+    static async getEmployeeSalaryByEmployeeId(id) {
+        let ret = await EmployeeSalaryModel.getSalaryByEmployeeId(id);
+
+        if (ret.length) {
+            return { status: true, data: ret[0] }
+
+        } else {
+            return { status: false }
+        }
+
+    }
+
     /**
      * get total count of employeeSalary rows
      * @return count of all rows
@@ -469,6 +535,22 @@ class EmployeeService {
     static async deleteEmployee(employeeID) {
 
         let ret = await EmployeeModel.deleteModel.deleteRow(employeeID);
+
+        if (ret == false) {
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
+     * delete bulk id array
+     * @param {Array} idArray array containing ids of row
+     */
+    static async deleteBulkEmployee(idArray) {
+
+        let ret = await EmployeeModel.deleteModel.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
@@ -578,6 +660,164 @@ class EmployeeService {
             return { status: false }
         } else {
             return { status: true }
+        }
+
+    }
+
+
+
+    /**
+    * inserts new employee in the database
+    * @param {Object} obj - An object.
+    * @param {Number} obj.salaryID salary id
+    * @param {String} obj.employeeNo employee number
+    * @param {String} obj.firstName first name of employee
+    * @param {String} obj.middleName middle name of employee
+    * @param {String} obj.lastName last name of employee
+    * @param {Number} obj.sex sex of employee
+    * @param {Number} obj.contactNo contact number of employee
+    * @param {String} obj.hireDate hire date of employee
+    * @param {String} obj.birthDate birthdate of employee
+    * @param {Number} obj.employeePositionID employee position ID
+    * @param {Number} obj.employeeDepartmentID employee department ID
+    * @param {Number} obj.salary salary on employee salary table
+    * @param {String} obj.startedDate started date of employee salary
+    * @param {String} obj.untilDate until date of employee salary
+    * @return {Object} result
+    * @return {Number} result.insertId employee id of last inserted
+    */
+    static async insertEmployeeBulk({
+        employeeNo,
+        firstName,
+        middleName,
+        lastName,
+        sex,
+        contactNo,
+        hireDate,
+        birthDate,
+        employeePositionID,
+        employeeDepartmentID,
+        salary,
+        startedDate,
+        untilDate
+    }) {
+
+        let objEmployee = {
+            employeeNo,
+            firstName,
+            middleName,
+            lastName,
+            sex,
+            contactNo,
+            hireDate,
+            birthDate,
+            employeePositionID,
+            employeeDepartmentID
+        };
+
+        let resultEmployee = await EmployeeModel.insertEmployee(objEmployee);
+        let employeeID = resultEmployee.insertId;
+
+        if (resultEmployee !== false) {
+            let objSalary = {
+                salary,
+                startedDate,
+                untilDate,
+                employeeID
+            };
+
+            let resultFromSalary = await EmployeeSalaryModel.insertEmployeeSalary(objSalary);
+
+            if (resultFromSalary === false) {
+
+                return { status: false }
+            } else {
+                return { status: true, data: employeeID }
+            }
+
+        }
+
+    }
+
+    /**
+    * modify employee information to the database, doesn't have sort because its handled differently
+    * @param {Number} employeeID id of the salary
+    * @param {Number} obj.salaryID salary id
+    * @param {String} obj.employeeNo employee number
+    * @param {String} obj.firstName first name of employee
+    * @param {String} obj.middleName middle name of employee
+    * @param {String} obj.lastName last name of employee
+    * @param {Number} obj.sex sex of employee
+    * @param {Number} obj.contactNo contact number of employee
+    * @param {String} obj.hireDate hire date of employee
+    * @param {String} obj.birthDate birthdate of employee
+    * @param {Number} obj.employeePositionID employee position ID
+    * @param {Number} obj.employeeDepartmentID employee department ID
+    * @param {Number} obj.salary salary on employee salary table
+    * @param {String} obj.startedDate started date of employee salary
+    * @param {String} obj.untilDate until date of employee salary
+    * @return {Object} result
+    * @return {Number} result.insertId page id of last inserted
+    */
+    static async modifyEmployeeBulk(employeeID, {
+        employeeSalaryID,
+        employeeNo,
+        firstName,
+        middleName,
+        lastName,
+        sex,
+        contactNo,
+        hireDate,
+        birthDate,
+        employeePositionID,
+        employeeDepartmentID,
+        salary,
+        startedDate,
+        untilDate
+    }) {
+
+        let obj = {
+            employeeID,
+            employeeNo,
+            firstName,
+            middleName,
+            lastName,
+            sex,
+            contactNo,
+            hireDate,
+            birthDate,
+            employeePositionID,
+            employeeDepartmentID
+        };
+
+        let resultEmployee = await EmployeeModel.modifyEmployee(obj);
+
+        if (resultEmployee !== false) {
+
+            let objSalary = {
+                salary,
+                startedDate,
+                untilDate,
+                employeeID
+            };
+
+            let resultFromSalary;
+
+            // if just in case the salary row doesn't exist yet, like getting deleted independently, then perform an add
+            if (employeeSalaryID === undefined) {
+                resultFromSalary = await EmployeeSalaryModel.insertEmployeeSalary(objSalary);
+
+            } else {
+                objSalary.employeeSalaryID = employeeSalaryID;
+                resultFromSalary = await EmployeeSalaryModel.modifyEmployeeSalary(objSalary);
+            }
+
+            if (resultEmployee === false) {
+                return { status: false }
+            } else {
+                return { status: true, data: resultEmployee.insertId }
+            }
+
         }
 
     }

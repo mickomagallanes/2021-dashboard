@@ -71,8 +71,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
 
   // if this component is used as child
   const { current: isRenderedAsChild } = useRef(customEmployeeSalaryURL !== undefined);
-  // const isRenderedAsChild = customEmployeeSalaryURL !== undefined;
-  // const employeeSalaryURL = isRenderedAsChild ? customEmployeeSalaryURL : employeeSalaryByIdURL;
+
   const { current: employeeSalaryURL } = useRef(isRenderedAsChild ? customEmployeeSalaryURL : employeeSalaryByIdURL);
 
   // HOOKS DECLARATIONS AND VARIABLES
@@ -140,7 +139,7 @@ function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pa
       "salary": fields.salary,
       "employeeID": fields.employeeID,
       "startedDate": formatDate(fields.startedDate, "YYYY-MM-DD"),
-      "untilDate": fields.untilDate === null ? null : formatDate(fields.untilDate, "YYYY-MM-DD")
+      "untilDate": fields.untilDate === null || fields.untilDate === "" ? null : formatDate(fields.untilDate, "YYYY-MM-DD")
     }
 
     if (isAddMode) {

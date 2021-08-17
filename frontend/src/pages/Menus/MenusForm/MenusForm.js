@@ -60,9 +60,11 @@ export const menuFormInitialState = {
  */
 function MenusForm({ priv, customMenuURL, parentFormRef, pagePath }) {
 
+  // TODO: make all static data useRef
+
   // if this component is used as child
-  const isRenderedAsChild = customMenuURL !== undefined;
-  const menuURL = isRenderedAsChild ? customMenuURL : menuByIdURL;
+  const { current: isRenderedAsChild } = useRef(customMenuURL !== undefined);
+  const { current: menuURL } = useRef(isRenderedAsChild ? customMenuURL : menuByIdURL);
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();

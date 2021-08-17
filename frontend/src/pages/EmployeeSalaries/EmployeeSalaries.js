@@ -15,6 +15,7 @@ const employeeSalaryURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/sa
 const employeeSalaryCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/salary/get/all/count`;
 
 const employeeSalaryDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/salary/delete/`;
+const employeeSalaryBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/salary/delete/bulk`;
 
 const modalTitle = "Do you want to delete this employee salary?";
 const modalBody = "This row will be deleted in the database, do you want to proceed?";
@@ -53,15 +54,20 @@ function EmployeesSalaries({ priv }) {
     },
     tableProps,
     filteringProps,
+    bulkDeleteProps,
+    bulkDeleteProps: {
+      deleteBulkData,
+      setCurrentDeleteRows
+    },
     BundledTable
-  } = useBundledTable({ data: employeeSalaryData, dataCount: totalEmployeeSalaries });
+  } = useBundledTable({ data: employeeSalaryData, dataCount: totalEmployeeSalaries, bulkDeleteUrl: employeeSalaryBulkDeleteURL });
 
   const [deleteEmployeeSalary, deleteEmployeeSalaryResult] = useDelete(employeeSalaryDeleteURL);
 
   // to determine if initial fetch of data is done
 
-  const fetchDepsCount = [currentEntries, currentPage, deleteEmployeeSalaryResult];
-  const fetchDepsEmployee = [deleteEmployeeSalaryResult];
+  const fetchDepsCount = [currentEntries, currentPage, deleteEmployeeSalaryResult, deleteBulkData];
+  const fetchDepsEmployee = [deleteEmployeeSalaryResult, deleteBulkData];
 
   const [dataCount, loadingCount] = useFetch(employeeSalaryCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
@@ -97,6 +103,7 @@ function EmployeesSalaries({ priv }) {
     handleShow();
     confirmDelete.current = () => {
       deleteEmployeeSalary(employeeSalaryId);
+      setCurrentDeleteRows(prev => [...prev].filter(o => o !== employeeSalaryId));
       handleClose();
     }
   }
@@ -154,6 +161,17 @@ function EmployeesSalaries({ priv }) {
     postAfterCallback(deleteEmployeeSalaryResult);
 
   }, [deleteEmployeeSalaryResult]);
+
+  useDidUpdateEffect(() => {
+
+    if (deleteBulkData.status) {
+      timerSuccessAlert([deleteBulkData.msg]);
+    } else {
+      timerErrorAlert([deleteBulkData.msg]);
+    }
+
+  }, [deleteBulkData]);
+
 
   // UI
   const actionButtons = (employeeSalaryID) => {
@@ -217,6 +235,7 @@ function EmployeesSalaries({ priv }) {
                   actionButtons={actionButtons}
                   addButtons={addButtons}
                   filteringProps={filteringProps}
+                  bulkDeleteProps={bulkDeleteProps}
                 />
 
 
