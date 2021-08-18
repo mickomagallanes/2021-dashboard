@@ -334,9 +334,9 @@ $btnlink-color-light: #000000;
         border: none;
       }
      
-     
+     // TODO: multiple not is not good, as bootstrap have a lot of classes for btn
       // pagination, table buttons
-      a, button:not(.btn-primary) {
+      a, button:not(.btn-primary):not(.btn-success) {
         background: $btnlink-bg-light;
         color: $btnlink-color-light;
   

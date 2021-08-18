@@ -10,6 +10,10 @@ import Spinner from '../../components/Spinner/Spinner';
 import useDelete from '../../components/useDelete';
 import useDialog from '../../components/useDialog';
 import useBundledTable from '../../components/useBundledTable';
+import CSVExport from '../../components/CSVExport';
+import axios from 'axios';
+import { axiosConfig } from '../../helpers/utils';
+import { Button } from 'react-bootstrap';
 
 const employeePositionURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/position/get/all`;
 const employeePositionCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/position/get/all/count`;
@@ -20,6 +24,11 @@ const employeePositionBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API
 const colData = [
   { "id": "EmployeePositionID", "name": "Employee Position ID" },
   { "id": "PositionName", "name": "Position Name" }
+];
+
+const csvHeader = [
+  { "key": "EmployeePositionID", "label": "Employee Position ID" },
+  { "key": "PositionName", "label": "Position Name" }
 ];
 
 const idKey = "EmployeePositionID";
@@ -133,6 +142,31 @@ function EmployeePositions({ priv }) {
     }
   }
 
+  const fetchCsvData = async () => {
+    try {
+      const respCsv = await axios.get(
+        employeePositionURL,
+        axiosConfig
+      );
+      const { data } = respCsv;
+
+      if (data.status) {
+
+        return {
+          data: data.data,
+          headers: csvHeader,
+          filename: "EmployeePositions.csv"
+        };
+
+      } else {
+        return false;
+      }
+
+    } catch (error) {
+      return false;
+    }
+  }
+
   // LIFECYCLES
 
   useDidUpdateEffect(() => {
@@ -211,7 +245,18 @@ function EmployeePositions({ priv }) {
           <div className="col-lg-12 grid-margin stretch-card">
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title"> Employee Position Table </h4>
+
+                <div className="row">
+                  <div className="col-12 col-sm-8 col-md-8 col-lg-10 col-xl-10">
+                    <h4 className="card-title"> Employee Position Table
+                    </h4>
+                  </div>
+                  <div className="col-12 col-sm-4 col-md-4 col-lg-2 col-xl-2">
+                    <CSVExport
+                      asyncExportMethod={fetchCsvData}
+                    ><Button variant="success">Export All To CSV <i className="mdi mdi-file-export"> </i> </Button></CSVExport>
+                  </div>
+                </div>
 
                 {!!loadingEmployeePositions && !!loadingCount && <Spinner />}
 
