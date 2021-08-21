@@ -51,14 +51,16 @@ export const menuFormInitialState = {
   parentMenuID: ""
 };
 
+// TODO: upload csv
 /**
  * MenusForm Component
  * @param {Object} obj
  * @param {String} obj.priv Privilege of logged-in user to MenusForm
+ * @param {String} obj.pagePath path connecting sub page to page
  * @param {String} [obj.customMenuURL] replaces url of menu get by id, added if component is rendered as child from other form
  * @param {React useRef} [obj.parentFormRef] add ref for formik, so parent component can fetch the form value
  */
-function MenusForm({ priv, customMenuURL, parentFormRef, pagePath }) {
+function MenusForm({ priv, pagePath, customMenuURL, parentFormRef }) {
 
   // TODO: make all static data useRef
 

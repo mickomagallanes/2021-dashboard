@@ -205,7 +205,7 @@ function EmployeesFormBulk({ priv, pagePath }) {
       });
     }
 
-  }, [history, isAddMode, location.search, priv])
+  }, [history, isAddMode, location.search, pagePath, priv])
 
   useDidUpdateEffect(() => {
 

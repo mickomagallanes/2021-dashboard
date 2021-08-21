@@ -23,9 +23,13 @@ class EmployeeSalaryModel {
      * @return {Array} result, length = 1
      */
     static async getSalaryByEmployeeId(id) {
-        const stmt = `SELECT * from EmployeeSalaries
+        const stmt = `SELECT * from Employees a LEFT JOIN EmployeeSalaries b ON 
+        a.EmployeeID = b.EmployeeID AND 
+        b.EmployeeSalaryID IN 
+        (SELECT MAX(EmployeeSalaryID) FROM EmployeeSalaries WHERE EmployeeID = a.EmployeeID
+         AND StartedDate <= CURDATE() AND (UntilDate > CURDATE() OR ISNULL(UntilDate)))
             WHERE
-                CAST(EmployeeID AS CHAR) = ?;`;
+                CAST(a.EmployeeID AS CHAR) = ?;`;
 
         try {
             const result = await mysql_conn.query(stmt, [id]);

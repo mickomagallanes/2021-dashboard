@@ -29,7 +29,6 @@ const colData = [
 
 const idKey = "MenuID";
 
-// TODO: make a portfolio using github.io. post pics or docs if you cant publish
 function Menus({ priv }) {
 
   // HOOKS DECLARATIONS AND VARIABLES

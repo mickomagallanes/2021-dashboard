@@ -64,10 +64,11 @@ const valueKeySelect = ["EmployeeNo", "FirstName", "LastName"];
  * EmployeeSalariesForm Component
  * @param {Object} obj
  * @param {String} obj.priv Privilege of logged-in user to EmployeeSalariesForm
+ * @param {String} obj.pagePath path connecting sub page to page
  * @param {String} [obj.customEmployeeSalaryURL] replaces url of employeeSalary get by id, added if component is rendered as child from other form
  * @param {React useRef} [obj.parentFormRef] add ref for formik, so parent component can fetch the form value
  */
-function EmployeeSalariesForm({ priv, customEmployeeSalaryURL, parentFormRef, pagePath }) {
+function EmployeeSalariesForm({ priv, pagePath, customEmployeeSalaryURL, parentFormRef }) {
 
   // if this component is used as child
   const { current: isRenderedAsChild } = useRef(customEmployeeSalaryURL !== undefined);

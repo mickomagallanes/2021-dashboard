@@ -875,7 +875,7 @@ class EmployeeService {
      * @return one row of employee
      */
     static async getEmployeeById(id) {
-        let ret = await EmployeeModel.getByIdJoinSalary(id);
+        let ret = await EmployeeModel.getterModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
