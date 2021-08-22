@@ -54,7 +54,7 @@ class PageService {
      * @return {Object} result
      * @return {Number} result.insertId role id of last inserted
      */
-    static async insertPageBulk(roleID, { pageName, pagePath, privID, menuName, parentMenuID }) {
+    static async insertPageComplete(roleID, { pageName, pagePath, privID, menuName, parentMenuID }) {
         let objPage = {
             pageName: pageName,
             pagePath: pagePath
@@ -102,7 +102,7 @@ class PageService {
     * @return {Object} result
     * @return {Number} result.insertId page id of last inserted
     */
-    static async modifyPageBulk(pageID, roleID, { menuID, pageName, pagePath, privID, menuName, parentMenuID }) {
+    static async modifyPageComplete(pageID, roleID, { menuID, pageName, pagePath, privID, menuName, parentMenuID }) {
 
         let obj = {
             pageID: pageID,

@@ -90,9 +90,9 @@ class Navbar extends React.Component {
 
 
             <Dropdown alignRight as="li" className="nav-item d-none d-lg-block">
-              <Dropdown.Toggle className="nav-link btn btn-success create-new-button no-caret">
+              {/* <Dropdown.Toggle className="nav-link btn btn-success create-new-button no-caret">
                 + Create New Project
-              </Dropdown.Toggle>
+              </Dropdown.Toggle> */}
 
               <Dropdown.Menu className="navbar-dropdown preview-list create-new-dropdown-menu">
                 <h6 className="p-3 mb-0"> Projects </h6>

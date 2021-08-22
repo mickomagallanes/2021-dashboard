@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import propsTypes from 'prop-types';
 import { CSVLink } from 'react-csv';
 
-//TODO: make a csv import
 const CSVExport = ({ asyncExportMethod, children, disable }) => {
 
     const [csvData, setCsvData] = useState(false);
@@ -20,7 +19,7 @@ const CSVExport = ({ asyncExportMethod, children, disable }) => {
     return (
         <>
             <div
-                className="text-center"
+
                 onClick={async () => {
                     if (disable) {
                         return;

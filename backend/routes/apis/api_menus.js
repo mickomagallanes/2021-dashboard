@@ -13,10 +13,25 @@ const {
     parentMenuSortSchema,
     getAllCountGeneralSchema,
     deleteGeneralSchema,
-    deleteBulkGeneralSchema
+    deleteBulkGeneralSchema,
+    menuInsertBulkSchema
 } = require('../../middlewares/validator.js');
 
 /******************************** Menu ***************************************/
+
+// insert new menu
+// returns insertId of menu
+router.post('/insert/bulk', [checkSession, menuInsertBulkSchema, authorizeWriteRoute], async function (req, res, next) {
+
+    // insert role information
+    let result = await MenusService.insertBulkMenu(req.body.data);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed inserting menus by bulk" });
+    } else {
+        res.json({ "status": true, "msg": "Successful inserting menus by bulk", "id": result.data });
+    }
+});
 
 // insert new menu
 // returns insertId of menu

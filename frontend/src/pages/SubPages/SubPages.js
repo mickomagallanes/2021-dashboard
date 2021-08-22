@@ -209,7 +209,7 @@ function SubPages({ priv }) {
             <div className="card">
               <div className="card-body">
                 <h4 className="card-title"> SubPage Table </h4>
-                {!!loadingSubPages && !!loadingCount && <Spinner />}
+                {(!!loadingSubPages || !!loadingCount) && <Spinner />}
 
                 <BundledTable
                   tableProps={tableProps}

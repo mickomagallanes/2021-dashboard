@@ -51,7 +51,6 @@ export const menuFormInitialState = {
   parentMenuID: ""
 };
 
-// TODO: upload csv
 /**
  * MenusForm Component
  * @param {Object} obj

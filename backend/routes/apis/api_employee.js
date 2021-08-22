@@ -17,8 +17,8 @@ const {
     employeeDepartmentInsertSchema,
     getAllCountGeneralSchema,
     deleteBulkGeneralSchema,
-    employeeInsertBulkSchema,
-    employeeModifyBulkSchema
+    employeeInsertCompleteSchema,
+    employeeModifyCompleteSchema
 } = require('../../middlewares/validator.js');
 
 
@@ -410,29 +410,29 @@ router.put('/modify/:id', [checkSession, employeeModifySchema, authorizeWriteRou
     }
 });
 
-// insert new employee by bulk: employee + salary
+// insert new employee by complete: employee + salary
 // returns insertId of employee
-router.post('/insert/bulk', [checkSession, employeeInsertBulkSchema, authorizeWriteRoute], async function (req, res, next) {
+router.post('/insert/complete', [checkSession, employeeInsertCompleteSchema, authorizeWriteRoute], async function (req, res, next) {
 
     // insert employee information
-    let result = await EmployeeService.insertEmployeeBulk(req.body);
+    let result = await EmployeeService.insertEmployeeComplete(req.body);
 
     if (result.status === false) {
-        res.json({ "status": false, "msg": "Failed inserting employee by bulk" });
+        res.json({ "status": false, "msg": "Failed inserting employee by complete" });
     } else {
-        res.json({ "status": true, "msg": "Successful inserting employee by bulk", "id": result.data });
+        res.json({ "status": true, "msg": "Successful inserting employee by complete", "id": result.data });
     }
 });
 
-// edit employee by bulk: employee + salary
-router.put('/modify/bulk/:id', [checkSession, employeeModifyBulkSchema, authorizeWriteRoute], async function (req, res, next) {
+// edit employee by complete: employee + salary
+router.put('/modify/complete/:id', [checkSession, employeeModifyCompleteSchema, authorizeWriteRoute], async function (req, res, next) {
 
-    let result = await EmployeeService.modifyEmployeeBulk(req.params.id, req.body);
+    let result = await EmployeeService.modifyEmployeeComplete(req.params.id, req.body);
 
     if (result.status === false) {
-        res.json({ "status": false, "msg": "Failed modification of employee by bulk" });
+        res.json({ "status": false, "msg": "Failed modification of employee complete" });
     } else {
-        res.json({ "status": true, "msg": "Successful modification of employee by bulk", "id": result.data });
+        res.json({ "status": true, "msg": "Successful modification of employee complete", "id": result.data });
     }
 });
 

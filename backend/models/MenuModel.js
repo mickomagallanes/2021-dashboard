@@ -2,6 +2,7 @@ const mysql_conn = require("./db.js");
 const { PRIVILEGES } = require('../utils/constants.js');
 const GettersModel = require("./GettersModel.js");
 const DeleteModel = require("./DeleteModel.js");
+const { loopArr } = require("../utils/looping.js");
 
 "use strict";
 
@@ -32,6 +33,40 @@ class MenusModel {
         try {
             const result = await mysql_conn.query(stmt, [id]);
             return result;
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
+    /**
+    * inserts new menu in the database
+    * @param {Array of Objects} dataArr contains the insert row for menu
+    */
+    static async insertBulkMenu(dataArr) {
+        let valuesClause = ` `
+        const valuesArray = [];
+
+        await loopArr(dataArr, (indx) => {
+
+            valuesArray.push(dataArr[indx]["MenuName"], dataArr[indx]["PageID"], dataArr[indx]["ParentMenuID"]);
+
+            if (indx === 0) {
+                valuesClause += `( ?, ?, ? )`;
+            } else {
+                valuesClause += ` , ( ?, ?, ? )`;
+            }
+
+        });
+
+        const stmt = `INSERT INTO Menus
+                    (MenuName, PageID, ParentMenuID)
+                    VALUES ${valuesClause} `;
+
+        try {
+            const result = await mysql_conn.query(stmt, valuesArray);
+            return result;
+
         } catch (err) {
             console.error(err);
             return false;

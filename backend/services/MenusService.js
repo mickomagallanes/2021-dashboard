@@ -70,6 +70,24 @@ class MenusService {
     }
 
     /**
+    * inserts new menu in the database
+    * @param {Array of Objects} dataArr contains the insert row for menu
+    * @return {Object} result
+    */
+    static async insertBulkMenu(dataArr) {
+
+        let ret = await MenuModel.insertBulkMenu(dataArr);
+
+        if (ret === false) {
+
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+    /**
     * modify menu information to the database, doesn't have sort because its handled differently
     * @param {String} menuID id of the menu
     * @param {Object} obj - An object.

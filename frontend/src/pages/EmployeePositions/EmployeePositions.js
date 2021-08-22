@@ -258,7 +258,7 @@ function EmployeePositions({ priv }) {
                   </div>
                 </div>
 
-                {!!loadingEmployeePositions && !!loadingCount && <Spinner />}
+                {(!!loadingEmployeePositions || !!loadingCount) && <Spinner />}
 
                 <BundledTable
                   tableProps={tableProps}

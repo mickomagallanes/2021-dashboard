@@ -212,7 +212,9 @@ function Users({ priv }) {
             <div className="card">
               <div className="card-body">
                 <h4 className="card-title"> Users Table </h4>
-                {!!loadingUsers && !!loadingCount && <Spinner />}
+
+                {(!!loadingUsers || !!loadingCount) && <Spinner />}
+
                 <BundledTable
                   tableProps={tableProps}
                   entryProps={entryProps}

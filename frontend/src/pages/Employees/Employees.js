@@ -231,8 +231,7 @@ function Employees({ priv }) {
             <div className="card">
               <div className="card-body">
                 <h4 className="card-title"> Employee Table </h4>
-                {!!loadingEmployees && !!loadingCount && <Spinner />}
-
+                {(!!loadingEmployees || !!loadingCount) && <Spinner />}
                 <BundledTable
                   tableProps={tableProps}
                   entryProps={entryProps}

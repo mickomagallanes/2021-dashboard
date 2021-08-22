@@ -214,7 +214,7 @@ function Routes({ priv }) {
               <div className="card-body">
                 <h4 className="card-title"> Route Table </h4>
 
-                {!!loadingRoutes && !!loadingCount && <Spinner />}
+                {(!!loadingRoutes || !!loadingCount) && <Spinner />}
 
                 <BundledTable
                   tableProps={tableProps}

@@ -228,7 +228,7 @@ function Pages({ priv }) {
               <div className="card-body">
                 <h4 className="card-title"> Page Table </h4>
 
-                {!!loadingPages && !!loadingCount && <Spinner />}
+                {(!!loadingPages || !!loadingCount) && <Spinner />}
 
                 <BundledTable
                   tableProps={tableProps}

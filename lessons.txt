@@ -2,7 +2,7 @@ Class Components vs Functional Components.
 
 1. The following components are made with Class:
 
- - RolesForm (depends on itself when inserting bulk data)
+ - RolesForm (depends on itself when inserting complete data)
  - RouteRolesForm
  - PageRolesForm
  - Login
@@ -27,7 +27,7 @@ Class Components vs Functional Components.
  - ParentMenusForm
  - Pages
  - PagesForm
- - PagesFormBulk (depends on the api when inserting bulk data)
+ - PagesFormComplete (depends on the api when inserting complete data)
  - SubPages
  - SubPagesForm
  - Roles
@@ -79,4 +79,4 @@ Important Pattern Lessons for React
         or you want to to Pass By Reference, which is the solution on the 6.1 problem
 8. React.memo and useMemo
     8.1 A component needs React.memo if you dont want to rerender a Child Component if the Parent Component rerenders even if the passed
-        props are just the same. An example can be seen at PagesFormBulk
+        props are just the same. An example can be seen at PagesFormComplete

@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useRef } from 'react'
 import ReactDOM from "react-dom";
-import './PagesFormBulk.css';
+import './PagesFormComplete.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import useAlert from '../../../components/useAlert';
 import useFetch from '../../../components/useFetch';
@@ -20,8 +20,8 @@ import FormikWithRef from '../../../components/FormikWithRef';
 const MemoMenusForm = React.memo(MenusForm);
 
 const pageByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/`;
-const addPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/insert/bulk/by/session`;
-const editPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/modify/bulk/by/session/`;
+const addPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/insert/complete/by/session`;
+const editPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/modify/complete/by/session/`;
 const privUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/privilege/get/all`;
 const pagesRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/get/by/session/and/page/`;
 
@@ -58,7 +58,7 @@ const pageFormInitialState = {
 
 const menuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/by/page/`;
 
-function PagesFormBulk({ priv, pagePath }) {
+function PagesFormComplete({ priv, pagePath }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
@@ -325,4 +325,4 @@ const StyledLabel = styled.label`
     margin: 0px 50px 0px 0px;
 `
 
-export default PagesFormBulk;
+export default PagesFormComplete;

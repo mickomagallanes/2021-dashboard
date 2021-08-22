@@ -686,7 +686,7 @@ class EmployeeService {
     * @return {Object} result
     * @return {Number} result.insertId employee id of last inserted
     */
-    static async insertEmployeeBulk({
+    static async insertEmployeeComplete({
         employeeNo,
         firstName,
         middleName,
@@ -759,7 +759,7 @@ class EmployeeService {
     * @return {Object} result
     * @return {Number} result.insertId page id of last inserted
     */
-    static async modifyEmployeeBulk(employeeID, {
+    static async modifyEmployeeComplete(employeeID, {
         employeeSalaryID,
         employeeNo,
         firstName,

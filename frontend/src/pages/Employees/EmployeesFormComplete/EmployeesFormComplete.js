@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useRef } from 'react'
 import ReactDOM from "react-dom";
-import './EmployeesFormBulk.css';
+import './EmployeesFormComplete.css';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import useAlert from '../../../components/useAlert';
 import useFetch from '../../../components/useFetch';
@@ -24,8 +24,8 @@ const MemoEmployeeSalariesForm = React.memo(EmployeeSalariesForm);
 const employeeByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/get/by/`;
 const employeeDepartmentAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/department/get/all`;
 const employeePositionAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/position/get/all`;
-const addEmployeeURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/insert/bulk`;
-const editEmployeeURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/modify/bulk/`;
+const addEmployeeURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/insert/complete`;
+const editEmployeeURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/modify/complete/`;
 
 const schema = yup.object().shape({
   employeeNo: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
@@ -96,7 +96,7 @@ const employeeFormInitialState = {
 
 const employeeSalaryByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/salary/get/by/employee/`;
 
-function EmployeesFormBulk({ priv, pagePath }) {
+function EmployeesFormComplete({ priv, pagePath }) {
 
   // HOOKS DECLARATIONS AND VARIABLES
   const location = useLocation();
@@ -446,4 +446,4 @@ function EmployeesFormBulk({ priv, pagePath }) {
   );
 }
 
-export default EmployeesFormBulk;
+export default EmployeesFormComplete;

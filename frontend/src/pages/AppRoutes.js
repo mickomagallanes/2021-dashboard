@@ -27,7 +27,7 @@ import Pages from './Pages/Pages';
 import PagesForm from './Pages/PagesForm/PagesForm';
 import SubPages from './SubPages/SubPages';
 import SubPagesForm from './SubPages/SubPagesForm/SubPagesForm';
-import PagesFormBulk from './Pages/PagesFormBulk/PagesFormBulk';
+import PagesFormComplete from './Pages/PagesFormComplete/PagesFormComplete';
 import EmployeesSalaries from './EmployeeSalaries/EmployeeSalaries';
 import EmployeeSalariesForm from './EmployeeSalaries/EmployeeSalariesForm/EmployeeSalariesForm';
 import Routes from './Routes/Routes';
@@ -38,7 +38,7 @@ import EmployeeDepartments from './EmployeeDepartments/EmployeeDepartments';
 import EmployeeDepartmentsForm from './EmployeeDepartments/EmployeeDepartmentsForm/EmployeeDepartmentsForm';
 import EmployeePositions from './EmployeePositions/EmployeePositions';
 import EmployeePositionsForm from './EmployeePositions/EmployeePositionsForm/EmployeePositionsForm';
-import EmployeesFormBulk from './Employees/EmployeesFormBulk/EmployeesFormBulk';
+import EmployeesFormComplete from './Employees/EmployeesFormComplete/EmployeesFormComplete';
 
 
 const pagesByRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/by/session`;
@@ -171,7 +171,7 @@ function matchComponentName(name) {
     case "MenusForm": return MenusForm;
     case "Pages": return Pages;
     case "PagesForm": return PagesForm;
-    case "PagesFormBulk": return PagesFormBulk;
+    case "PagesFormComplete": return PagesFormComplete;
     case "Routes": return Routes;
     case "RoutesForm": return RoutesForm;
     case "SubPages": return SubPages;
@@ -184,7 +184,7 @@ function matchComponentName(name) {
     case "EmployeeDepartmentsForm": return EmployeeDepartmentsForm;
     case "EmployeePositions": return EmployeePositions;
     case "EmployeePositionsForm": return EmployeePositionsForm;
-    case "EmployeesFormBulk": return EmployeesFormBulk;
+    case "EmployeesFormComplete": return EmployeesFormComplete;
 
     default: return undefined;
   }

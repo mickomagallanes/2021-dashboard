@@ -9,8 +9,8 @@ const {
     getAllGeneralSchema,
     pageInsertSchema,
     pageModifySchema,
-    pageInsertBulkSchema,
-    pageModifyBulkSchema,
+    pageInsertCompleteSchema,
+    pageModifyCompleteSchema,
     deleteGeneralSchema,
     getAllCountGeneralSchema,
     deleteBulkGeneralSchema
@@ -83,13 +83,13 @@ router.get('/get/by/:id', [checkSession, authorizeReadRoute], async function (re
     }
 });
 
-// insert new page by bulk: page + menu + pagerole
+// insert new page by complete: page + menu + pagerole
 // returns insertId of page
-router.post('/insert/bulk/by/session', [checkSession, pageInsertBulkSchema, authorizeWriteRoute], async function (req, res, next) {
+router.post('/insert/complete/by/session', [checkSession, pageInsertCompleteSchema, authorizeWriteRoute], async function (req, res, next) {
     let roleId = req.session.userData.roleid;
 
     // insert role information
-    let result = await PageService.insertPageBulk(roleId, req.body);
+    let result = await PageService.insertPageComplete(roleId, req.body);
 
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed inserting page" });
@@ -107,23 +107,23 @@ router.post('/insert', [checkSession, pageInsertSchema, authorizeWriteRoute], as
     let result = await PageService.insertPage(req.body);
 
     if (result.status === false) {
-        res.json({ "status": false, "msg": "Failed inserting page by bulk" });
+        res.json({ "status": false, "msg": "Failed inserting page by complete" });
     } else {
-        res.json({ "status": true, "msg": "Successful inserting page by bulk", "id": result.data });
+        res.json({ "status": true, "msg": "Successful inserting page by complete", "id": result.data });
     }
 });
 
 
-// edit page by bulk: page + menu + pagerole
-router.put('/modify/bulk/by/session/:id', [checkSession, pageModifyBulkSchema, authorizeWriteRoute], async function (req, res, next) {
+// edit page by complete: page + menu + pagerole
+router.put('/modify/complete/by/session/:id', [checkSession, pageModifyCompleteSchema, authorizeWriteRoute], async function (req, res, next) {
 
     let roleId = req.session.userData.roleid;
-    let result = await PageService.modifyPageBulk(req.params.id, roleId, req.body);
+    let result = await PageService.modifyPageComplete(req.params.id, roleId, req.body);
 
     if (result.status === false) {
-        res.json({ "status": false, "msg": "Failed modification of page by bulk" });
+        res.json({ "status": false, "msg": "Failed modification of page complete" });
     } else {
-        res.json({ "status": true, "msg": "Successful modification of page by bulk", "id": result.data });
+        res.json({ "status": true, "msg": "Successful modification of page complete", "id": result.data });
     }
 });
 

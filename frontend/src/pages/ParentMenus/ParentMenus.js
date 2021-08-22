@@ -248,7 +248,9 @@ function ParentMenus({ priv }) {
             <div className="card">
               <div className="card-body">
                 <h4 className="card-title"> Parent Menu Table </h4>
-                {!!loadingParentMenus && !!loadingCount && <Spinner />}
+
+                {(!!loadingParentMenus || !!loadingCount) && <Spinner />}
+
                 <BundledTable
                   tableProps={tableProps}
                   entryProps={entryProps}

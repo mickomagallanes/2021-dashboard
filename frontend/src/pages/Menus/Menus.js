@@ -10,12 +10,15 @@ import Spinner from '../../components/Spinner/Spinner';
 import useBundledTable from '../../components/useBundledTable';
 import useDialog from '../../components/useDialog';
 import useDelete from '../../components/useDelete';
+import useCsv from '../../components/useCsv';
 
 const menuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all`;
 const menuCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/all/count`;
 
 const menuDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/delete/`;
 const menuBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/delete/bulk`;
+
+const menuInsertBulkURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/insert/bulk`;
 
 const modalTitle = "Do you want to delete this menu?";
 const modalBody = "This row will be deleted in the database, do you want to proceed?";
@@ -25,6 +28,13 @@ const colData = [
   { "id": "ParentMenuName", "name": "Parent Menu Name" },
   { "id": "PageName", "name": "Page Name" },
   { "id": "MenuName", "name": "Menu Name" }
+];
+
+const csvHeader = [
+  { "key": "MenuID", "label": "Menu ID" },
+  { "key": "MenuName", "label": "Menu Name" },
+  { "key": "ParentMenuName", "label": "Parent Menu Name" },
+  { "key": "PageName", "label": "Page Name" }
 ];
 
 const idKey = "MenuID";
@@ -59,17 +69,33 @@ function Menus({ priv }) {
     BundledTable
   } = useBundledTable({ data: menuData, dataCount: totalMenus, bulkDeleteUrl: menuBulkDeleteURL });
 
+  const {
+    exportCsvFunc,
+    importCsvFunc,
+    ImportElem,
+    ExportElem,
+    isLoadingExport,
+    isLoadingImport,
+    importCsvFuncResp
+  } = useCsv({
+    exportURL: menuURL,
+    importURL: menuInsertBulkURL,
+    csvHeader,
+    csvName: "Menus.csv"
+  })
+
   // to determine if initial fetch of data is done
   const [deleteMenu, deleteMenuResult] = useDelete(menuDeleteURL);
 
-  const fetchDepsCount = [currentEntries, currentPage, deleteMenuResult, deleteBulkData];
-  const fetchDepsMenus = [deleteMenuResult, deleteBulkData];
+  const fetchDepsCount = [currentEntries, currentPage, deleteMenuResult, deleteBulkData, importCsvFuncResp];
+  const fetchDepsMenus = [deleteMenuResult, deleteBulkData, importCsvFuncResp];
 
   const [dataCount, loadingCount] = useFetch(menuCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
   const [dataMenus, loadingMenus] = useFetch(menuURL + searchParamQuery, { customDeps: fetchDepsMenus });
 
   const confirmDelete = useRef();
+
 
   const {
     handleShow,
@@ -143,6 +169,16 @@ function Menus({ priv }) {
     checkFetchedData();
   }, [dataMenus, dataCount]);
 
+  useDidUpdateEffect(() => {
+
+    if (importCsvFuncResp.status) {
+      timerSuccessAlert([importCsvFuncResp.msg]);
+    } else {
+      timerErrorAlert([importCsvFuncResp.msg]);
+    }
+
+  }, [importCsvFuncResp]);
+
 
   useDidUpdateEffect(() => {
 
@@ -190,6 +226,8 @@ function Menus({ priv }) {
               <i className="mdi mdi-account-plus"> </i>
               Add Menu
             </Link>
+
+
           </>
         }
 
@@ -210,8 +248,19 @@ function Menus({ priv }) {
           <div className="col-lg-12 grid-margin stretch-card">
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title"> Menus Table </h4>
-                {!!loadingMenus && !!loadingCount && <Spinner />}
+                <div className="row">
+                  <div className="col-12 col-sm-8 col-md-8 col-lg-10 col-xl-10">
+                    <h4 className="card-title"> Menus Table
+                    </h4>
+                  </div>
+                  <div className="col-12 col-sm-4 col-md-4 col-lg-2 col-xl-2 text-center">
+                    <ExportElem exportCsvFunc={exportCsvFunc} />
+                    <ImportElem importCsvFunc={importCsvFunc} />
+
+                  </div>
+                </div>
+                {console.log(isLoadingExport)}
+                {(!!loadingMenus || !!loadingCount || !!isLoadingExport || !!isLoadingImport) && <Spinner />}
 
                 <BundledTable
                   tableProps={tableProps}
@@ -224,7 +273,6 @@ function Menus({ priv }) {
                   filteringProps={filteringProps}
                   bulkDeleteProps={bulkDeleteProps}
                 />
-
 
               </div>
             </div>

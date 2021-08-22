@@ -175,6 +175,22 @@ function menuInsertSchema(req, res, next) {
     validateRequestBody(req, res, next, schema);
 }
 
+function menuInsertBulkSchema(req, res, next) {
+
+    const schema = Joi.object({
+        data: Joi.array().items(
+            Joi.object({
+                MenuName: Joi.string().max(30).required(),
+                PageID: Joi.number().required(),
+                ParentMenuID: Joi.alternatives().try(Joi.number().required(), Joi.string().allow(null).required()),
+            })
+        )
+
+    });
+
+    validateRequestBody(req, res, next, schema);
+}
+
 function menuModifySchema(req, res, next) {
 
     const schemaBody = Joi.object({
@@ -225,7 +241,7 @@ function pageModifySchema(req, res, next) {
 
 }
 
-function pageInsertBulkSchema(req, res, next) {
+function pageInsertCompleteSchema(req, res, next) {
 
     const schema = Joi.object({
         pageName: Joi.string().max(30).required(),
@@ -237,7 +253,7 @@ function pageInsertBulkSchema(req, res, next) {
     validateRequestBody(req, res, next, schema);
 }
 
-function pageModifyBulkSchema(req, res, next) {
+function pageModifyCompleteSchema(req, res, next) {
 
     const schemaBody = Joi.object({
         pageName: Joi.string().max(30).required(),
@@ -341,7 +357,7 @@ function employeeModifySchema(req, res, next) {
     validateRequest(req, res, next, wholeSchema);
 }
 
-function employeeInsertBulkSchema(req, res, next) {
+function employeeInsertCompleteSchema(req, res, next) {
 
     const schema = Joi.object({
         employeeNo: Joi.string().max(45).required(),
@@ -361,7 +377,7 @@ function employeeInsertBulkSchema(req, res, next) {
     validateRequestBody(req, res, next, schema);
 }
 
-function employeeModifyBulkSchema(req, res, next) {
+function employeeModifyCompleteSchema(req, res, next) {
 
     const schemaBody = Joi.object({
         employeeSalaryID: Joi.number().required(),
@@ -575,17 +591,18 @@ module.exports = {
     parentMenuModifySchema,
     parentMenuSortSchema,
     menuInsertSchema,
+    menuInsertBulkSchema,
     menuModifySchema,
     pageInsertSchema,
-    pageInsertBulkSchema,
-    pageModifyBulkSchema,
+    pageInsertCompleteSchema,
+    pageModifyCompleteSchema,
     pageModifySchema,
     subPageInsertSchema,
     subPageModifySchema,
     employeeModifySchema,
     employeeInsertSchema,
-    employeeInsertBulkSchema,
-    employeeModifyBulkSchema,
+    employeeInsertCompleteSchema,
+    employeeModifyCompleteSchema,
     employeeSalaryModifySchema,
     employeeSalaryInsertSchema,
     employeePositionModifySchema,
