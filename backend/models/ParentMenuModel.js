@@ -1,3 +1,4 @@
+const { loopArr } = require("../utils/looping.js");
 const mysql_conn = require("./db.js");
 const DeleteModel = require("./DeleteModel.js");
 const GettersModel = require("./GettersModel.js");
@@ -29,6 +30,40 @@ class ParentMenuModel {
         const stmt = `INSERT INTO ParentMenus (ParentMenuName) VALUES (?)`;
         try {
             const result = await mysql_conn.query(stmt, [parentMenuName]);
+            return result;
+
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
+    /**
+     * inserts new parent menu in the database
+     * @param {Array of Objects} dataArr contains the insert row for parent menu
+     */
+    static async insertBulkParentMenu(dataArr) {
+        let valuesClause = ` `
+        const valuesArray = [];
+
+        await loopArr(dataArr, (indx) => {
+
+            valuesArray.push(dataArr[indx]["ParentMenuName"], dataArr[indx]["ParentMenuSort"]);
+
+            if (indx === 0) {
+                valuesClause += `( ?, ? )`;
+            } else {
+                valuesClause += ` , ( ?, ? )`;
+            }
+
+        });
+
+        const stmt = `INSERT INTO ParentMenus
+                        (ParentMenuName, ParentMenuSort)
+                        VALUES ${valuesClause} `;
+
+        try {
+            const result = await mysql_conn.query(stmt, valuesArray);
             return result;
 
         } catch (err) {

@@ -297,6 +297,25 @@ class MenusService {
     }
 
     /**
+     * inserts new parent menu in the database
+     * @param {Array of Objects} dataArr contains the insert row for parent menu
+     * @return {Object} result
+     */
+    static async insertBulkParentMenu(dataArr) {
+
+        let ret = await ParentMenuModel.insertBulkParentMenu(dataArr);
+
+        if (ret === false) {
+
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+
+    /**
     * modify parent menu information to the database, doesn't have sort because its handled differently
     * @param {String} parentMenuID id of the parent menu
     * @param {Object} obj - An object.

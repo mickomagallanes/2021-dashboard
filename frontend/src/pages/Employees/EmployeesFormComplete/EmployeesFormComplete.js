@@ -27,6 +27,8 @@ const employeePositionAllURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employ
 const addEmployeeURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/insert/complete`;
 const editEmployeeURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/modify/complete/`;
 
+const employeeSalaryByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/salary/get/by/employee/`;
+
 const schema = yup.object().shape({
   employeeNo: yup.string().max(45, 'Must be 45 characters or less').required('Required'),
   firstName: yup.string().max(60, 'Must be 60 characters or less').required('Required'),
@@ -93,8 +95,6 @@ const employeeFormInitialState = {
   employeeDepartmentID: ""
 
 };
-
-const employeeSalaryByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/employee/salary/get/by/employee/`;
 
 function EmployeesFormComplete({ priv, pagePath }) {
 

@@ -172,6 +172,25 @@ class PageService {
     }
 
     /**
+   * inserts new page in the database
+   * @param {Array of Objects} dataArr contains the insert row for page
+   * @return {Object} result
+   */
+    static async insertBulkPage(dataArr) {
+
+        let ret = await PageModel.insertBulkPage(dataArr);
+
+        if (ret === false) {
+
+            return { status: false }
+        } else {
+            return { status: true }
+        }
+
+    }
+
+
+    /**
     * modify page information to the database, doesn't have sort because its handled differently
     * @param {String} pageID id of the page
     * @param {Object} obj - An object.

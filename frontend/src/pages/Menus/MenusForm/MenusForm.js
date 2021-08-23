@@ -212,7 +212,7 @@ function MenusForm({ priv, pagePath, customMenuURL, parentFormRef }) {
         });
 
 
-      } else if (!dataMenu.status) {
+      } else if (!dataMenu.status && !isRenderedAsChild) {
         passErrorMsg(`${dataMenu.msg}`);
       }
     }

@@ -146,6 +146,21 @@ function parentMenuInsertSchema(req, res, next) {
     validateRequestBody(req, res, next, schema);
 }
 
+function parentMenuInsertBulkSchema(req, res, next) {
+
+    const schema = Joi.object({
+        data: Joi.array().items(
+            Joi.object({
+                ParentMenuName: Joi.string().max(30).required(),
+                ParentMenuSort: Joi.number().required()
+            })
+        )
+
+    });
+
+    validateRequestBody(req, res, next, schema);
+}
+
 function parentMenuModifySchema(req, res, next) {
 
     const schemaBody = Joi.object({
@@ -221,6 +236,21 @@ function pageInsertSchema(req, res, next) {
     validateRequestBody(req, res, next, schema);
 }
 
+function pageInsertBulkSchema(req, res, next) {
+
+    const schema = Joi.object({
+        data: Joi.array().items(
+            Joi.object({
+                PageName: Joi.string().max(30).required(),
+                PagePath: Joi.string().max(30).required()
+            })
+        )
+
+    });
+
+    validateRequestBody(req, res, next, schema);
+}
+
 function pageModifySchema(req, res, next) {
 
     const schemaBody = Joi.object({
@@ -260,7 +290,7 @@ function pageModifyCompleteSchema(req, res, next) {
         pagePath: Joi.string().max(30).required(),
         privID: Joi.number().required(),
         menuName: Joi.string().max(30).required(),
-        menuID: Joi.number().required(),
+        menuID: Joi.number(),
         parentMenuID: Joi.alternatives().try(Joi.number().required(), Joi.string().allow(null).required())
     });
 
@@ -380,7 +410,7 @@ function employeeInsertCompleteSchema(req, res, next) {
 function employeeModifyCompleteSchema(req, res, next) {
 
     const schemaBody = Joi.object({
-        employeeSalaryID: Joi.number().required(),
+        employeeSalaryID: Joi.number(),
         employeeNo: Joi.string().max(45).required(),
         firstName: Joi.string().max(60).required(),
         middleName: Joi.string().max(60).required(),
@@ -588,12 +618,14 @@ module.exports = {
     routeInsertSchema,
     routeModifySchema,
     parentMenuInsertSchema,
+    parentMenuInsertBulkSchema,
     parentMenuModifySchema,
     parentMenuSortSchema,
     menuInsertSchema,
     menuInsertBulkSchema,
     menuModifySchema,
     pageInsertSchema,
+    pageInsertBulkSchema,
     pageInsertCompleteSchema,
     pageModifyCompleteSchema,
     pageModifySchema,

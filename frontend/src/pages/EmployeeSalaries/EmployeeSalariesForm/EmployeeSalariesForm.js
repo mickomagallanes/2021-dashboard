@@ -212,7 +212,7 @@ function EmployeeSalariesForm({ priv, pagePath, customEmployeeSalaryURL, parentF
         });
 
 
-      } else if (!dataEmployeeSalary.status) {
+      } else if (!dataEmployeeSalary.status && !isRenderedAsChild) {
         passErrorMsg(`${dataEmployeeSalary.msg}`);
       }
     }

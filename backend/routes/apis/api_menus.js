@@ -14,13 +14,14 @@ const {
     getAllCountGeneralSchema,
     deleteGeneralSchema,
     deleteBulkGeneralSchema,
-    menuInsertBulkSchema
+    menuInsertBulkSchema,
+    parentMenuInsertBulkSchema
 } = require('../../middlewares/validator.js');
 
 /******************************** Menu ***************************************/
 
-// insert new menu
-// returns insertId of menu
+// insert new menu by bulk
+// returns insertId of menu by bulk
 router.post('/insert/bulk', [checkSession, menuInsertBulkSchema, authorizeWriteRoute], async function (req, res, next) {
 
     // insert role information
@@ -29,7 +30,7 @@ router.post('/insert/bulk', [checkSession, menuInsertBulkSchema, authorizeWriteR
     if (result.status === false) {
         res.json({ "status": false, "msg": "Failed inserting menus by bulk" });
     } else {
-        res.json({ "status": true, "msg": "Successful inserting menus by bulk", "id": result.data });
+        res.json({ "status": true, "msg": "Successful inserting menus by bulk" });
     }
 });
 
@@ -187,6 +188,19 @@ router.post('/parent/delete/bulk', [checkSession, deleteBulkGeneralSchema, autho
     }
 });
 
+// insert parent menu by bulk
+// returns insertId of parent menu by bulk
+router.post('/parent/insert/bulk', [checkSession, parentMenuInsertBulkSchema, authorizeWriteRoute], async function (req, res, next) {
+
+    // insert role information
+    let result = await MenusService.insertBulkParentMenu(req.body.data);
+
+    if (result.status === false) {
+        res.json({ "status": false, "msg": "Failed inserting parent menus by bulk" });
+    } else {
+        res.json({ "status": true, "msg": "Successful inserting parent menus by bulk" });
+    }
+});
 
 // insert new parent menu
 // returns insertId of parent menu

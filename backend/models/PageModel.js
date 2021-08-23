@@ -38,6 +38,40 @@ class PageModel {
     }
 
     /**
+     * inserts new page in the database
+     * @param {Array of Objects} dataArr contains the insert row for page
+     */
+    static async insertBulkPage(dataArr) {
+        let valuesClause = ` `
+        const valuesArray = [];
+
+        await loopArr(dataArr, (indx) => {
+
+            valuesArray.push(dataArr[indx]["PageName"], dataArr[indx]["PagePath"]);
+
+            if (indx === 0) {
+                valuesClause += `( ?, ? )`;
+            } else {
+                valuesClause += ` , ( ?, ? )`;
+            }
+
+        });
+
+        const stmt = `INSERT INTO Pages
+                        (PageName, PagePath)
+                        VALUES ${valuesClause} `;
+
+        try {
+            const result = await mysql_conn.query(stmt, valuesArray);
+            return result;
+
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
+    /**
      * modify page information to the database
      * @param {Object} obj - An object.
      * @param {String} obj.pageID id of the page

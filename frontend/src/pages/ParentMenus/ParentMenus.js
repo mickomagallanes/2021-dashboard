@@ -11,6 +11,7 @@ import useDialog from '../../components/useDialog';
 import useAlert from '../../components/useAlert';
 import useDidUpdateEffect from '../../components/useDidUpdateEffect';
 import Spinner from '../../components/Spinner/Spinner';
+import useCsv from '../../components/useCsv';
 
 const parentMenuURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/all`;
 const parentMenuCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/get/all/count`;
@@ -20,6 +21,8 @@ const sortDownURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/sort
 const parentMenuDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/delete/`;
 const parentMenuBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/delete/bulk`;
 
+const parentMenuInsertBulkURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/parent/insert/bulk`;
+
 const modalTitle = "Do you want to delete this parent menu?";
 const modalBody = "This row will be deleted in the database, do you want to proceed?";
 
@@ -27,6 +30,12 @@ const colData = [
   { "id": "ParentMenuID", "name": "Parent Menu ID" },
   { "id": "ParentMenuName", "name": "Parent Menu Name" },
   { "id": "ParentMenuSort", "name": "Parent Menu Sort" }
+];
+
+const csvHeader = [
+  { "key": "ParentMenuID", "label": "Parent Menu ID" },
+  { "key": "ParentMenuName", "label": "Parent Menu Name" },
+  { "key": "ParentMenuSort", "label": "Parent Menu Sort" }
 ];
 
 const idKey = "ParentMenuID";
@@ -61,12 +70,27 @@ function ParentMenus({ priv }) {
     BundledTable
   } = useBundledTable({ data: parentMenuData, dataCount: totalParentMenus, bulkDeleteUrl: parentMenuBulkDeleteURL });
 
+  const {
+    exportCsvFunc,
+    importCsvFunc,
+    ImportElem,
+    ExportElem,
+    isLoadingExport,
+    isLoadingImport,
+    importCsvFuncResp
+  } = useCsv({
+    exportURL: parentMenuURL,
+    importURL: parentMenuInsertBulkURL,
+    csvHeader,
+    csvName: "ParentMenus.csv"
+  })
+
   const [deleteParentMenu, deleteParentMenuResult] = useDelete(parentMenuDeleteURL);
 
   // to determine if initial fetch of data is done
 
-  const fetchDepsCount = [currentEntries, currentPage, deleteParentMenuResult, deleteBulkData];
-  const fetchDepsMenus = [deleteParentMenuResult, deleteBulkData];
+  const fetchDepsCount = [currentEntries, currentPage, deleteParentMenuResult, deleteBulkData, importCsvFuncResp];
+  const fetchDepsMenus = [deleteParentMenuResult, deleteBulkData, importCsvFuncResp];
 
   const [dataCount, loadingCount] = useFetch(parentMenuCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
@@ -158,6 +182,16 @@ function ParentMenus({ priv }) {
     checkFetchedData();
   }, [dataParentMenus, dataCount]);
 
+  useDidUpdateEffect(() => {
+
+    if (importCsvFuncResp.status) {
+      timerSuccessAlert([importCsvFuncResp.msg]);
+    } else {
+      timerErrorAlert([importCsvFuncResp.msg]);
+    }
+
+  }, [importCsvFuncResp]);
+
 
   useDidUpdateEffect(() => {
 
@@ -247,9 +281,18 @@ function ParentMenus({ priv }) {
           <div className="col-lg-12 grid-margin stretch-card">
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title"> Parent Menu Table </h4>
+                <div className="row">
+                  <div className="col-12 col-sm-8 col-md-8 col-lg-10 col-xl-10">
+                    <h4 className="card-title"> Parent Menu Table </h4>
+                  </div>
+                  <div className="col-12 col-sm-4 col-md-4 col-lg-2 col-xl-2 text-center">
+                    <ExportElem exportCsvFunc={exportCsvFunc} />
+                    <ImportElem importCsvFunc={importCsvFunc} />
 
-                {(!!loadingParentMenus || !!loadingCount) && <Spinner />}
+                  </div>
+                </div>
+
+                {(!!loadingParentMenus || !!loadingCount || !!isLoadingExport || !!isLoadingImport) && <Spinner />}
 
                 <BundledTable
                   tableProps={tableProps}

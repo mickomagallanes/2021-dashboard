@@ -259,7 +259,7 @@ function Menus({ priv }) {
 
                   </div>
                 </div>
-                {console.log(isLoadingExport)}
+
                 {(!!loadingMenus || !!loadingCount || !!isLoadingExport || !!isLoadingImport) && <Spinner />}
 
                 <BundledTable

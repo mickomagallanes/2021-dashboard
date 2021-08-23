@@ -10,6 +10,7 @@ import Spinner from '../../components/Spinner/Spinner';
 import useDelete from '../../components/useDelete';
 import useDialog from '../../components/useDialog';
 import useBundledTable from '../../components/useBundledTable';
+import useCsv from '../../components/useCsv';
 
 const pageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all`;
 const pageCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all/count`;
@@ -17,9 +18,17 @@ const pageCountURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/get/all/cou
 const pageDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/delete/`;
 const pageBulkDeleteURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/delete/bulk`;
 
+const pageInsertBulkURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/insert/bulk`;
+
 const colData = [
   { "id": "PageID", "name": "Page ID" },
   { "id": "PageName", "name": "Page Name" }
+];
+
+const csvHeader = [
+  { "key": "PageID", "label": "Page ID" },
+  { "key": "PageName", "label": "Page Name" },
+  { "key": "PagePath", "label": "Page Path" }
 ];
 
 const idKey = "PageID";
@@ -57,12 +66,28 @@ function Pages({ priv }) {
     BundledTable
   } = useBundledTable({ data: pageData, dataCount: totalPages, bulkDeleteUrl: pageBulkDeleteURL });
 
+  const {
+    exportCsvFunc,
+    importCsvFunc,
+    ImportElem,
+    ExportElem,
+    isLoadingExport,
+    isLoadingImport,
+    importCsvFuncResp
+  } = useCsv({
+    exportURL: pageURL,
+    importURL: pageInsertBulkURL,
+    csvHeader,
+    csvName: "Pages.csv"
+  })
+
+
   // to determine if initial fetch of data is done
 
   const [deletePage, deletePageResult] = useDelete(pageDeleteURL);
 
-  const fetchDepsCount = [currentEntries, currentPage, deletePageResult, deleteBulkData];
-  const fetchDepsPages = [deletePageResult, deleteBulkData];
+  const fetchDepsCount = [currentEntries, currentPage, deletePageResult, deleteBulkData, importCsvFuncResp];
+  const fetchDepsPages = [deletePageResult, deleteBulkData, importCsvFuncResp];
 
   const [dataCount, loadingCount] = useFetch(pageCountURL + `?${filterParam}`, { customDeps: fetchDepsCount });
 
@@ -139,6 +164,16 @@ function Pages({ priv }) {
     checkFetchedData();
   }, [dataPages, dataCount]);
 
+  useDidUpdateEffect(() => {
+
+    if (importCsvFuncResp.status) {
+      timerSuccessAlert([importCsvFuncResp.msg]);
+    } else {
+      timerErrorAlert([importCsvFuncResp.msg]);
+    }
+
+  }, [importCsvFuncResp]);
+
 
   useDidUpdateEffect(() => {
 
@@ -170,8 +205,8 @@ function Pages({ priv }) {
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
 
-        <Link to={`/pages/bulk/form/${pageID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
-          {isWriteable ? "Edit" : "Read"} Page (Bulk)
+        <Link to={`/pages/complete/form/${pageID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+          {isWriteable ? "Edit" : "Read"} Page (Complete)
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
 
@@ -199,9 +234,9 @@ function Pages({ priv }) {
               </div>
 
               <div className="col-8">
-                <Link to={`/pages/bulk/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
+                <Link to={`/pages/complete/form/add${location.search}`} className="btn btn-outline-secondary float-sm-right d-block">
                   <i className="mdi mdi-account-plus"> </i>
-                  Add Page (Bulk)
+                  Add Page (Complete)
                 </Link>
 
               </div>
@@ -226,9 +261,19 @@ function Pages({ priv }) {
           <div className="col-lg-12 grid-margin stretch-card">
             <div className="card">
               <div className="card-body">
-                <h4 className="card-title"> Page Table </h4>
 
-                {(!!loadingPages || !!loadingCount) && <Spinner />}
+                <div className="row">
+                  <div className="col-12 col-sm-8 col-md-8 col-lg-10 col-xl-10">
+                    <h4 className="card-title"> Page Table </h4>
+                  </div>
+                  <div className="col-12 col-sm-4 col-md-4 col-lg-2 col-xl-2 text-center">
+                    <ExportElem exportCsvFunc={exportCsvFunc} />
+                    <ImportElem importCsvFunc={importCsvFunc} />
+
+                  </div>
+                </div>
+
+                {(!!loadingPages || !!loadingCount || !!isLoadingExport || !!isLoadingImport) && <Spinner />}
 
                 <BundledTable
                   tableProps={tableProps}

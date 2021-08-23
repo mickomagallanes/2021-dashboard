@@ -175,8 +175,8 @@ function Employees({ priv }) {
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
 
-        <Link to={`/employees/bulk/form/${employeeID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
-          {isWriteable ? "Edit" : "Read"} Employee (Bulk)
+        <Link to={`/employees/complete/form/${employeeID}${location.search}`} className="btn btn-icon-text btn-outline-secondary mr-3">
+          {isWriteable ? "Edit" : "Read"} Employee (Complete)
           <i className={`mdi ${isWriteable ? "mdi-pencil" : "mdi-read"} btn-icon-append `}></i>
         </Link>
 
@@ -203,9 +203,9 @@ function Employees({ priv }) {
               </div>
 
               <div className="col-8">
-                <Link to={`/employees/bulk/form/add${location.search}`} className="btn btn-outline-secondary d-block">
+                <Link to={`/employees/complete/form/add${location.search}`} className="btn btn-outline-secondary d-block">
                   <i className="mdi mdi-account-plus"> </i>
-                  Add Employee (Bulk)
+                  Add Employee (Complete)
                 </Link>
 
               </div>

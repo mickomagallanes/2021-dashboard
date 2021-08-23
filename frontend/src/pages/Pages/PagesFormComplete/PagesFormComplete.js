@@ -25,6 +25,8 @@ const editPageURL = `${process.env.REACT_APP_BACKEND_HOST}/API/page/modify/compl
 const privUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/privilege/get/all`;
 const pagesRoleUrl = `${process.env.REACT_APP_BACKEND_HOST}/API/pagerole/get/by/session/and/page/`;
 
+const menuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/by/page/`;
+
 const schema = yup.object().shape({
   pageName: yup.string().max(30, 'Must be 30 characters or less').required('Required'),
   pagePath: yup.string().max(30, 'Must be 30 characters or less').required('Required')
@@ -52,11 +54,8 @@ const mapDispatch = dispatch => ({
 const pageFormInitialState = {
   pageName: "",
   pagePath: "",
-  privID: ""
+  privID: "1"
 };
-
-
-const menuByIdURL = `${process.env.REACT_APP_BACKEND_HOST}/API/menus/get/by/page/`;
 
 function PagesFormComplete({ priv, pagePath }) {
 
@@ -191,8 +190,6 @@ function PagesFormComplete({ priv, pagePath }) {
           actionsPageData.changePrivID(`${data[0].PrivilegeID}`);
         });
 
-      } else if (!dataPageRole.status) {
-        passErrorMsg(`${dataPageRole.msg}`);
       }
     }
 
