@@ -39,6 +39,7 @@ const schema = yup.object().shape({
   birthDate: yup.date().required('Required')
 });
 
+// TODO: create students
 const employeeReducer = (state, action) => {
   switch (action.type) {
     case 'changeEmployeeNo':
@@ -358,16 +359,27 @@ function EmployeesFormComplete({ priv, pagePath }) {
                                   component={TextFormField}
                                 />
                               </div>
-                              <div>
-                                <Field
-                                  label="Sex"
-                                  options={sexArray}
-                                  idKey="id"
-                                  valueKey="value"
-                                  name="sex"
-                                  component={SelectFormField}
-                                  disabled={!isWriteable}
-                                />
+                              <div className="mb-3">
+                                <label className="d-block"> Sex </label>
+                                {sexArray.map(obj => {
+
+                                  return (
+                                    <React.Fragment key={`sexFrag${obj.id}`}>
+                                      <label key={`sexLabel${obj.id}`} htmlFor={`sex${obj.id}`} className="mr-4">
+                                        <Field
+                                          type="radio"
+                                          value={`${obj.id}`}
+                                          id={`sex${obj.id}`}
+                                          key={`sex${obj.id}`}
+                                          name="sex"
+                                          disabled={!isWriteable}
+                                        />
+                                        {obj.value}
+                                      </label>
+                                    </React.Fragment>
+                                  )
+                                })}
+
                               </div>
                               <div>
                                 <Field

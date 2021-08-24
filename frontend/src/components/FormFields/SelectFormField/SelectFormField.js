@@ -8,7 +8,7 @@ import { Form } from 'react-bootstrap';
   * @param {Formik Prop} field
   * @param {Formik Prop} form
   * @param {String} [label] label of select
-  * @param {String} options array data converted to options
+  * @param {Array of Objects} options array data converted to options
   * @param {String} idKey ID column name
   * @param {String|Array} valueKey text shown in option, can be array
   * @param {Boolean} allowDefaultNull specify whether to put a default option with Blank value
