@@ -39,6 +39,8 @@ const schema = yup.object().shape({
   birthDate: yup.date().required('Required')
 });
 
+// TODO: learn SCRUM, agile, CI/CD, docker.
+// TODO: finish portfolio then publish it as static
 // TODO: create students
 const employeeReducer = (state, action) => {
   switch (action.type) {
