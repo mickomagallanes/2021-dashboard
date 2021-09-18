@@ -58,7 +58,6 @@ async function authorizeWriteRoute(req, res, next) {
  * check if user has valid session, if not then clear cookie
  */
 function checkSession(req, res, next) {
-
     if (req.session.userData) {
         next();
     } else {
