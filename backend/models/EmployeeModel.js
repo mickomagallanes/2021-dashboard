@@ -1,6 +1,5 @@
+const CRUDModel = require("./CRUDModel.js");
 const mysql_conn = require("./db.js");
-const DeleteModel = require("./DeleteModel.js");
-const GettersModel = require("./GettersModel.js");
 
 "use strict";
 
@@ -11,14 +10,13 @@ const secondaryTables = [
     { id: "EmployeePositionID", name: "EmployeePositions", relation: " INNER JOIN " }
 
 ];
-const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
-const deleteModel = new DeleteModel(tableName, primaryKey);
+
 
 // LESSON: One model per table
-class EmployeeModel {
+class EmployeeModel extends CRUDModel {
 
     constructor() {
-
+        super(tableName, primaryKey, secondaryTables)
     }
 
     /**
@@ -168,6 +166,5 @@ class EmployeeModel {
 
 }
 
-EmployeeModel.deleteModel = deleteModel;
-EmployeeModel.getterModel = getterModel;
+
 module.exports = EmployeeModel;

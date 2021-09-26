@@ -1,19 +1,16 @@
 const mysql_conn = require("./db.js");
 const { PRIVILEGES } = require('../utils/constants.js');
-const GettersModel = require("./GettersModel.js");
-const DeleteModel = require("./DeleteModel.js");
+const CRUDModel = require("./CRUDModel.js");
 
 "use strict";
 
 const tableName = "EmployeePositions";
 const primaryKey = "EmployeePositionID";
-const getterModel = new GettersModel(tableName, primaryKey);
-const deleteModel = new DeleteModel(tableName, primaryKey);
 
-class EmployeePositionModel {
+class EmployeePositionModel extends CRUDModel {
 
     constructor() {
-
+        super(tableName, primaryKey)
     }
 
     /**
@@ -63,8 +60,5 @@ class EmployeePositionModel {
     }
 
 }
-
-EmployeePositionModel.deleteModel = deleteModel;
-EmployeePositionModel.getterModel = getterModel;
 
 module.exports = EmployeePositionModel;

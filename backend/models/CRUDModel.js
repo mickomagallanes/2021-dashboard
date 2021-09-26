@@ -4,7 +4,7 @@ const { loopArr } = require('../utils/looping.js');
 "use strict";
 
 // class extension for page with Pagination, returns all getter functions needed
-class GettersModel {
+class CRUDModel {
 
     /**
      * get count of all menu for pagination
@@ -66,7 +66,7 @@ class GettersModel {
      * get count of all menu for pagination
      * @return {Array} result, length = 1
      */
-    async getAllCount({ filter = undefined } = {}) {
+    static async getAllCount({ filter = undefined } = {}) {
 
         await this.init();
 
@@ -106,7 +106,7 @@ class GettersModel {
      * @param {Array} obj.filter filter arrays
      * @return {Array} result
      */
-    async getAll({ startIndex, limit, sortBy, order, filter } = {}) {
+    static async getAll({ startIndex, limit, sortBy, order, filter } = {}) {
 
         await this.init();
 
@@ -157,7 +157,7 @@ class GettersModel {
     * @param {Number} id primary key column of table
     * @return {Array} result, length = 1
     */
-    async getById(id) {
+    static async getById(id) {
         await this.init();
 
         const stmt = `SELECT * from ${this.allTblStrFrom} WHERE 1 
@@ -167,6 +167,49 @@ class GettersModel {
         try {
             const result = await mysql_conn.query(stmt, [id]);
             return result;
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
+    /**
+  * deleted rows in the database
+  * @param {String} id id of the row
+  */
+    static async deleteRow(id) {
+
+        try {
+            const result = await mysql_conn.delete(this.tableName, `where ${this.primaryKey}=?`, [id]);
+            return result;
+
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
+    /**
+     * delete bulk id array
+     * @param {Array} idArray array containing ids of row
+     */
+    static async deleteBulkRows(idArray) {
+        let whereClause = ` WHERE ${this.primaryKey} IN ( `
+
+        await loopArr(idArray, (indx) => {
+            if (indx === 0) {
+                whereClause += ` ? `;
+            } else {
+                whereClause += ` , ? `;
+            }
+        });
+
+        whereClause += `)`;
+
+        try {
+            const result = await mysql_conn.delete(this.tableName, whereClause, idArray);
+            return result;
+
         } catch (err) {
             console.error(err);
             return false;
@@ -246,4 +289,4 @@ class GettersModel {
 }
 
 
-module.exports = GettersModel;
+module.exports = CRUDModel;

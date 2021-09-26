@@ -1,19 +1,15 @@
 const mysql_conn = require("./db.js");
-const DeleteModel = require("./DeleteModel.js");
-const GettersModel = require("./GettersModel.js");
 
 "use strict";
 
 const tableName = "Users";
 const primaryKey = "UserID";
 const secondaryTables = [{ id: "RoleID", name: "Roles", relation: " INNER JOIN " }];
-const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
-const deleteModel = new DeleteModel(tableName, primaryKey);
 
-class UserModel {
+class UserModel extends CRUDModel {
 
     constructor() {
-
+        super(tableName, primaryKey, secondaryTables)
     }
 
     /**
@@ -134,8 +130,5 @@ class UserModel {
     }
 
 }
-
-UserModel.deleteModel = deleteModel;
-UserModel.getterModel = getterModel;
 
 module.exports = UserModel;

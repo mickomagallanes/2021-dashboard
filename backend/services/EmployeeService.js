@@ -18,7 +18,7 @@ class EmployeeService {
      */
     static async deleteEmployeePosition(employeePositionID) {
 
-        let ret = await EmployeePositionModel.deleteModel.deleteRow(employeePositionID);
+        let ret = await EmployeePositionModel.deleteRow(employeePositionID);
 
         if (ret == false) {
             return { status: false }
@@ -34,7 +34,7 @@ class EmployeeService {
      */
     static async deleteBulkEmployeePosition(idArray) {
 
-        let ret = await EmployeePositionModel.deleteModel.deleteBulkRows(idArray);
+        let ret = await EmployeePositionModel.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
@@ -120,7 +120,7 @@ class EmployeeService {
             }
         }
 
-        let employeePositionArr = await EmployeePositionModel.getterModel.getAll({
+        let employeePositionArr = await EmployeePositionModel.getAll({
             startIndex: startIndex,
             limit: limit,
             sortBy: sortBy,
@@ -144,7 +144,7 @@ class EmployeeService {
      * @return one row of employeePosition
      */
     static async getEmployeePositionById(id) {
-        let ret = await EmployeePositionModel.getterModel.getById(id);
+        let ret = await EmployeePositionModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -161,7 +161,7 @@ class EmployeeService {
      */
     static async getAllEmployeePositionCount({ filter }) {
 
-        const employeePositionCount = await EmployeePositionModel.getterModel.getAllCount({ filter });
+        const employeePositionCount = await EmployeePositionModel.getAllCount({ filter });
 
         if (employeePositionCount.length) {
             return { status: true, data: employeePositionCount[0] }
@@ -181,7 +181,7 @@ class EmployeeService {
      */
     static async deleteEmployeeDepartment(employeeDepartmentID) {
 
-        let ret = await EmployeeDepartmentModel.deleteModel.deleteRow(employeeDepartmentID);
+        let ret = await EmployeeDepartmentModel.deleteRow(employeeDepartmentID);
 
         if (ret == false) {
             return { status: false }
@@ -197,7 +197,7 @@ class EmployeeService {
      */
     static async deleteBulkEmployeeDepartment(idArray) {
 
-        let ret = await EmployeeDepartmentModel.deleteModel.deleteBulkRows(idArray);
+        let ret = await EmployeeDepartmentModel.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
@@ -283,7 +283,7 @@ class EmployeeService {
             }
         }
 
-        let employeeDepartmentArr = await EmployeeDepartmentModel.getterModel.getAll({
+        let employeeDepartmentArr = await EmployeeDepartmentModel.getAll({
             startIndex: startIndex,
             limit: limit,
             sortBy: sortBy,
@@ -307,7 +307,7 @@ class EmployeeService {
      * @return one row of employeeDepartment
      */
     static async getEmployeeDepartmentById(id) {
-        let ret = await EmployeeDepartmentModel.getterModel.getById(id);
+        let ret = await EmployeeDepartmentModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -324,7 +324,7 @@ class EmployeeService {
      */
     static async getAllEmployeeDepartmentCount({ filter }) {
 
-        const employeeDepartmentCount = await EmployeeDepartmentModel.getterModel.getAllCount({ filter });
+        const employeeDepartmentCount = await EmployeeDepartmentModel.getAllCount({ filter });
 
         if (employeeDepartmentCount.length) {
             return { status: true, data: employeeDepartmentCount[0] }
@@ -341,7 +341,7 @@ class EmployeeService {
      */
     static async deleteEmployeeSalary(employeeSalaryID) {
 
-        let ret = await EmployeeSalaryModel.deleteModel.deleteRow(employeeSalaryID);
+        let ret = await EmployeeSalaryModel.deleteRow(employeeSalaryID);
 
         if (ret == false) {
             return { status: false }
@@ -357,7 +357,7 @@ class EmployeeService {
      */
     static async deleteBulkEmployeeSalary(idArray) {
 
-        let ret = await EmployeeSalaryModel.deleteModel.deleteBulkRows(idArray);
+        let ret = await EmployeeSalaryModel.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
@@ -456,7 +456,7 @@ class EmployeeService {
 
         const startIndex = isPaged ? (page - 1) * limit : false;
 
-        let employeeSalaryArr = await EmployeeSalaryModel.getterModel.getAll({
+        let employeeSalaryArr = await EmployeeSalaryModel.getAll({
             startIndex: startIndex,
             limit: limit,
             sortBy: sortBy,
@@ -480,7 +480,7 @@ class EmployeeService {
      * @return one row of employeeSalary
      */
     static async getEmployeeSalaryById(id) {
-        let ret = await EmployeeSalaryModel.getterModel.getById(id);
+        let ret = await EmployeeSalaryModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -515,7 +515,7 @@ class EmployeeService {
      */
     static async getAllEmployeeSalaryCount({ filter }) {
 
-        const employeeSalaryCount = await EmployeeSalaryModel.getterModel.getAllCount({ filter });
+        const employeeSalaryCount = await EmployeeSalaryModel.getAllCount({ filter });
 
         if (employeeSalaryCount.length) {
             return { status: true, data: employeeSalaryCount[0] }
@@ -534,7 +534,7 @@ class EmployeeService {
      */
     static async deleteEmployee(employeeID) {
 
-        let ret = await EmployeeModel.deleteModel.deleteRow(employeeID);
+        let ret = await EmployeeModel.deleteRow(employeeID);
 
         if (ret == false) {
             return { status: false }
@@ -550,7 +550,7 @@ class EmployeeService {
      */
     static async deleteBulkEmployee(idArray) {
 
-        let ret = await EmployeeModel.deleteModel.deleteBulkRows(idArray);
+        let ret = await EmployeeModel.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
@@ -851,7 +851,7 @@ class EmployeeService {
 
         const startIndex = isPaged ? (page - 1) * limit : false;
 
-        let employeeArr = await EmployeeModel.getterModel.getAll({
+        let employeeArr = await EmployeeModel.getAll({
             startIndex: startIndex,
             limit: limit,
             sortBy: sortBy,
@@ -875,7 +875,7 @@ class EmployeeService {
      * @return one row of employee
      */
     static async getEmployeeById(id) {
-        let ret = await EmployeeModel.getterModel.getById(id);
+        let ret = await EmployeeModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -892,7 +892,7 @@ class EmployeeService {
      */
     static async getAllEmployeeCount({ filter }) {
 
-        const employeeCount = await EmployeeModel.getterModel.getAllCount({ filter });
+        const employeeCount = await EmployeeModel.getAllCount({ filter });
 
         if (employeeCount.length) {
             return { status: true, data: employeeCount[0] }

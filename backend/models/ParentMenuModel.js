@@ -1,21 +1,17 @@
 const { loopArr } = require("../utils/looping.js");
+const CRUDModel = require("./CRUDModel.js");
 const mysql_conn = require("./db.js");
-const DeleteModel = require("./DeleteModel.js");
-const GettersModel = require("./GettersModel.js");
 
 "use strict";
 
 const tableName = "ParentMenus";
 const primaryKey = "ParentMenuID";
 
-const getterModel = new GettersModel(tableName, primaryKey);
-const deleteModel = new DeleteModel(tableName, primaryKey);
-
 // LESSON: One model per table
-class ParentMenuModel {
+class ParentMenuModel extends CRUDModel {
 
     constructor() {
-
+        super(tableName, primaryKey)
     }
 
 
@@ -181,8 +177,5 @@ class ParentMenuModel {
     }
 
 }
-
-ParentMenuModel.deleteModel = deleteModel;
-ParentMenuModel.getterModel = getterModel;
 
 module.exports = ParentMenuModel;

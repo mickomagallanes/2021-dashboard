@@ -1,18 +1,14 @@
 const mysql_conn = require("./db.js");
-const DeleteModel = require("./DeleteModel.js");
-const GettersModel = require("./GettersModel.js");
 
 "use strict";
 
 const tableName = "Roles";
 const primaryKey = "RoleID";
-const getterModel = new GettersModel(tableName, primaryKey);
-const deleteModel = new DeleteModel(tableName, primaryKey);
 
-class RoleModel {
+class RoleModel extends CRUDModel {
 
     constructor() {
-
+        super(tableName, primaryKey)
     }
 
 
@@ -64,9 +60,5 @@ class RoleModel {
     }
 
 }
-
-
-RoleModel.deleteModel = deleteModel;
-RoleModel.getterModel = getterModel;
 
 module.exports = RoleModel;

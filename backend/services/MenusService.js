@@ -17,7 +17,7 @@ class MenusService {
      */
     static async deleteMenu(menuID) {
 
-        let ret = await MenuModel.deleteModel.deleteRow(menuID);
+        let ret = await MenuModel.deleteRow(menuID);
 
         if (ret == false) {
             return { status: false }
@@ -33,7 +33,7 @@ class MenusService {
      */
     static async deleteBulkMenu(idArray) {
 
-        let ret = await MenuModel.deleteModel.deleteBulkRows(idArray);
+        let ret = await MenuModel.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
@@ -159,7 +159,7 @@ class MenusService {
             }
         }
 
-        let menuArr = await MenuModel.getterModel.getAll({
+        let menuArr = await MenuModel.getAll({
             startIndex,
             limit,
             sortBy,
@@ -183,7 +183,7 @@ class MenusService {
      * @return one row of menu
      */
     static async getMenuById(id) {
-        let ret = await MenuModel.getterModel.getById(id);
+        let ret = await MenuModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -217,7 +217,7 @@ class MenusService {
      */
     static async getAllMenuCount({ filter }) {
 
-        const menuCount = await MenuModel.getterModel.getAllCount({ filter });
+        const menuCount = await MenuModel.getAllCount({ filter });
 
         if (menuCount.length) {
             return { status: true, data: menuCount[0] }
@@ -235,7 +235,7 @@ class MenusService {
      */
     static async deleteParentMenu(parentMenuID) {
 
-        let ret = await ParentMenuModel.deleteModel.deleteRow(parentMenuID);
+        let ret = await ParentMenuModel.deleteRow(parentMenuID);
 
         if (ret == false) {
             return { status: false }
@@ -251,7 +251,7 @@ class MenusService {
      */
     static async deleteBulkParentMenu(idArray) {
 
-        let ret = await ParentMenuModel.deleteModel.deleteBulkRows(idArray);
+        let ret = await ParentMenuModel.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
@@ -368,7 +368,7 @@ class MenusService {
 
         const startIndex = isPaged ? (page - 1) * limit : false;
 
-        let parentMenuArr = await ParentMenuModel.getterModel.getAll({
+        let parentMenuArr = await ParentMenuModel.getAll({
             startIndex: startIndex,
             limit: limit,
             sortBy: sortBy,
@@ -392,7 +392,7 @@ class MenusService {
      * @return one row of parent menu
      */
     static async getParentMenuById(id) {
-        let ret = await ParentMenuModel.getterModel.getById(id);
+        let ret = await ParentMenuModel.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -409,7 +409,7 @@ class MenusService {
      */
     static async getAllParentMenuCount({ filter }) {
 
-        const parentMenuCount = await ParentMenuModel.getterModel.getAllCount({ filter });
+        const parentMenuCount = await ParentMenuModel.getAllCount({ filter });
 
         if (parentMenuCount.length) {
             return { status: true, data: parentMenuCount[0] }

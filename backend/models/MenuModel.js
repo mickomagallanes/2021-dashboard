@@ -1,8 +1,7 @@
 const mysql_conn = require("./db.js");
 const { PRIVILEGES } = require('../utils/constants.js');
-const GettersModel = require("./GettersModel.js");
-const DeleteModel = require("./DeleteModel.js");
 const { loopArr } = require("../utils/looping.js");
+const CRUDModel = require("./CRUDModel.js");
 
 "use strict";
 
@@ -12,12 +11,11 @@ const secondaryTables = [
     { id: "ParentMenuID", name: "ParentMenus", relation: " LEFT JOIN " },
     { id: "PageID", name: "Pages", relation: " INNER JOIN " }
 ];
-const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
-const deleteModel = new DeleteModel(tableName, primaryKey);
 
-class MenusModel {
+
+class MenusModel extends CRUDModel {
     constructor() {
-
+        super(tableName, primaryKey, secondaryTables)
     }
 
     /**
@@ -156,8 +154,5 @@ class MenusModel {
     }
 
 }
-
-MenusModel.deleteModel = deleteModel;
-MenusModel.getterModel = getterModel;
 
 module.exports = MenusModel;

@@ -1,20 +1,17 @@
+const CRUDModel = require("./CRUDModel.js");
 const mysql_conn = require("./db.js");
-const DeleteModel = require("./DeleteModel.js");
-const GettersModel = require("./GettersModel.js");
 
 "use strict";
 
 const tableName = "EmployeeSalaries";
 const primaryKey = "EmployeeSalaryID";
 const secondaryTables = [{ id: "EmployeeID", name: "Employees", relation: " INNER JOIN " }]; // TODO: add fields specifically for faster query
-const getterModel = new GettersModel(tableName, primaryKey, secondaryTables);
-const deleteModel = new DeleteModel(tableName, primaryKey);
 
 // LESSON: One model per table
-class EmployeeSalaryModel {
+class EmployeeSalaryModel extends CRUDModel {
 
     constructor() {
-
+        super(tableName, primaryKey, secondaryTables)
     }
 
     /**
@@ -104,8 +101,5 @@ class EmployeeSalaryModel {
     }
 
 }
-
-EmployeeSalaryModel.deleteModel = deleteModel;
-EmployeeSalaryModel.getterModel = getterModel;
 
 module.exports = EmployeeSalaryModel;
