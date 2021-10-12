@@ -16,7 +16,7 @@ class PageService {
      */
     static async deletePage(pageID) {
 
-        let ret = await PageModel.deleteRow(pageID);
+        let ret = await PageModel.crud.deleteRow(pageID);
 
         if (ret == false) {
             return { status: false }
@@ -32,7 +32,7 @@ class PageService {
     */
     static async deleteBulkPage(idArray) {
 
-        let ret = await PageModel.deleteBulkRows(idArray);
+        let ret = await PageModel.crud.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
@@ -260,7 +260,7 @@ class PageService {
             }
         }
 
-        let pageArr = await PageModel.getAll({
+        let pageArr = await PageModel.crud.getAll({
             startIndex: startIndex,
             limit: limit,
             sortBy: sortBy,
@@ -284,7 +284,7 @@ class PageService {
      * @return one row of page
      */
     static async getPageById(id) {
-        let ret = await PageModel.getById(id);
+        let ret = await PageModel.crud.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -301,7 +301,7 @@ class PageService {
      */
     static async getAllPageCount({ filter }) {
 
-        const pageCount = await PageModel.getAllCount({ filter });
+        const pageCount = await PageModel.crud.getAllCount({ filter });
 
         if (pageCount.length) {
             return { status: true, data: pageCount[0] }

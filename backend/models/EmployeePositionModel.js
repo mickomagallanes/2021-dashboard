@@ -7,10 +7,12 @@ const CRUDModel = require("./CRUDModel.js");
 const tableName = "EmployeePositions";
 const primaryKey = "EmployeePositionID";
 
-class EmployeePositionModel extends CRUDModel {
+const crudModel = new CRUDModel(tableName, primaryKey)
+
+class EmployeePositionModel {
 
     constructor() {
-        super(tableName, primaryKey)
+
     }
 
     /**
@@ -60,5 +62,7 @@ class EmployeePositionModel extends CRUDModel {
     }
 
 }
+
+EmployeePositionModel.crud = crudModel;
 
 module.exports = EmployeePositionModel;

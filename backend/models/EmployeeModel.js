@@ -11,12 +11,13 @@ const secondaryTables = [
 
 ];
 
+const crudModel = new CRUDModel(tableName, primaryKey, secondaryTables)
 
 // LESSON: One model per table
-class EmployeeModel extends CRUDModel {
+class EmployeeModel {
 
     constructor() {
-        super(tableName, primaryKey, secondaryTables)
+
     }
 
     /**
@@ -166,5 +167,6 @@ class EmployeeModel extends CRUDModel {
 
 }
 
+EmployeeModel.crud = crudModel;
 
 module.exports = EmployeeModel;

@@ -14,7 +14,7 @@ class SubPageService {
      */
     static async deleteSubPage(subPageID) {
 
-        let ret = await SubPageModel.deleteRow(subPageID);
+        let ret = await SubPageModel.crud.deleteRow(subPageID);
 
         if (ret == false) {
             return { status: false }
@@ -31,7 +31,7 @@ class SubPageService {
      */
     static async deleteBulkSubPage(idArray) {
 
-        let ret = await SubPageModel.deleteBulkRows(idArray);
+        let ret = await SubPageModel.crud.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
@@ -139,7 +139,7 @@ class SubPageService {
             }
         }
 
-        let subPageArr = await SubPageModel.getAll({
+        let subPageArr = await SubPageModel.crud.getAll({
             startIndex: startIndex,
             limit: limit,
             sortBy: sortBy,
@@ -163,7 +163,7 @@ class SubPageService {
      * @return one row of subPage
      */
     static async getSubPageById(id) {
-        let ret = await SubPageModel.getById(id);
+        let ret = await SubPageModel.crud.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -180,7 +180,7 @@ class SubPageService {
      */
     static async getAllSubPageCount({ filter }) {
 
-        const subPageCount = await SubPageModel.getAllCount({ filter });
+        const subPageCount = await SubPageModel.crud.getAllCount({ filter });
 
         if (subPageCount.length) {
             return { status: true, data: subPageCount[0] }

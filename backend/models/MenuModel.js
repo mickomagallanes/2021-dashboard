@@ -12,10 +12,11 @@ const secondaryTables = [
     { id: "PageID", name: "Pages", relation: " INNER JOIN " }
 ];
 
+const crudModel = new CRUDModel(tableName, primaryKey, secondaryTables)
 
-class MenusModel extends CRUDModel {
+class MenusModel {
     constructor() {
-        super(tableName, primaryKey, secondaryTables)
+
     }
 
     /**
@@ -154,5 +155,7 @@ class MenusModel extends CRUDModel {
     }
 
 }
+
+MenusModel.crud = crudModel;
 
 module.exports = MenusModel;

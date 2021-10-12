@@ -1,14 +1,17 @@
 const mysql_conn = require("./db.js");
+const CRUDModel = require("./CRUDModel.js");
 
 "use strict";
 
 const tableName = "Roles";
 const primaryKey = "RoleID";
 
-class RoleModel extends CRUDModel {
+const crudModel = new CRUDModel(tableName, primaryKey)
+
+class RoleModel {
 
     constructor() {
-        super(tableName, primaryKey)
+
     }
 
 
@@ -60,5 +63,7 @@ class RoleModel extends CRUDModel {
     }
 
 }
+
+RoleModel.crud = crudModel;
 
 module.exports = RoleModel;

@@ -1,15 +1,18 @@
 const mysql_conn = require("./db.js");
 const { PRIVILEGES } = require('../utils/constants.js');
+const CRUDModel = require("./CRUDModel.js");
 
 "use strict";
 
 const tableName = "Routes";
 const primaryKey = "RouteID";
 
-class RouteModel extends CRUDModel {
+const crudModel = new CRUDModel(tableName, primaryKey)
+
+class RouteModel {
 
     constructor() {
-        super(tableName, primaryKey)
+
     }
 
     /**
@@ -65,5 +68,7 @@ class RouteModel extends CRUDModel {
     }
 
 }
+
+RouteModel.crud = crudModel;
 
 module.exports = RouteModel;

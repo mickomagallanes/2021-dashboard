@@ -1,5 +1,6 @@
 const mysql_conn = require("./db.js");
 const { PRIVILEGES } = require('../utils/constants.js');
+const CRUDModel = require("./CRUDModel.js");
 
 "use strict";
 
@@ -7,10 +8,12 @@ const tableName = "SubPages";
 const primaryKey = "SubPageID";
 const secondaryTables = [{ id: "PageID", name: "Pages", relation: " INNER JOIN " }];
 
-class SubPageModel extends CRUDModel {
+const crudModel = new CRUDModel(tableName, primaryKey, secondaryTables)
+
+class SubPageModel {
 
     constructor() {
-        super(tableName, primaryKey, secondaryTables)
+
     }
 
     /**
@@ -93,5 +96,7 @@ class SubPageModel extends CRUDModel {
     }
 
 }
+
+SubPageModel.crud = crudModel;
 
 module.exports = SubPageModel;

@@ -8,10 +8,12 @@ const CRUDModel = require("./CRUDModel.js");
 const tableName = "Pages";
 const primaryKey = "PageID";
 
-class PageModel extends CRUDModel {
+const crudModel = new CRUDModel(tableName, primaryKey)
+
+class PageModel {
 
     constructor() {
-        super(tableName, primaryKey)
+
     }
 
     /**
@@ -122,5 +124,7 @@ class PageModel extends CRUDModel {
 
 
 }
+
+PageModel.crud = crudModel;
 
 module.exports = PageModel;

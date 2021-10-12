@@ -14,7 +14,7 @@ class RouteService {
      */
     static async deleteRoute(routeID) {
 
-        let ret = await RouteModel.deleteRow(routeID);
+        let ret = await RouteModel.crud.deleteRow(routeID);
 
         if (ret == false) {
             return { status: false }
@@ -30,7 +30,7 @@ class RouteService {
      */
     static async deleteBulkRoute(idArray) {
 
-        let ret = await RouteModel.deleteBulkRows(idArray);
+        let ret = await RouteModel.crud.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
@@ -120,7 +120,7 @@ class RouteService {
             }
         }
 
-        let routeArr = await RouteModel.getAll({
+        let routeArr = await RouteModel.crud.getAll({
             startIndex: startIndex,
             limit: limit,
             sortBy: sortBy,
@@ -144,7 +144,7 @@ class RouteService {
      * @return one row of route
      */
     static async getRouteById(id) {
-        let ret = await RouteModel.getById(id);
+        let ret = await RouteModel.crud.getById(id);
 
         if (ret.length) {
             return { status: true, data: ret[0] }
@@ -161,7 +161,7 @@ class RouteService {
      */
     static async getAllRouteCount({ filter }) {
 
-        const routeCount = await RouteModel.getAllCount({ filter });
+        const routeCount = await RouteModel.crud.getAllCount({ filter });
 
         if (routeCount.length) {
             return { status: true, data: routeCount[0] }

@@ -66,7 +66,7 @@ class CRUDModel {
      * get count of all menu for pagination
      * @return {Array} result, length = 1
      */
-    static async getAllCount({ filter = undefined } = {}) {
+    async getAllCount({ filter = undefined } = {}) {
 
         await this.init();
 
@@ -106,7 +106,7 @@ class CRUDModel {
      * @param {Array} obj.filter filter arrays
      * @return {Array} result
      */
-    static async getAll({ startIndex, limit, sortBy, order, filter } = {}) {
+    async getAll({ startIndex, limit, sortBy, order, filter } = {}) {
 
         await this.init();
 
@@ -157,7 +157,7 @@ class CRUDModel {
     * @param {Number} id primary key column of table
     * @return {Array} result, length = 1
     */
-    static async getById(id) {
+    async getById(id) {
         await this.init();
 
         const stmt = `SELECT * from ${this.allTblStrFrom} WHERE 1 
@@ -177,7 +177,7 @@ class CRUDModel {
   * deleted rows in the database
   * @param {String} id id of the row
   */
-    static async deleteRow(id) {
+    async deleteRow(id) {
 
         try {
             const result = await mysql_conn.delete(this.tableName, `where ${this.primaryKey}=?`, [id]);
@@ -193,7 +193,7 @@ class CRUDModel {
      * delete bulk id array
      * @param {Array} idArray array containing ids of row
      */
-    static async deleteBulkRows(idArray) {
+    async deleteBulkRows(idArray) {
         let whereClause = ` WHERE ${this.primaryKey} IN ( `
 
         await loopArr(idArray, (indx) => {

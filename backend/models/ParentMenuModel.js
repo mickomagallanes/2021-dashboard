@@ -7,11 +7,14 @@ const mysql_conn = require("./db.js");
 const tableName = "ParentMenus";
 const primaryKey = "ParentMenuID";
 
+
+const crudModel = new CRUDModel(tableName, primaryKey)
+
 // LESSON: One model per table
-class ParentMenuModel extends CRUDModel {
+class ParentMenuModel {
 
     constructor() {
-        super(tableName, primaryKey)
+
     }
 
 
@@ -177,5 +180,7 @@ class ParentMenuModel extends CRUDModel {
     }
 
 }
+
+ParentMenuModel.crud = crudModel;
 
 module.exports = ParentMenuModel;

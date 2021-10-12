@@ -7,11 +7,14 @@ const tableName = "EmployeeSalaries";
 const primaryKey = "EmployeeSalaryID";
 const secondaryTables = [{ id: "EmployeeID", name: "Employees", relation: " INNER JOIN " }]; // TODO: add fields specifically for faster query
 
+const crudModel = new CRUDModel(tableName, primaryKey, secondaryTables)
+
+
 // LESSON: One model per table
-class EmployeeSalaryModel extends CRUDModel {
+class EmployeeSalaryModel {
 
     constructor() {
-        super(tableName, primaryKey, secondaryTables)
+
     }
 
     /**
@@ -101,5 +104,7 @@ class EmployeeSalaryModel extends CRUDModel {
     }
 
 }
+
+EmployeeSalaryModel.crud = crudModel;
 
 module.exports = EmployeeSalaryModel;

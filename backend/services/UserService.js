@@ -16,7 +16,7 @@ class UserService {
      */
     static async deleteUser(userID) {
 
-        let ret = await UserModel.deleteRow(userID);
+        let ret = await UserModel.crud.deleteRow(userID);
 
         if (ret == false) {
             return { status: false }
@@ -32,7 +32,7 @@ class UserService {
        */
     static async deleteBulkUser(idArray) {
 
-        let ret = await UserModel.deleteBulkRows(idArray);
+        let ret = await UserModel.crud.deleteBulkRows(idArray);
 
         if (ret == false) {
             return { status: false }
@@ -71,7 +71,7 @@ class UserService {
             }
         }
 
-        let userData = await UserModel.getAll({
+        let userData = await UserModel.crud.getAll({
             startIndex: startIndex,
             limit: limit,
             sortBy: sortBy,
@@ -114,7 +114,7 @@ class UserService {
 
     static async getAllCount({ filter }) {
 
-        const userCount = await UserModel.getAllCount({ filter });
+        const userCount = await UserModel.crud.getAllCount({ filter });
         if (userCount.length) {
             return { status: true, data: userCount[0] }
         } else {
