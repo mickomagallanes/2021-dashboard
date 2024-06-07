@@ -1,1 +1,5 @@
-# bug-tracker
+![1](readme-img/1.png)
+![2](readme-img/2.png)
+![3](readme-img/3.png)
+![4](readme-img/4.png)
+![5](readme-img/5.png)
