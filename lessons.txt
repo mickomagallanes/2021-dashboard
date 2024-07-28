@@ -53,15 +53,15 @@ PROJECT WORKFLOW
 
 Important Pattern Lessons for React
 
-1. Have an individual states and don't use nested states. 
-2. setters from useState hooks don't receive callbacks and not immediately updating, so use useEffect and watch for the state instead.
+1. Have an individual states and don't use nested states. (2024: what do you mean nested states? forms could be a complex state so this is wrong Micko)
+2. setters from useState hooks don't receive callbacks and not immediately updating, so use useEffect and watch for the state instead. (2024: Never, ever watch for state changes. 2021 Micko has no understanding of the Component's lifecycle. A setter of state will re-render a component, and it is enough)
 3. Custom Hooks:
-    3.1. Components for UI, Hooks for Behavior. Never return a jsx, or component with Custom Hooks.
+    3.1. Components for UI, Hooks for Behavior. Never return a jsx, or component with Custom Hooks. (2024: This is correct. Custom Hooks is a reusable function with lifecycle features for Components. Returning jsx or components defeats hooks purpose)
 4. Optimization with useMemo, useCallback
     4.1. Each hook has cost, so beware on using them. Only use them if it will skip large rerenders, or to function and/or component
-        that rarely affected throughout the workflow. Read: https://kentcdodds.com/blog/usememo-and-usecallback
+        that rarely affected throughout the workflow. Read: https://kentcdodds.com/blog/usememo-and-usecallback (2024: not clear about this. A vercel project uses useMemo and useCallback everytime. But no worries, React will be compiled and this will be automatic in the near future)
 5. useEffect
-    5.1. Don't lie about dependencies array, fix your code if its producing infinite loop with the required dependencies
+    5.1. Don't lie about dependencies array, fix your code if its producing infinite loop with the required dependencies (2024: don't use useEffect at all unless you're doing real side effects. Having a useEffect that has confused dependencies means you're probably overusing this hook)
 6. useState
     6.1. whenever the state changes, it will have its new reference, so when you pass it like this:
     ```
@@ -76,7 +76,7 @@ Important Pattern Lessons for React
     and count changes, the alerted count will be the outdated value, because the reference of count called is different. 
 7. useRef
     7.1. You can use useRef if you dont want a state but not rerender the component, you want a reference of an HTML element,
-        or you want to to Pass By Reference, which is the solution on the 6.1 problem
+        or you want to to Pass By Reference, which is the solution on the 6.1 problem (2024: why would you not want to re-render the component when changing a value? useRef is used mainly for referencing an HTML element)
 8. React.memo and useMemo
     8.1 A component needs React.memo if you dont want to rerender a Child Component if the Parent Component rerenders even if the passed
         props are just the same. An example can be seen at PagesFormComplete
